@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LORE — every post is part of the Lore</title>
 <meta name="description" content="LORE — a zero-budget social network built on GitHub. Profiles, voice cards, topics, ranks, streaks. Admin: aNDROBEET.">
+<meta name="theme-color" content="#1a0505">
+<!-- Social link previews (Twitter/Discord/WhatsApp cards) -->
+<meta property="og:title" content="LORE — every post is part of the Lore">
+<meta property="og:description" content="A social network built entirely on GitHub. Profiles, voice cards, topic ranks, streaks & monthly charts. $0 forever.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/og-banner.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="assets/og-banner.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-512.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%231a0505' stroke='%23c41e3a' stroke-width='6'/><text x='50' y='66' font-size='48' text-anchor='middle' fill='white' font-family='Georgia'>L</text></svg>">
 <style>
 /* ============ THEMES (CSS variables) ============ */
@@ -183,7 +193,7 @@ svg.donut .seg:hover{stroke-width:34}
     <button class="postbtn" onclick="openCompose()">+ NEW POST</button>
     <div class="sidefoot">
       Admin: <b>aNDROBEET</b> ⭐<br>
-      Support: <a href="/cdn-cgi/l/email-protection#6908070d1b0c1e135e5e5b025f290e04080005470a0604"><span class="__cf_email__" data-cfemail="f5949b918790828fc2c2c79ec3b59298949c99db969a98">[email&#160;protected]</span></a><br>
+      Support: <a href="/cdn-cgi/l/email-protection#4829262c3a2d3f327f7f7a237e082f25292124662b2725"><span class="__cf_email__" data-cfemail="fe9f909a8c9b8984c9c9cc95c8be99939f9792d09d9193">[email&#160;protected]</span></a><br>
       Built on GitHub · $0 budget
     </div>
   </nav>
@@ -722,6 +732,9 @@ function submitPost(){
 document.body.dataset.theme=S.theme;
 if(!location.hash) location.hash="#/explore";
 render();
+// PWA: register service worker (makes LORE installable + work offline)
+if("serviceWorker" in navigator && location.protocol==="https:")
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a1d28bd815918d',t:'MTc4MTE5MzU2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
