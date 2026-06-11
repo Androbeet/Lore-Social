@@ -1,0 +1,19 @@
+{
+  "name": "LORE — every post is part of the Lore",
+  "short_name": "LORE",
+  "description": "A zero-budget social network built entirely on GitHub. Profiles, voice cards, topics, ranks, streaks & monthly charts.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#120303",
+  "theme_color": "#1a0505",
+  "icons": [
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
