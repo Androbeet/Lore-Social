@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# LORE — a zero-budget social network built on GitHub
+# Admin: aNDROBEET · Support: andrewz772k6@gmail.com
