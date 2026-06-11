@@ -1,0 +1,86 @@
+# LORE — daily maintenance brain (place in the **lore-data** repo)
+# · recalculates streaks per user
+# · awards ECHO (10+ shares) / RESONANCE (100+ shares) badges
+# · rebuilds the feed index from post files (self-healing)
+
+name: Daily Maintenance
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Streaks, echoes & feed rebuild
+        run: |
+          python3 - <<'PY'
+          import json, glob, datetime, collections, os
+
+          posts = []
+          for path in glob.glob("posts/*.json"):
+              try:
+                  posts.append(json.load(open(path)))
+              except Exception:
+                  pass
+
+          # --- ECHO / RESONANCE badges ---
+          for p in posts:
+              shares = p.get("shares", 0)
+              new = "RESONANCE" if shares >= 100 else "ECHO" if shares >= 10 else ""
+              if new != p.get("echo", ""):
+                  p["echo"] = new
+                  json.dump(p, open(f"posts/{p['id']}.json", "w"), indent=1)
+
+          # --- streaks (consecutive days with >=1 post) ---
+          by_user = collections.defaultdict(set)
+          for p in posts:
+              day = datetime.datetime.utcfromtimestamp(p.get("ts", 0) / 1000).date()
+              by_user[p.get("author", "?")].add(day)
+
+          today = datetime.datetime.utcnow().date()
+          for user, days in by_user.items():
+              streak, d = 0, today
+              # streak counts back from today or yesterday
+              if d not in days:
+                  d = d - datetime.timedelta(days=1)
+              while d in days:
+                  streak += 1
+                  d -= datetime.timedelta(days=1)
+              tier = "Gold" if streak >= 90 else "Silver" if streak >= 30 else "Bronze" if streak >= 7 else "—"
+              upath = f"users/{user}.json"
+              if os.path.exists(upath):
+                  u = json.load(open(upath))
+                  u["streak"] = {"count": streak, "tier": tier}
+                  u["echoes"] = sum(1 for p in posts if p.get("author") == user and p.get("echo") == "ECHO")
+                  u["resonance"] = sum(1 for p in posts if p.get("author") == user and p.get("echo") == "RESONANCE")
+                  u["pioneer"] = sum(1 for p in posts if p.get("pioneer") == user)
+                  json.dump(u, open(upath, "w"), indent=1)
+
+          # --- rebuild feed index (last 500) ---
+          posts.sort(key=lambda p: -p.get("ts", 0))
+          feed = [{
+              "id": p["id"], "author": p.get("author"), "topic": p.get("topic"),
+              "snippet": (p.get("text") or "")[:280], "img": p.get("img", ""),
+              "ts": p.get("ts"), "up": len(p.get("up", [])), "down": len(p.get("down", [])),
+              "comments": len(p.get("comments", [])), "echo": p.get("echo", "")
+          } for p in posts[:500]]
+          os.makedirs("config", exist_ok=True)
+          json.dump(feed, open("config/feed.json", "w"), indent=1)
+          print("feed rebuilt:", len(feed), "posts")
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name "lore-bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "🤖 daily maintenance"
+          git push
