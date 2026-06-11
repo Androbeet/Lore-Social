@@ -2,7 +2,7 @@
 
 > Every post you make is part of the Lore.
 
-**Admin:** aNDROBEET · **Support:** andrewz772k6@gmail.com
+**Admin:** ANDROBEET · **Support:** andrewz772k6@gmail.com
 
 A full social network — profiles, voice cards, topics, upvotes, communities,
 ranks, streaks, monthly leaderboard charts — that costs **$0 forever**:
