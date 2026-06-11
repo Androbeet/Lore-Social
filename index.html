@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LORE — every post is part of the Lore</title>
+<meta name="description" content="LORE — a zero-budget social network built on GitHub. Profiles, voice cards, topics, ranks, streaks. Admin: aNDROBEET.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%231a0505' stroke='%23c41e3a' stroke-width='6'/><text x='50' y='66' font-size='48' text-anchor='middle' fill='white' font-family='Georgia'>L</text></svg>">
+<style>
+/* ============ THEMES (CSS variables) ============ */
+:root, [data-theme="maroon"]{
+  --bg:#120303; --bg2:#1a0505; --bg3:#240a0a; --card:#1e0707; --card2:#2a0c0c;
+  --text:#ffffff; --text2:#d8b9b9; --muted:#9c7474;
+  --accent:#c41e3a; --accent2:#8b0000; --accent-soft:rgba(196,30,58,.16);
+  --glow:0 0 18px rgba(196,30,58,.45), 0 0 40px rgba(139,0,0,.25);
+  --glow-soft:0 0 10px rgba(196,30,58,.30);
+  --border:#3a1111; --green:#3ddc84; --down:#7a8cff;
+}
+[data-theme="mono"]{
+  --bg:#000000; --bg2:#0a0a0a; --bg3:#141414; --card:#101010; --card2:#1a1a1a;
+  --text:#ffffff; --text2:#cccccc; --muted:#888888;
+  --accent:#ffffff; --accent2:#aaaaaa; --accent-soft:rgba(255,255,255,.10);
+  --glow:0 0 14px rgba(255,255,255,.25); --glow-soft:0 0 8px rgba(255,255,255,.18);
+  --border:#2a2a2a; --green:#3ddc84; --down:#9aa4b5;
+}
+[data-theme="light"]{
+  --bg:#f6f4f2; --bg2:#ffffff; --bg3:#efe9e7; --card:#ffffff; --card2:#f3eded;
+  --text:#141414; --text2:#3c3c3c; --muted:#7c7c7c;
+  --accent:#8b0000; --accent2:#c41e3a; --accent-soft:rgba(139,0,0,.08);
+  --glow:0 4px 18px rgba(139,0,0,.14); --glow-soft:0 2px 8px rgba(0,0,0,.10);
+  --border:#ddd2d2; --green:#1f9e5f; --down:#3551d1;
+}
+/* ============ BASE ============ */
+*{box-sizing:border-box; margin:0; padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, var(--accent-soft), transparent);
+  background-attachment:fixed;
+}
+a{color:inherit; text-decoration:none}
+button{font-family:inherit; cursor:pointer}
+input,textarea,select{font-family:inherit; color:var(--text); background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; outline:none; width:100%}
+input:focus,textarea:focus{border-color:var(--accent); box-shadow:var(--glow-soft)}
+::placeholder{color:var(--muted)}
+::-webkit-scrollbar{width:9px} ::-webkit-scrollbar-thumb{background:var(--border); border-radius:9px}
+/* ============ LAYOUT ============ */
+#app{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:230px 1fr; gap:0; min-height:100vh}
+@media(max-width:880px){ #app{grid-template-columns:1fr} .sidebar{display:none} .mobilebar{display:flex!important} body{padding-bottom:64px} }
+.sidebar{
+  border-right:1px solid var(--border); padding:22px 16px; position:sticky; top:0; height:100vh;
+  display:flex; flex-direction:column; gap:6px; background:linear-gradient(180deg, var(--bg2), transparent);
+}
+.logo{font-family:Georgia,'Times New Roman',serif; font-size:34px; letter-spacing:6px; font-weight:bold; padding:4px 12px 18px; text-shadow:var(--glow); user-select:none}
+.logo span{color:var(--accent)}
+.navbtn{display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:12px; font-size:15px; color:var(--text2); border:1px solid transparent; background:none; width:100%; text-align:left; transition:.15s}
+.navbtn:hover{background:var(--accent-soft); color:var(--text)}
+.navbtn.active{background:var(--accent-soft); color:var(--text); border-color:var(--border); box-shadow:var(--glow-soft); font-weight:600}
+.navbtn .ico{width:22px; text-align:center; font-size:17px}
+.navbadge{margin-left:auto; background:var(--accent); color:#fff; font-size:11px; min-width:19px; height:19px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px; font-weight:700}
+[data-theme="mono"] .navbadge{color:#000}
+.postbtn{margin-top:14px; background:linear-gradient(135deg, var(--accent2), var(--accent)); color:#fff; border:none; border-radius:14px; padding:13px; font-size:15px; font-weight:700; letter-spacing:1px; box-shadow:var(--glow); transition:.2s}
+[data-theme="mono"] .postbtn{color:#000}
+.postbtn:hover{transform:translateY(-1px); filter:brightness(1.15)}
+.sidefoot{margin-top:auto; font-size:11px; color:var(--muted); padding:10px 12px; line-height:1.7}
+.sidefoot a{color:var(--accent2); text-decoration:underline dotted}
+.mobilebar{display:none; position:fixed; bottom:0; left:0; right:0; background:var(--bg2); border-top:1px solid var(--border); z-index:60; justify-content:space-around; padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
+.mobilebar button{background:none; border:none; color:var(--text2); font-size:21px; padding:6px 14px; border-radius:10px; position:relative}
+.mobilebar button.active{color:var(--accent); background:var(--accent-soft)}
+.mobilebar .navbadge{position:absolute; top:0; right:4px}
+main{padding:0 0 60px; min-width:0}
+.topbar{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px); background:color-mix(in srgb, var(--bg) 78%, transparent); border-bottom:1px solid var(--border); padding:14px 22px; display:flex; align-items:center; gap:14px}
+.topbar h1{font-size:19px; font-weight:700; letter-spacing:.5px}
+.topbar .sub{font-size:12px; color:var(--muted)}
+.content{padding:20px 22px; max-width:760px}
+.wide .content{max-width:none}
+/* ============ COMPONENTS ============ */
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:14px; transition:.15s}
+.card:hover{border-color:color-mix(in srgb, var(--accent) 45%, var(--border)); box-shadow:var(--glow-soft)}
+.tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap}
+.tab{background:var(--bg3); border:1px solid var(--border); color:var(--text2); padding:8px 18px; border-radius:999px; font-size:13.5px; font-weight:600; transition:.15s}
+.tab.active{background:linear-gradient(135deg,var(--accent2),var(--accent)); color:#fff; border-color:transparent; box-shadow:var(--glow-soft)}
+[data-theme="mono"] .tab.active{color:#000}
+.avatar{border-radius:50%; object-fit:cover; flex-shrink:0; background:var(--bg3); border:2px solid var(--border)}
+.av-gen{border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; border:2px solid var(--border); font-family:Georgia,serif; user-select:none}
+.posthead{display:flex; align-items:center; gap:11px; margin-bottom:10px}
+.posthead .uname{font-weight:700; font-size:14.5px}
+.posthead .uname:hover{color:var(--accent); cursor:pointer}
+.posthead .meta{font-size:12px; color:var(--muted)}
+.topicchip{font-size:11px; background:var(--accent-soft); color:var(--accent); border:1px solid color-mix(in srgb, var(--accent) 35%, transparent); padding:2.5px 10px; border-radius:999px; font-weight:700; cursor:pointer}
+[data-theme="mono"] .topicchip{color:var(--text)}
+.posttext{font-size:15px; line-height:1.65; color:var(--text); white-space:pre-wrap; word-wrap:break-word}
+.postimg{width:100%; max-height:420px; object-fit:cover; border-radius:12px; margin-top:12px; border:1px solid var(--border)}
+.actions{display:flex; gap:6px; margin-top:14px; align-items:center; flex-wrap:wrap}
+.act{display:flex; align-items:center; gap:7px; background:var(--bg3); border:1px solid var(--border); color:var(--text2); padding:7px 14px; border-radius:999px; font-size:13px; font-weight:600; transition:.15s}
+.act:hover{border-color:var(--accent); color:var(--text); box-shadow:var(--glow-soft)}
+.act.on-up{background:var(--accent-soft); color:var(--accent); border-color:var(--accent)}
+[data-theme="mono"] .act.on-up{color:var(--text)}
+.act.on-down{background:rgba(122,140,255,.12); color:var(--down); border-color:var(--down)}
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; letter-spacing:.5px}
+.badge.echo{background:rgba(255,170,0,.15); color:#ffaa33; border:1px solid rgba(255,170,0,.4)}
+.badge.resonance{background:rgba(190,80,255,.15); color:#c879ff; border:1px solid rgba(190,80,255,.4)}
+.badge.seal{background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent)}
+.badge.pioneer{background:rgba(61,220,132,.12); color:var(--green); border:1px solid rgba(61,220,132,.4)}
+.badge.streak{background:rgba(255,120,40,.13); color:#ff8c42; border:1px solid rgba(255,120,40,.4)}
+.badge.mutual{background:rgba(61,220,132,.10); color:var(--green); border:1px solid rgba(61,220,132,.35)}
+[data-theme="light"] .badge.echo{color:#9a6400} 
+.btn{background:linear-gradient(135deg,var(--accent2),var(--accent)); color:#fff; border:none; border-radius:11px; padding:10px 22px; font-size:14px; font-weight:700; transition:.15s; box-shadow:var(--glow-soft)}
+[data-theme="mono"] .btn{color:#000}
+.btn:hover{filter:brightness(1.15)}
+.btn.ghost{background:var(--bg3); color:var(--text); border:1px solid var(--border); box-shadow:none}
+.btn.sm{padding:7px 16px; font-size:13px; border-radius:9px}
+.empty{text-align:center; color:var(--muted); padding:50px 20px; font-size:14px; line-height:1.8}
+.empty .big{font-size:40px; display:block; margin-bottom:10px}
+/* profile */
+.banner{height:130px; border-radius:18px 18px 0 0; background:linear-gradient(120deg, var(--accent2), var(--accent), #4a0a14); position:relative; overflow:hidden}
+.banner::after{content:''; position:absolute; inset:0; background:radial-gradient(circle at 80% 20%, rgba(255,255,255,.22), transparent 55%)}
+.profilecard{background:var(--card); border:1px solid var(--border); border-radius:18px; margin-bottom:16px; overflow:hidden}
+.pbody{padding:0 22px 20px; margin-top:-46px; position:relative}
+.pfp-ring{width:96px; height:96px; border-radius:50%; padding:3px; background:conic-gradient(var(--accent), #ff8c42, var(--accent2), var(--accent)); box-shadow:var(--glow); display:inline-block; animation:ringspin 6s linear infinite}
+@keyframes ringspin{to{filter:hue-rotate(20deg)}}
+.statrow{display:flex; gap:26px; margin:14px 0; flex-wrap:wrap}
+.stat b{font-size:17px} .stat span{font-size:12.5px; color:var(--muted); margin-left:5px}
+.stat{cursor:default}
+.tagrow{display:flex; gap:7px; flex-wrap:wrap; margin-top:12px}
+.voicecard{display:flex; align-items:center; gap:12px; background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:10px 14px; margin-top:12px; max-width:340px}
+.playbtn{width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--accent2),var(--accent)); border:none; color:#fff; font-size:15px; flex-shrink:0; box-shadow:var(--glow-soft)}
+.wavebar{display:flex; gap:2.5px; align-items:center; height:26px; flex:1}
+.wavebar i{width:3px; background:var(--accent); border-radius:3px; opacity:.65}
+.ranks{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+.rankchip{background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:6px 12px; font-size:12.5px}
+.rankchip b{color:var(--accent)} [data-theme="mono"] .rankchip b{color:var(--text)}
+/* leaderboard circle */
+.lbwrap{display:flex; gap:24px; align-items:center; flex-wrap:wrap; justify-content:center}
+.lblegend{display:flex; flex-direction:column; gap:9px; min-width:210px}
+.lbrow{display:flex; align-items:center; gap:10px; font-size:13.5px; padding:7px 12px; border-radius:10px; background:var(--bg3); border:1px solid var(--border); cursor:pointer; transition:.15s}
+.lbrow:hover{box-shadow:var(--glow-soft); border-color:var(--accent)}
+.lbdot{width:11px; height:11px; border-radius:50%; flex-shrink:0}
+.lbrow .pct{margin-left:auto; color:var(--muted); font-size:12px; font-weight:700}
+svg.donut .seg{transition:opacity .15s, stroke-width .15s; cursor:pointer}
+svg.donut .seg:hover{stroke-width:34}
+/* modal */
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(4px); z-index:100; display:flex; align-items:flex-start; justify-content:center; padding:60px 16px}
+.modal{background:var(--bg2); border:1px solid var(--border); border-radius:18px; width:100%; max-width:540px; padding:22px; box-shadow:var(--glow); animation:pop .18s ease}
+@keyframes pop{from{transform:scale(.96); opacity:0}}
+.modal h2{font-size:18px; margin-bottom:16px}
+.field{margin-bottom:14px}
+.field label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; font-weight:600; letter-spacing:.3px}
+.toast{position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--card2); border:1px solid var(--accent); color:var(--text); padding:11px 22px; border-radius:999px; font-size:13.5px; z-index:200; box-shadow:var(--glow); animation:pop .2s}
+/* notifications */
+.notifrow{display:flex; gap:12px; align-items:flex-start; padding:13px 14px; border-radius:12px; border:1px solid var(--border); background:var(--card); margin-bottom:9px; font-size:14px}
+.notifrow.unread{border-color:var(--accent); background:var(--accent-soft)}
+.notifrow .t{font-size:11.5px; color:var(--muted); margin-top:3px}
+/* themes settings */
+.themegrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px}
+.themeopt{border:2px solid var(--border); border-radius:14px; padding:14px; cursor:pointer; text-align:center; transition:.15s}
+.themeopt.active{border-color:var(--accent); box-shadow:var(--glow-soft)}
+.swatch{height:54px; border-radius:9px; margin-bottom:10px; border:1px solid var(--border); position:relative; overflow:hidden}
+.comment{display:flex; gap:10px; padding:12px 0; border-top:1px solid var(--border); font-size:14px}
+.searchbox{position:relative; margin-bottom:18px}
+.commgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px}
+.hr{border:none; border-top:1px solid var(--border); margin:16px 0}
+.muted{color:var(--muted); font-size:12.5px}
+.link{color:var(--accent); cursor:pointer; font-weight:600}
+[data-theme="mono"] .link{color:var(--text); text-decoration:underline}
+.notice{background:var(--accent-soft); border:1px solid color-mix(in srgb,var(--accent) 40%, transparent); border-radius:13px; padding:13px 16px; font-size:13px; line-height:1.65; margin-bottom:18px; color:var(--text2)}
+.notice b{color:var(--text)}
+</style>
+</head>
+<body data-theme="maroon">
+<div id="app">
+  <nav class="sidebar">
+    <div class="logo">L<span>O</span>RE</div>
+    <button class="navbtn" data-nav="explore"><span class="ico">⌂</span> Explore</button>
+    <button class="navbtn" data-nav="topics"><span class="ico">#</span> Topics</button>
+    <button class="navbtn" data-nav="communities"><span class="ico">◉</span> Communities</button>
+    <button class="navbtn" data-nav="search"><span class="ico">⌕</span> Search</button>
+    <button class="navbtn" data-nav="notifications"><span class="ico">🔔</span> Notifications <span class="navbadge" id="bellbadge" style="display:none">0</span></button>
+    <button class="navbtn" data-nav="dms"><span class="ico">✉</span> Messages</button>
+    <button class="navbtn" data-nav="me"><span class="ico">◈</span> My Profile</button>
+    <button class="navbtn" data-nav="settings"><span class="ico">⚙</span> Settings</button>
+    <button class="postbtn" onclick="openCompose()">+ NEW POST</button>
+    <div class="sidefoot">
+      Admin: <b>aNDROBEET</b> ⭐<br>
+      Support: <a href="/cdn-cgi/l/email-protection#6908070d1b0c1e135e5e5b025f290e04080005470a0604"><span class="__cf_email__" data-cfemail="f5949b918790828fc2c2c79ec3b59298949c99db969a98">[email&#160;protected]</span></a><br>
+      Built on GitHub · $0 budget
+    </div>
+  </nav>
+  <main>
+    <div class="topbar"><h1 id="pagetitle">Explore</h1><span class="sub" id="pagesub"></span></div>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+<div class="mobilebar">
+  <button data-nav="explore">⌂</button>
+  <button data-nav="topics">#</button>
+  <button onclick="openCompose()" style="color:var(--accent); font-size:26px">＋</button>
+  <button data-nav="notifications">🔔<span class="navbadge" id="bellbadge2" style="display:none">0</span></button>
+  <button data-nav="me">◈</button>
+</div>
+<div id="modalroot"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* =====================================================================
+   LORE — zero-budget social network frontend
+   Admin: aNDROBEET · Support: andrewz772k6@gmail.com
+   ---------------------------------------------------------------------
+   MODES:
+   · DEMO MODE (default): runs fully client-side with seed data +
+     localStorage. Works the second GitHub Pages goes live. Perfect for
+     screenshots, soft-launch demos, and Show HN.
+   · LIVE MODE: set CONFIG.WORKER_URL to your deployed Cloudflare Worker
+     and CONFIG.DATA_BASE to your jsDelivr data-repo URL. The app then
+     reads JSON from the data repo and sends writes to the Worker.
+     (Worker source is in /worker/worker.js of this repo.)
+   ===================================================================== */
+const CONFIG = {
+  WORKER_URL: "",   // e.g. "https://lore-api.yourname.workers.dev"
+  DATA_BASE:  "",   // e.g. "https://cdn.jsdelivr.net/gh/yourname/lore-data@main"
+  ADMIN: "androbeet",
+  SUPPORT: "andrewz772k6@gmail.com"
+};
+const LIVE = !!(CONFIG.WORKER_URL && CONFIG.DATA_BASE);
+
+/* ============ SEED DATA (demo mode database) ============ */
+const SEED = {
+tags:["Philosophy","Tech","Music","Art","Confessions","Memes","Books","Films","Gaming","Science","Poetry","Fitness","Food","Travel","History","Space","Coding","AI","Dreams","Late Night Thoughts"],
+users:{
+ androbeet:{bio:"Founder & philosopher-admin of LORE. Building a social network on $0 and pure GitHub sorcery. Every post you make is part of the Lore.",pfp:"",banner:"",voice:"demo",tags:["Philosophy","Tech","Late Night Thoughts"],followers:["nyxwrites","pixel_monk","sable","quietstorm","verse9"],following:["nyxwrites","sable"],joined:"2026-03-01",streak:{count:71,tier:"Silver"},seal:true,echoes:4,resonance:1,pioneer:2,ranks:{Philosophy:1,Tech:3},color:"#c41e3a"},
+ nyxwrites:{bio:"Poetry at 3am. Confessions before sunrise. I write the things you're afraid to say.",pfp:"",tags:["Poetry","Confessions","Late Night Thoughts"],followers:["androbeet","sable","verse9"],following:["androbeet","quietstorm"],joined:"2026-03-04",streak:{count:23,tier:"Bronze"},seal:false,echoes:2,resonance:0,pioneer:1,ranks:{Poetry:1,Confessions:2},color:"#9b59b6"},
+ pixel_monk:{bio:"I make pixel art and over-engineer side projects. Currently rendering enlightenment at 16×16.",pfp:"",tags:["Art","Coding","Gaming"],followers:["androbeet"],following:["androbeet","nyxwrites"],joined:"2026-03-11",streak:{count:9,tier:"—"},seal:false,echoes:1,resonance:0,pioneer:0,ranks:{Art:2},color:"#e67e22"},
+ sable:{bio:"Film, noir, and the spaces between frames. Watching everything so you don't have to.",pfp:"",tags:["Films","Music","History"],followers:["androbeet","nyxwrites"],following:["androbeet"],joined:"2026-03-15",streak:{count:34,tier:"Silver"},seal:false,echoes:1,resonance:0,pioneer:1,ranks:{Films:1},color:"#16a085"},
+ quietstorm:{bio:"Science, space, and the occasional existential spiral. Ask me about black holes.",pfp:"",tags:["Science","Space","AI"],followers:["nyxwrites"],following:["androbeet","nyxwrites"],joined:"2026-04-02",streak:{count:5,tier:"—"},seal:false,echoes:0,resonance:0,pioneer:0,ranks:{Science:1,Space:2},color:"#2980d9"},
+ verse9:{bio:"Memes are modern folklore. I'm just the archivist.",pfp:"",tags:["Memes","Music","Gaming"],followers:[],following:["androbeet","nyxwrites"],joined:"2026-04-20",streak:{count:12,tier:"—"},seal:false,echoes:1,resonance:0,pioneer:0,ranks:{Memes:1},color:"#d35490"}
+},
+posts:[
+ {id:"p1",author:"androbeet",topic:"Philosophy",ts:Date.now()-1000*60*42,text:"Welcome to LORE.\n\nThis entire platform runs on $0 — GitHub is the database, a free Worker is the backend, and Actions is the scheduled brain.\n\nEvery post you make here is permanent. Every profile is a page in a shared mythology. You're not posting content. You're building your Lore.",img:"",up:["nyxwrites","sable","pixel_monk","quietstorm","verse9"],down:[],shares:14,echo:"ECHO",pioneer:"nyxwrites",comments:[{a:"nyxwrites",t:"first. forever part of the Lore now 🔥",ts:Date.now()-1000*60*40},{a:"sable",t:"a social network with an actual aesthetic. finally.",ts:Date.now()-1000*60*31},{a:"pixel_monk",t:"the fact this runs on a repo is insane",ts:Date.now()-1000*60*22}]},
+ {id:"p2",author:"nyxwrites",topic:"Poetry",ts:Date.now()-1000*60*60*3,text:"i archive myself in fragments —\na bio, a voice card, a maroon glow.\nif the servers ever forget me,\nat least the commit history won't.",img:"",up:["androbeet","sable","verse9","quietstorm"],down:[],shares:11,echo:"ECHO",pioneer:"sable",comments:[{a:"sable",t:"\"the commit history won't\" — chills",ts:Date.now()-1000*60*60*2.8},{a:"androbeet",t:"this is exactly what LORE is for. Sealed. ⭐",ts:Date.now()-1000*60*60*2}]},
+ {id:"p3",author:"quietstorm",topic:"Space",ts:Date.now()-1000*60*60*7,text:"Fun fact: the data you post here is replicated across GitHub's global infrastructure — meaning your shower thought is now technically more redundantly backed up than most government records.",img:"",up:["androbeet","verse9","nyxwrites"],down:[],shares:6,echo:"",pioneer:"verse9",comments:[{a:"verse9",t:"my 2am takes deserve enterprise-grade durability tbh",ts:Date.now()-1000*60*60*6}]},
+ {id:"p4",author:"pixel_monk",topic:"Art",ts:Date.now()-1000*60*60*11,text:"Made a pixel banner for my LORE profile tonight. The decoration system accepting any image URL means my profile is now 90% animated gradient, 10% restraint.",img:"",up:["androbeet","sable"],down:["verse9"],shares:3,echo:"",pioneer:"",comments:[]},
+ {id:"p5",author:"sable",topic:"Films",ts:Date.now()-1000*60*60*26,text:"Hot take: the monthly leaderboard chart is the most cinematic feature here. A circle of colored arcs deciding who ruled the topic this month? That's literally the third act of a heist movie.",img:"",up:["androbeet","nyxwrites","pixel_monk","verse9","quietstorm"],down:[],shares:8,echo:"",pioneer:"androbeet",comments:[{a:"androbeet",t:"wait till you see the rank-change notifications",ts:Date.now()-1000*60*60*24}]},
+ {id:"p6",author:"verse9",topic:"Memes",ts:Date.now()-1000*60*60*30,text:"\"what's your tech stack?\"\n\nme, whispering: a markdown file and a dream",img:"",up:["androbeet","nyxwrites","pixel_monk","sable"],down:[],shares:19,echo:"ECHO",pioneer:"pixel_monk",comments:[{a:"pixel_monk",t:"PIONEER claimed. this one's going viral",ts:Date.now()-1000*60*60*29}]},
+ {id:"p7",author:"androbeet",topic:"Tech",ts:Date.now()-1000*60*60*49,text:"How LORE stays free forever:\n\n→ Reads: jsDelivr CDN caching the data repo\n→ Writes: one Cloudflare Worker (100k req/day free)\n→ Cron brain: GitHub Actions — streaks, ranks, monthly charts\n→ Media: you link it (Imgur / Catbox), we never store it\n\nNo servers. No bills. No excuses.",img:"",up:["quietstorm","pixel_monk","sable"],down:[],shares:9,echo:"",pioneer:"quietstorm",comments:[{a:"quietstorm",t:"the Actions-as-scheduled-brain trick is genuinely 990 IQ",ts:Date.now()-1000*60*60*48}]},
+ {id:"p8",author:"nyxwrites",topic:"Confessions",ts:Date.now()-1000*60*60*55,text:"confession: i check my topic rank more often than my actual messages. #3 in Confessions and i can taste #2.",img:"",up:["verse9","androbeet"],down:[],shares:2,echo:"",pioneer:"",comments:[{a:"verse9",t:"the rank system has us all in a chokehold",ts:Date.now()-1000*60*60*54}]}
+],
+communities:[
+ {name:"midnight-circle",desc:"Late night thoughts, confessions, and the things only 3am understands.",members:["androbeet","nyxwrites","quietstorm"],posts:18},
+ {name:"the-forge",desc:"Builders, coders, zero-budget engineers. Show what you shipped.",members:["androbeet","pixel_monk","quietstorm"],posts:31},
+ {name:"frame-by-frame",desc:"Film, art, and visual obsessions dissected weekly.",members:["sable","pixel_monk"],posts:12},
+ {name:"verse-vault",desc:"Poetry drops every day. Bring your fragments.",members:["nyxwrites","androbeet","verse9"],posts:25}
+],
+leaderboard:{month:"May 2026",topic:"Philosophy",rows:[
+ {user:"androbeet",engagement:38,color:"#c41e3a"},
+ {user:"nyxwrites",engagement:24,color:"#9b59b6"},
+ {user:"quietstorm",engagement:17,color:"#2980d9"},
+ {user:"sable",engagement:12,color:"#16a085"},
+ {user:"pixel_monk",engagement:9,color:"#e67e22"}],
+ mostUp:"androbeet", mostDown:"verse9"},
+notifications:[
+ {type:"follow",from:"quietstorm",ts:Date.now()-1000*60*18,read:false},
+ {type:"upvote",from:"sable",post:"p1",ts:Date.now()-1000*60*52,read:false},
+ {type:"comment",from:"pixel_monk",post:"p1",snippet:"the fact this runs on a repo is insane",ts:Date.now()-1000*60*65,read:false},
+ {type:"seal",from:"androbeet",post:"p2",ts:Date.now()-1000*60*60*2,read:true},
+ {type:"rank_change",topic:"Philosophy",oldRank:2,newRank:1,ts:Date.now()-1000*60*60*26,read:true}
+]
+};
+
+/* ============ LOCAL STATE (demo persistence) ============ */
+const LS_KEY="lore_state_v1";
+let S = loadState();
+function loadState(){
+  try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.me) return s; }catch(e){}
+  return { me:"you", theme:"maroon",
+    profile:{bio:"New to LORE. Writing my first pages.",pfp:"",tags:["Tech"],voice:"",joined:new Date().toISOString().slice(0,10)},
+    myPosts:[], votes:{}, follows:["androbeet"], comments:{}, joined:[], readNotifs:false, shares:{} };
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+
+/* ============ HELPERS ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return"just now";if(d<3600)return Math.floor(d/60)+"m ago";if(d<86400)return Math.floor(d/3600)+"h ago";if(d<604800)return Math.floor(d/86400)+"d ago";return new Date(ts).toLocaleDateString();}
+function userColor(u){ if(SEED.users[u]) return SEED.users[u].color; let h=0; for(const c of u) h=(h*31+c.charCodeAt(0))%360; return `hsl(${h},62%,46%)`; }
+function avatarHTML(u,size){
+  const url = u===S.me ? S.profile.pfp : (SEED.users[u]?.pfp||"");
+  if(url) return `<img class="avatar" src="${esc(url)}" width="${size}" height="${size}" alt="${esc(u)}" onerror="this.outerHTML=genAv('${esc(u)}',${size})">`;
+  return genAv(u,size);
+}
+function genAv(u,size){ return `<div class="av-gen" style="width:${size}px;height:${size}px;font-size:${size*0.42}px;background:linear-gradient(135deg,${userColor(u)},#000c)">${esc(u[0].toUpperCase())}</div>`; }
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2400); }
+function allPosts(){
+  const mine = S.myPosts.map(p=>({...p}));
+  const seeded = SEED.posts.map(p=>{
+    const v=S.votes[p.id], extra=S.comments[p.id]||[];
+    const up=[...p.up], down=[...p.down];
+    if(v==="up")up.push(S.me); if(v==="down")down.push(S.me);
+    return {...p, up, down, comments:[...p.comments, ...extra], shares:p.shares+(S.shares[p.id]||0)};
+  });
+  return [...mine, ...seeded].sort((a,b)=>b.ts-a.ts);
+}
+function getUser(u){
+  if(u===S.me) return {bio:S.profile.bio,pfp:S.profile.pfp,tags:S.profile.tags,voice:S.profile.voice,followers:[],following:S.follows,joined:S.profile.joined,streak:{count:S.myPosts.length,tier:S.myPosts.length>=30?"Silver":S.myPosts.length>=7?"Bronze":"—"},seal:false,echoes:0,resonance:0,pioneer:0,ranks:{},color:"#c41e3a"};
+  return SEED.users[u];
+}
+function unreadCount(){ return S.readNotifs?0:SEED.notifications.filter(n=>!n.read).length; }
+function refreshBadges(){
+  const n=unreadCount();
+  for(const id of["bellbadge","bellbadge2"]){const el=document.getElementById(id); if(el){el.style.display=n?"inline-flex":"none"; el.textContent=n;}}
+}
+
+/* ============ ROUTER ============ */
+const routes={};
+function nav(hash){ location.hash=hash; }
+window.addEventListener("hashchange",render);
+document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>nav("#/"+b.dataset.nav)));
+function setActive(name){
+  document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===name));
+}
+function header(title,sub){ $("#pagetitle").textContent=title; $("#pagesub").textContent=sub||""; }
+
+function render(){
+  const h=(location.hash||"#/explore").slice(2);
+  const [page,arg]=h.split("/").map(decodeURIComponent);
+  refreshBadges();
+  window.scrollTo(0,0);
+  const fn=routes[page]||routes.explore;
+  setActive(page==="u"?"":page);
+  fn(arg);
+}
+
+/* ============ POST CARD ============ */
+function postCard(p, full){
+  const score=p.up.length-p.down.length;
+  const myVote=p.up.includes(S.me)?"up":p.down.includes(S.me)?"down":"";
+  const echoBadge=p.echo==="RESONANCE"?`<span class="badge resonance">⚡ RESONANCE</span>`:p.echo==="ECHO"?`<span class="badge echo">〰 ECHO</span>`:"";
+  return `<div class="card" ${full?"":`onclick="if(!event.target.closest('button,.uname,.topicchip,a'))nav('#/post/${p.id}')"`} style="${full?"":"cursor:pointer"}">
+    <div class="posthead">
+      ${avatarHTML(p.author,40)}
+      <div>
+        <div class="uname" onclick="event.stopPropagation();nav('#/u/${esc(p.author)}')">@${esc(p.author)} ${SEED.users[p.author]?.seal?'<span class="badge seal" title="Androbeet Seal">⭐</span>':""}</div>
+        <div class="meta">${timeAgo(p.ts)}</div>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:7px; align-items:center">
+        ${echoBadge}
+        <span class="topicchip" onclick="event.stopPropagation();nav('#/topic/${esc(p.topic)}')">#${esc(p.topic)}</span>
+      </div>
+    </div>
+    <div class="posttext">${esc(p.text)}</div>
+    ${p.img?`<img class="postimg" src="${esc(p.img)}" alt="post image" loading="lazy" onerror="this.style.display='none'">`:""}
+    <div class="actions">
+      <button class="act ${myVote==="up"?"on-up":""}" onclick="event.stopPropagation();vote('${p.id}','up')">▲ ${p.up.length}</button>
+      <button class="act ${myVote==="down"?"on-down":""}" onclick="event.stopPropagation();vote('${p.id}','down')">▼ ${p.down.length}</button>
+      <button class="act" onclick="event.stopPropagation();nav('#/post/${p.id}')">💬 ${p.comments.length}</button>
+      <button class="act" onclick="event.stopPropagation();sharePost('${p.id}')">↗ ${p.shares}</button>
+      <span class="muted" style="margin-left:auto">${score>=0?"+":""}${score}</span>
+    </div>
+  </div>`;
+}
+
+function vote(id,dir){
+  const mine=S.myPosts.find(p=>p.id===id);
+  if(mine){
+    const arr=dir==="up"?mine.up:mine.down, other=dir==="up"?mine.down:mine.up;
+    const i=arr.indexOf(S.me);
+    if(i>=0)arr.splice(i,1); else {arr.push(S.me); const j=other.indexOf(S.me); if(j>=0)other.splice(j,1);}
+  } else {
+    S.votes[id]=S.votes[id]===dir?"":dir;
+  }
+  save(); render();
+  if(LIVE) api("/vote",{post:id,dir});
+}
+function sharePost(id){
+  S.shares[id]=(S.shares[id]||0)+1; save();
+  const url=location.origin+location.pathname+"#/post/"+id;
+  if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast("Permalink copied — shared!")).catch(()=>toast("Share link: "+url));
+  else toast("Share link: "+url);
+  render();
+}
+async function api(path,body){
+  try{ await fetch(CONFIG.WORKER_URL+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); }catch(e){}
+}
+
+/* ============ PAGES ============ */
+routes.explore = ()=>{
+  header("Explore","the latest Lore");
+  const tab = sessionStorage.getItem("exptab")||"Hot";
+  const posts=allPosts();
+  let sorted=[...posts];
+  if(tab==="Hot") sorted.sort((a,b)=>(b.up.length-b.down.length)-(a.up.length-a.down.length));
+  if(tab==="Rising") sorted.sort((a,b)=>((b.up.length+b.comments.length)/Math.max(1,(Date.now()-b.ts)/3.6e6))-((a.up.length+a.comments.length)/Math.max(1,(Date.now()-a.ts)/3.6e6)));
+  if(tab==="Random") sorted.sort(()=>Math.random()-0.5);
+  $("#content").innerHTML = `
+    ${LIVE?"":`<div class="notice"><b>Demo mode.</b> This build runs fully on GitHub Pages with sample data — votes, posts and follows persist in your browser. Connect a Cloudflare Worker in <span class="link" onclick="nav('#/settings')">Settings → Go Live</span> to turn on the real shared database.</div>`}
+    <div class="tabs">${["Hot","Rising","New","Random"].map(t=>`<button class="tab ${t===tab?"active":""}" onclick="sessionStorage.setItem('exptab','${t}');render()">${t}</button>`).join("")}</div>
+    ${sorted.map(p=>postCard(p)).join("")||`<div class="empty"><span class="big">🕳</span>No posts yet. Be the first page of the Lore.</div>`}`;
+};
+
+routes.post = (id)=>{
+  const p=allPosts().find(x=>x.id===id);
+  if(!p){ $("#content").innerHTML=`<div class="empty"><span class="big">🕳</span>This post isn't part of the Lore (yet).</div>`; header("Post"); return; }
+  header("Post","by @"+p.author);
+  $("#content").innerHTML = postCard(p,true) + `
+    <div class="card">
+      <div style="display:flex; gap:10px">
+        ${avatarHTML(S.me,36)}
+        <input id="cmtbox" placeholder="Add to the thread…" onkeydown="if(event.key==='Enter')addComment('${p.id}')">
+        <button class="btn sm" onclick="addComment('${p.id}')">Reply</button>
+      </div>
+      <div style="margin-top:14px">
+        ${p.comments.map((c,i)=>`<div class="comment">
+          ${avatarHTML(c.a,32)}
+          <div><b style="cursor:pointer" onclick="nav('#/u/${esc(c.a)}')">@${esc(c.a)}</b>
+          ${p.pioneer===c.a&&i===0?'<span class="badge pioneer">🚩 PIONEER</span>':""}
+          <span class="muted" style="margin-left:6px">${timeAgo(c.ts)}</span>
+          <div style="margin-top:4px">${esc(c.t)}</div></div>
+        </div>`).join("")||`<div class="muted" style="padding:10px 0">No replies yet. Claim the PIONEER badge.</div>`}
+      </div>
+    </div>`;
+};
+function addComment(id){
+  const v=$("#cmtbox").value.trim(); if(!v)return;
+  const mine=S.myPosts.find(p=>p.id===id);
+  const c={a:S.me,t:v,ts:Date.now()};
+  if(mine) mine.comments.push(c); else (S.comments[id]=S.comments[id]||[]).push(c);
+  save(); render(); toast("Reply added");
+  if(LIVE) api("/comment",{post:id,text:v});
+}
+
+routes.topics = ()=>{
+  header("Topics","every topic is a hall in the Lore");
+  const posts=allPosts();
+  $("#content").innerHTML = `<div class="commgrid">` + SEED.tags.map(t=>{
+    const n=posts.filter(p=>p.topic===t).length;
+    return `<div class="card" style="cursor:pointer;margin:0" onclick="nav('#/topic/${esc(t)}')">
+      <div style="font-size:17px;font-weight:800">#${esc(t)}</div>
+      <div class="muted" style="margin-top:6px">${n} post${n===1?"":"s"} ${t==="Philosophy"?"· 📊 monthly chart pinned":""}</div>
+    </div>`; }).join("") + `</div>
+    <div class="card" style="margin-top:16px; text-align:center">
+      <div class="muted">Don't see your interest?</div>
+      <button class="btn ghost sm" style="margin-top:8px" onclick="requestTag()">＋ Request a new tag</button>
+    </div>`;
+};
+function requestTag(){
+  const t=prompt("Suggest a new interest tag (goes to the moderation queue):");
+  if(t) toast(`"${t}" sent to aNDROBEET's moderation queue ✓`);
+}
+
+routes.topic = (name)=>{
+  header("#"+name,"topic page");
+  const posts=allPosts().filter(p=>p.topic===name);
+  const lb = name===SEED.leaderboard.topic ? leaderboardCard() : "";
+  $("#content").innerHTML = lb + (posts.map(p=>postCard(p)).join("") ||
+    `<div class="empty"><span class="big">#</span>Nothing in #${esc(name)} yet.<br><span class="link" onclick="openCompose('${esc(name)}')">Write the first post →</span></div>`);
+};
+
+function leaderboardCard(){
+  const L=SEED.leaderboard;
+  const total=L.rows.reduce((a,r)=>a+r.engagement,0);
+  const R=70, C=2*Math.PI*R; let off=0;
+  const segs=L.rows.map(r=>{
+    const frac=r.engagement/total, len=frac*C;
+    const s=`<circle class="seg" r="${R}" cx="100" cy="100" fill="none" stroke="${r.color}" stroke-width="28"
+      stroke-dasharray="${len-2} ${C-len+2}" stroke-dashoffset="${-off}" transform="rotate(-90 100 100)">
+      <title>@${r.user} — ${(frac*100).toFixed(0)}% of engagement</title></circle>`;
+    off+=len; return s;
+  }).join("");
+  return `<div class="card" style="border-color:var(--accent); box-shadow:var(--glow-soft)">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px">
+      <span class="badge seal">📌 PINNED</span><b>Monthly Chart — ${esc(L.topic)} · ${esc(L.month)}</b>
+    </div>
+    <div class="muted" style="margin-bottom:14px">Auto-posted by GitHub Actions on the 1st of every month.</div>
+    <div class="lbwrap">
+      <svg class="donut" width="200" height="200" viewBox="0 0 200 200">
+        ${segs}
+        <text x="100" y="95" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="700">ENGAGEMENT</text>
+        <text x="100" y="114" text-anchor="middle" fill="var(--muted)" font-size="11">${total} interactions</text>
+      </svg>
+      <div class="lblegend">
+        ${L.rows.map((r,i)=>`<div class="lbrow" onclick="nav('#/u/${r.user}')">
+          <span class="lbdot" style="background:${r.color}"></span>
+          <b>#${i+1}</b> @${esc(r.user)} <span class="pct">${((r.engagement/total)*100).toFixed(0)}%</span>
+        </div>`).join("")}
+        <div class="muted" style="margin-top:4px">▲ Most upvoted: <b>@${esc(L.mostUp)}</b> &nbsp;·&nbsp; ▼ Most controversial: <b>@${esc(L.mostDown)}</b></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+routes.u = (uname)=>{ profilePage(uname); };
+routes.me = ()=>{ profilePage(S.me); };
+function profilePage(uname){
+  const u=getUser(uname);
+  if(!u){ header("Profile"); $("#content").innerHTML=`<div class="empty"><span class="big">👤</span>@${esc(uname)} isn't part of the Lore.</div>`; return; }
+  const isMe=uname===S.me;
+  header(isMe?"My Profile":"@"+uname, isMe?"":"");
+  const posts=allPosts().filter(p=>p.author===uname);
+  const followers = isMe ? Object.values(SEED.users).filter(x=>false).length : u.followers.length + (S.follows.includes(uname)?1:0);
+  const iFollow=S.follows.includes(uname);
+  const mutual = !isMe && iFollow && (u.following||[]).includes(S.me);
+  const online = uname===CONFIG.ADMIN || uname===S.me;
+  const ranksHTML = Object.entries(u.ranks||{}).map(([t,r])=>`<span class="rankchip"><b>#${r}</b> ${esc(t)}</span>`).join("");
+  const wave = Array.from({length:34},(_,i)=>`<i style="height:${5+Math.abs(Math.sin(i*1.7))*19}px"></i>`).join("");
+  $("#content").innerHTML = `
+  <div class="profilecard">
+    <div class="banner"></div>
+    <div class="pbody">
+      <span class="pfp-ring">${u.pfp||(isMe&&S.profile.pfp)?`<img class="avatar" src="${esc(isMe?S.profile.pfp:u.pfp)}" width="90" height="90" style="border:3px solid var(--bg2)" onerror="this.outerHTML=genAv('${esc(uname)}',90)">`:genAv(uname,90)}</span>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap">
+        <h2 style="font-size:21px">@${esc(uname)}</h2>
+        ${u.seal?'<span class="badge seal">⭐ ANDROBEET SEAL</span>':""}
+        ${mutual?'<span class="badge mutual">⇄ MUTUAL</span>':""}
+        ${online?'<span style="color:var(--green); font-size:12.5px; font-weight:700">● online</span>':'<span class="muted">○ offline</span>'}
+        ${uname===CONFIG.ADMIN?'<span class="badge seal">ADMIN</span>':""}
+      </div>
+      ${u.streak&&u.streak.count>0?`<div style="margin-top:8px"><span class="badge streak">🔥 ${u.streak.count}-day streak ${u.streak.tier!=="—"?"· "+u.streak.tier:""}</span></div>`:""}
+      <p style="margin-top:12px; color:var(--text2); line-height:1.65; max-width:520px">${esc(u.bio)}</p>
+      ${u.voice?`<div class="voicecard">
+        <button class="playbtn" id="vplay" onclick="playVoice('${esc(uname)}')">▶</button>
+        <div class="wavebar">${wave}</div>
+        <span class="muted">voice card · 0:06</span>
+      </div>`:""}
+      <div class="tagrow">${(u.tags||[]).map(t=>`<span class="topicchip" onclick="nav('#/topic/${esc(t)}')">#${esc(t)}</span>`).join("")}
+        ${isMe?`<span class="topicchip" style="cursor:pointer" onclick="nav('#/settings')">＋ add</span>`:""}</div>
+      <div class="statrow">
+        <div class="stat"><b>${followers}</b><span>followers</span></div>
+        <div class="stat"><b>${(isMe?S.follows:u.following||[]).length}</b><span>following</span></div>
+        <div class="stat"><b>${posts.length}</b><span>posts</span></div>
+        <div class="stat"><b>${u.echoes||0}</b><span>echoes</span></div>
+        <div class="stat"><b>${u.resonance||0}</b><span>resonance</span></div>
+        <div class="stat"><b>${u.pioneer||0}</b><span>pioneer</span></div>
+      </div>
+      ${ranksHTML?`<div class="muted" style="margin-bottom:4px">TOPIC RANKS</div><div class="ranks">${ranksHTML}</div>`:""}
+      <div style="display:flex; gap:10px; margin-top:18px">
+        ${isMe?`<button class="btn" onclick="nav('#/settings')">Edit profile</button>`:`
+          <button class="btn ${iFollow?"ghost":""}" onclick="toggleFollow('${esc(uname)}')">${iFollow?"Following ✓":"+ Follow"}</button>
+          <button class="btn ghost" onclick="nav('#/dms')">✉ Message</button>`}
+      </div>
+      <div class="muted" style="margin-top:14px">Joined ${esc(u.joined||"recently")}</div>
+    </div>
+  </div>
+  <div class="tabs"><button class="tab active">Posts</button></div>
+  ${posts.map(p=>postCard(p)).join("")||`<div class="empty"><span class="big">✒</span>${isMe?"Your Lore is unwritten. <br><span class='link' onclick='openCompose()'>Write your first post →</span>":"No posts yet."}</div>`}`;
+}
+function toggleFollow(u){
+  const i=S.follows.indexOf(u);
+  if(i>=0){S.follows.splice(i,1); toast("Unfollowed @"+u);} else {S.follows.push(u); toast("Following @"+u+" ✓");}
+  save(); render();
+  if(LIVE) api("/follow",{target:u});
+}
+let voiceCtx=null;
+function playVoice(){
+  // demo voice card: a short synth chime via WebAudio (no files needed)
+  try{
+    voiceCtx=voiceCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const now=voiceCtx.currentTime;
+    [220,277,330,440].forEach((f,i)=>{
+      const o=voiceCtx.createOscillator(), g=voiceCtx.createGain();
+      o.frequency.value=f; o.type="sine";
+      g.gain.setValueAtTime(0.0001,now+i*0.16); g.gain.exponentialRampToValueAtTime(0.12,now+i*0.16+0.03); g.gain.exponentialRampToValueAtTime(0.0001,now+i*0.16+0.5);
+      o.connect(g).connect(voiceCtx.destination); o.start(now+i*0.16); o.stop(now+i*0.16+0.55);
+    });
+    toast("▶ playing voice card");
+  }catch(e){ toast("Voice cards play audio from any URL (Catbox/Discord CDN)"); }
+}
+
+routes.communities = ()=>{
+  header("Communities","circles within the Lore");
+  $("#content").innerHTML = `<div class="commgrid">`+SEED.communities.map(c=>{
+    const joined=S.joined.includes(c.name);
+    return `<div class="card" style="margin:0">
+      <div style="font-size:16.5px; font-weight:800">◉ ${esc(c.name)}</div>
+      <div class="muted" style="margin:8px 0 12px; line-height:1.55">${esc(c.desc)}</div>
+      <div class="muted">${c.members.length+(joined?1:0)} members · ${c.posts} posts</div>
+      <button class="btn sm ${joined?"ghost":""}" style="margin-top:12px" onclick="toggleJoin('${esc(c.name)}')">${joined?"Joined ✓":"Join"}</button>
+    </div>`;}).join("")+`</div>
+    <div class="card" style="margin-top:16px; text-align:center">
+      <div class="muted">Communities are JSON files in the data repo — members post, everyone reads.</div>
+      <button class="btn ghost sm" style="margin-top:8px" onclick="toast('Community creation opens after Worker connect (Settings → Go Live)')">＋ Create community</button>
+    </div>`;
+};
+function toggleJoin(n){
+  const i=S.joined.indexOf(n);
+  if(i>=0){S.joined.splice(i,1);} else {S.joined.push(n); toast("Joined ◉ "+n);}
+  save(); render();
+  if(LIVE) api("/join-community",{community:n});
+}
+
+routes.search = ()=>{
+  header("Search","find people & posts");
+  $("#content").innerHTML = `
+    <div class="searchbox"><input id="q" placeholder="Search @usernames or post text…" oninput="doSearch()" autofocus></div>
+    <div id="results">${searchResults("")}</div>`;
+  setTimeout(()=>$("#q")&&$("#q").focus(),50);
+};
+function doSearch(){ $("#results").innerHTML=searchResults($("#q").value.trim().toLowerCase()); }
+function searchResults(q){
+  const users=Object.keys(SEED.users).concat([S.me]).filter(u=>u.toLowerCase().includes(q.replace("@","")));
+  const posts=q?allPosts().filter(p=>p.text.toLowerCase().includes(q)||p.topic.toLowerCase().includes(q)):[];
+  let html=`<div class="muted" style="margin-bottom:10px">PEOPLE</div>`;
+  html+=users.map(u=>`<div class="card" style="display:flex; align-items:center; gap:13px; padding:13px 16px; cursor:pointer" onclick="nav('#/u/${esc(u)}')">
+    ${avatarHTML(u,42)}
+    <div><b>@${esc(u)}</b> ${SEED.users[u]?.seal?'<span class="badge seal">⭐</span>':""}
+    <div class="muted" style="margin-top:3px">${esc((getUser(u)?.bio||"").slice(0,70))}…</div></div>
+    <span style="margin-left:auto" class="link">view →</span>
+  </div>`).join("")||`<div class="muted">No users match.</div>`;
+  if(q) html+=`<div class="muted" style="margin:16px 0 10px">POSTS</div>`+(posts.map(p=>postCard(p)).join("")||`<div class="muted">No posts match.</div>`);
+  return html;
+}
+
+routes.notifications = ()=>{
+  header("Notifications","");
+  const icons={follow:"👤",upvote:"▲",comment:"💬",seal:"⭐",rank_change:"📈",mention:"@"};
+  const msg=n=>{
+    if(n.type==="follow")return `<b>@${n.from}</b> started following you`;
+    if(n.type==="upvote")return `<b>@${n.from}</b> upvoted your post`;
+    if(n.type==="comment")return `<b>@${n.from}</b> replied: “${esc(n.snippet)}”`;
+    if(n.type==="seal")return `<b>@${n.from}</b> awarded your post the <b>Androbeet Seal</b> ⭐`;
+    if(n.type==="rank_change")return `You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${n.topic} 🔥`;
+    return "activity";
+  };
+  $("#content").innerHTML = `
+    <div style="display:flex; justify-content:flex-end; margin-bottom:12px"><button class="btn ghost sm" onclick="S.readNotifs=true;save();render()">Mark all read</button></div>
+    ${SEED.notifications.map(n=>`<div class="notifrow ${(!n.read&&!S.readNotifs)?"unread":""}">
+      <span style="font-size:18px">${icons[n.type]||"•"}</span>
+      <div>${msg(n)}<div class="t">${timeAgo(n.ts)}</div></div>
+    </div>`).join("")}`;
+};
+
+routes.dms = ()=>{
+  header("Messages","private threads");
+  $("#content").innerHTML = `
+    <div class="notice"><b>DMs go live with the Worker.</b> Message threads are stored in a separate <b>private</b> GitHub repo — only the Worker can read/write them, and it validates that you're one of the two participants. Polling every 5s makes it feel near-real-time, at $0.</div>
+    ${["nyxwrites","sable"].map(u=>`<div class="card" style="display:flex; gap:13px; align-items:center; cursor:pointer; opacity:.75" onclick="toast('Connect your Worker in Settings → Go Live to start messaging')">
+      ${avatarHTML(u,44)}
+      <div><b>@${u}</b><div class="muted" style="margin-top:3px">Tap to start a thread…</div></div>
+      <span style="margin-left:auto" class="muted">🔒</span>
+    </div>`).join("")}`;
+};
+
+routes.settings = ()=>{
+  header("Settings","make the Lore yours");
+  const themes=[["maroon","Maroon Glow","#1a0505","#c41e3a"],["mono","Monochrome","#000000","#ffffff"],["light","Light","#ffffff","#8b0000"]];
+  $("#content").innerHTML = `
+  <div class="card"><h2 style="font-size:16px; margin-bottom:14px">🎨 Theme</h2>
+    <div class="themegrid">${themes.map(([id,name,bg,ac])=>`
+      <div class="themeopt ${S.theme===id?"active":""}" onclick="setTheme('${id}')">
+        <div class="swatch" style="background:${bg}"><div style="position:absolute;left:10px;top:10px;right:10px;height:8px;border-radius:4px;background:${ac}"></div><div style="position:absolute;left:10px;top:26px;width:60%;height:6px;border-radius:3px;background:${id==="light"?"#999":"#fff"};opacity:.6"></div></div>
+        <b style="font-size:13px">${name}</b>${id==="maroon"?'<div class="muted">default</div>':""}
+      </div>`).join("")}</div>
+  </div>
+  <div class="card"><h2 style="font-size:16px; margin-bottom:14px">◈ Profile</h2>
+    <div class="field"><label>USERNAME</label><input id="f_name" value="${esc(S.me)}" ${S.me!=="you"?"":""} placeholder="pick a username"></div>
+    <div class="field"><label>BIO</label><textarea id="f_bio" rows="3">${esc(S.profile.bio)}</textarea></div>
+    <div class="field"><label>PFP URL <span style="font-weight:400">(Imgur / Catbox / any image link)</span></label><input id="f_pfp" value="${esc(S.profile.pfp)}" placeholder="https://i.imgur.com/…"></div>
+    <div class="field"><label>VOICE CARD URL <span style="font-weight:400">(mp3/ogg link — Catbox.moe is free & permanent)</span></label><input id="f_voice" value="${esc(S.profile.voice)}" placeholder="https://files.catbox.moe/….mp3"></div>
+    <div class="field"><label>INTEREST TAGS</label>
+      <div class="tagrow">${SEED.tags.map(t=>`<span class="topicchip" style="cursor:pointer; ${S.profile.tags.includes(t)?"background:var(--accent); color:#fff; border-color:var(--accent)":""}" onclick="toggleTag('${esc(t)}')">#${esc(t)}</span>`).join("")}
+      <span class="topicchip" onclick="requestTag()">＋ request new</span></div>
+    </div>
+    <button class="btn" onclick="saveProfile()">Save profile</button>
+  </div>
+  <div class="card"><h2 style="font-size:16px; margin-bottom:10px">🚀 Go Live</h2>
+    <p class="muted" style="line-height:1.7">This build ships in <b>demo mode</b> — perfect for GitHub Pages with zero setup. To switch on the real shared backend:</p>
+    <ol style="font-size:13px; color:var(--text2); line-height:2; margin:10px 0 0 20px">
+      <li>Deploy <b>worker/worker.js</b> (in this repo) to Cloudflare Workers — free tier.</li>
+      <li>Create a public <b>lore-data</b> repo (seed files are in <b>data/</b> here).</li>
+      <li>Open <b>index.html</b>, fill in <b>CONFIG.WORKER_URL</b> and <b>CONFIG.DATA_BASE</b>.</li>
+      <li>Push. Done — full deploy guide in the README.</li>
+    </ol>
+  </div>
+  <div class="card"><h2 style="font-size:16px; margin-bottom:10px">🛡 Admin</h2>
+    <p class="muted" style="line-height:1.7">The moderation dashboard (activity logs, sus-activity flags, reports, bans, Seal awards) is restricted to <b>@${CONFIG.ADMIN}</b> and double-checked server-side by the Worker. ${S.me===CONFIG.ADMIN?'<span class="link" onclick="toast(\'Admin dashboard activates in live mode\')">Open dashboard →</span>':"You are not the admin."}</p>
+  </div>
+  <div class="card" style="text-align:center"><span class="muted">LORE · built on GitHub, $0 forever · support: <a class="link" href="mailto:${CONFIG.SUPPORT}">${CONFIG.SUPPORT}</a></span></div>`;
+};
+function setTheme(t){ S.theme=t; save(); document.body.dataset.theme=t; render(); }
+function toggleTag(t){
+  const i=S.profile.tags.indexOf(t);
+  if(i>=0)S.profile.tags.splice(i,1); else S.profile.tags.push(t);
+  save(); render();
+}
+function saveProfile(){
+  const name=$("#f_name").value.trim().toLowerCase().replace(/[^a-z0-9_]/g,"");
+  if(name) S.me=name;
+  S.profile.bio=$("#f_bio").value.trim();
+  S.profile.pfp=$("#f_pfp").value.trim();
+  S.profile.voice=$("#f_voice").value.trim();
+  save(); toast("Profile saved ✓"); render();
+  if(LIVE) api("/update-profile",{...S.profile,username:S.me});
+}
+
+/* ============ COMPOSE ============ */
+function openCompose(topic){
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <h2>✒ Add to the Lore</h2>
+      <div class="field"><textarea id="c_text" rows="5" placeholder="What's on your mind, @${esc(S.me)}?" autofocus></textarea></div>
+      <div class="field"><label>TOPIC (required)</label>
+        <select id="c_topic">${SEED.tags.map(t=>`<option ${t===topic?"selected":""}>${esc(t)}</option>`).join("")}</select></div>
+      <div class="field"><label>IMAGE LINK (optional — Imgur/Catbox URL, we never store files)</label><input id="c_img" placeholder="https://…"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end">
+        <button class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="submitPost()">Post</button>
+      </div>
+    </div></div>`;
+  setTimeout(()=>$("#c_text").focus(),50);
+}
+function closeModal(){ $("#modalroot").innerHTML=""; }
+function submitPost(){
+  const text=$("#c_text").value.trim();
+  if(!text){ toast("Write something first"); return; }
+  const p={id:"my_"+Date.now(), author:S.me, topic:$("#c_topic").value, ts:Date.now(),
+    text, img:$("#c_img").value.trim(), up:[], down:[], shares:0, echo:"", pioneer:"", comments:[]};
+  S.myPosts.unshift(p); save(); closeModal();
+  nav("#/explore"); sessionStorage.setItem("exptab","New"); render();
+  toast("Posted — it's part of the Lore now ✓");
+  if(LIVE) api("/post",p);
+}
+
+/* ============ INIT ============ */
+document.body.dataset.theme=S.theme;
+if(!location.hash) location.hash="#/explore";
+render();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a1d28bd815918d',t:'MTc4MTE5MzU2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
