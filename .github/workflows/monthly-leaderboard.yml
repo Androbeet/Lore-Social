@@ -1,0 +1,84 @@
+# LORE — monthly leaderboard "platform brain"
+# Runs on the 1st of every month at 00:05 UTC.
+# Reads all posts from the data repo, tallies engagement per user per
+# topic, and commits /leaderboards/<topic>-<YYYY-MM>.json that the
+# frontend pins to every topic page.
+#
+# NOTE: place this workflow in your **lore-data** repo (the data repo),
+# not the Pages repo, so it can commit results next to the posts.
+
+name: Monthly Leaderboard
+
+on:
+  schedule:
+    - cron: "5 0 1 * *"
+  workflow_dispatch: {}   # run manually anytime from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  leaderboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build leaderboards
+        run: |
+          python3 - <<'PY'
+          import json, os, glob, datetime, collections
+
+          now = datetime.datetime.utcnow()
+          # previous month window
+          first_this = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+          last_month_end = first_this
+          last_month_start = (first_this - datetime.timedelta(days=1)).replace(day=1)
+          label = last_month_start.strftime("%Y-%m")
+
+          start_ms = last_month_start.timestamp() * 1000
+          end_ms = last_month_end.timestamp() * 1000
+
+          per_topic = collections.defaultdict(lambda: collections.defaultdict(lambda: {"engagement": 0, "up": 0, "down": 0}))
+
+          for path in glob.glob("posts/*.json"):
+              try:
+                  p = json.load(open(path))
+              except Exception:
+                  continue
+              ts = p.get("ts", 0)
+              if not (start_ms <= ts < end_ms):
+                  continue
+              topic, author = p.get("topic", "General"), p.get("author", "?")
+              row = per_topic[topic][author]
+              row["up"] += len(p.get("up", []))
+              row["down"] += len(p.get("down", []))
+              row["engagement"] += len(p.get("up", [])) + len(p.get("down", [])) + len(p.get("comments", [])) + p.get("shares", 0)
+
+          os.makedirs("leaderboards", exist_ok=True)
+          palette = ["#c41e3a", "#9b59b6", "#2980d9", "#16a085", "#e67e22", "#d35490", "#f1c40f", "#7f8c8d"]
+
+          for topic, users in per_topic.items():
+              rows = sorted(users.items(), key=lambda kv: -kv[1]["engagement"])[:8]
+              out = {
+                  "month": label,
+                  "topic": topic,
+                  "rows": [
+                      {"user": u, "engagement": d["engagement"], "color": palette[i % len(palette)]}
+                      for i, (u, d) in enumerate(rows)
+                  ],
+                  "most_upvoted": max(users.items(), key=lambda kv: kv[1]["up"])[0] if users else None,
+                  "most_downvoted": max(users.items(), key=lambda kv: kv[1]["down"])[0] if users else None,
+              }
+              safe = "".join(c for c in topic if c.isalnum() or c in "-_ ").replace(" ", "_")
+              with open(f"leaderboards/{safe}-{label}.json", "w") as f:
+                  json.dump(out, f, indent=1)
+              print("wrote", topic, label)
+          PY
+
+      - name: Commit results
+        run: |
+          git config user.name "lore-bot"
+          git config user.email "actions@github.com"
+          git add leaderboards/ || true
+          git diff --cached --quiet || git commit -m "📊 monthly leaderboards $(date -u +%Y-%m)"
+          git push
