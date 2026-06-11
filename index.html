@@ -193,7 +193,7 @@ svg.donut .seg:hover{stroke-width:34}
     <button class="postbtn" onclick="openCompose()">+ NEW POST</button>
     <div class="sidefoot">
       Admin: <b>aNDROBEET</b> ⭐<br>
-      Support: <a href="/cdn-cgi/l/email-protection#4829262c3a2d3f327f7f7a237e082f25292124662b2725"><span class="__cf_email__" data-cfemail="fe9f909a8c9b8984c9c9cc95c8be99939f9792d09d9193">[email&#160;protected]</span></a><br>
+      Support: <a href="/cdn-cgi/l/email-protection#96f7f8f2e4f3e1eca1a1a4fda0d6f1fbf7fffab8f5f9fb"><span class="__cf_email__" data-cfemail="45242b213720323f7272772e73052228242c296b262a28">[email&#160;protected]</span></a><br>
       Built on GitHub · $0 budget
     </div>
   </nav>
@@ -281,7 +281,7 @@ const LS_KEY="lore_state_v1";
 let S = loadState();
 function loadState(){
   try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.me) return s; }catch(e){}
-  return { me:"you", theme:"maroon",
+  return { me:"you", theme:"maroon", token:"",
     profile:{bio:"New to LORE. Writing my first pages.",pfp:"",tags:["Tech"],voice:"",joined:new Date().toISOString().slice(0,10)},
     myPosts:[], votes:{}, follows:["androbeet"], comments:{}, joined:[], readNotifs:false, shares:{} };
 }
@@ -388,8 +388,46 @@ function sharePost(id){
   render();
 }
 async function api(path,body){
-  try{ await fetch(CONFIG.WORKER_URL+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); }catch(e){}
+  try{
+    const r=await fetch(CONFIG.WORKER_URL+path,{method:"POST",
+      headers:{"Content-Type":"application/json",...(S.token?{"Authorization":"Bearer "+S.token}:{})},
+      body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.error){ toast("⚠ "+d.error); if(/logged in|session/i.test(d.error)) openAuth(); }
+    return d;
+  }catch(e){ return {error:String(e)}; }
 }
+
+/* ============ ACCOUNTS (live mode) ============ */
+function openAuth(mode){
+  mode=mode||"login";
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="logo" style="font-size:26px; padding:0 0 14px">L<span>O</span>RE</div>
+      <div class="tabs">
+        <button class="tab ${mode==="login"?"active":""}" onclick="openAuth('login')">Log in</button>
+        <button class="tab ${mode==="signup"?"active":""}" onclick="openAuth('signup')">Create account</button>
+      </div>
+      <div class="field"><label>USERNAME</label><input id="a_user" placeholder="a-z, 0-9, _ only"></div>
+      ${mode==="signup"?`<div class="field"><label>EMAIL</label><input id="a_email" type="email" placeholder="you@gmail.com"></div>`:""}
+      <div class="field"><label>PASSWORD ${mode==="signup"?"(8+ characters)":""}</label><input id="a_pass" type="password" onkeydown="if(event.key==='Enter')submitAuth('${mode}')"></div>
+      <button class="btn" style="width:100%" onclick="submitAuth('${mode}')">${mode==="signup"?"Join the Lore →":"Log in →"}</button>
+      <div class="muted" style="margin-top:12px; text-align:center">Forgot password? Email ${CONFIG.SUPPORT}</div>
+    </div></div>`;
+  setTimeout(()=>$("#a_user").focus(),50);
+}
+async function submitAuth(mode){
+  const body={username:$("#a_user").value.trim(), password:$("#a_pass").value};
+  if(mode==="signup") body.email=$("#a_email").value.trim();
+  const d=await api("/"+mode,body);
+  if(d&&d.token){
+    S.token=d.token; S.me=d.username; save(); closeModal();
+    toast(mode==="signup"?"Welcome to the Lore, @"+d.username+" ✓":"Logged in as @"+d.username+" ✓");
+    render();
+  }
+}
+function logout(){ S.token=""; save(); toast("Logged out"); render(); if(LIVE) openAuth(); }
+function requireLogin(){ if(LIVE && !S.token){ openAuth(); return true; } return false; }
 
 /* ============ PAGES ============ */
 routes.explore = ()=>{
@@ -679,8 +717,11 @@ routes.settings = ()=>{
       <li>Push. Done — full deploy guide in the README.</li>
     </ol>
   </div>
+  <div class="card"><h2 style="font-size:16px; margin-bottom:10px">👤 Account</h2>
+    ${LIVE?(S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn ghost sm" style="margin-top:10px" onclick="logout()">Log out</button>`:`<p class="muted">You're browsing as a guest.</p><button class="btn sm" style="margin-top:10px" onclick="openAuth()">Log in / Create account</button>`):`<p class="muted">Accounts activate in live mode (see "Go Live" above). In demo mode you're <b>@${esc(S.me)}</b> locally.</p>`}
+  </div>
   <div class="card"><h2 style="font-size:16px; margin-bottom:10px">🛡 Admin</h2>
-    <p class="muted" style="line-height:1.7">The moderation dashboard (activity logs, sus-activity flags, reports, bans, Seal awards) is restricted to <b>@${CONFIG.ADMIN}</b> and double-checked server-side by the Worker. ${S.me===CONFIG.ADMIN?'<span class="link" onclick="toast(\'Admin dashboard activates in live mode\')">Open dashboard →</span>':"You are not the admin."}</p>
+    <p class="muted" style="line-height:1.7">The moderation dashboard (activity logs, sus-activity flags, reports, bans, Seal awards) is restricted to <b>@${CONFIG.ADMIN}</b> and double-checked server-side by the Worker. ${S.me===CONFIG.ADMIN?'<span class="link" onclick="nav(\'#/admin\')">Open dashboard →</span>':"You are not the admin."}</p>
   </div>
   <div class="card" style="text-align:center"><span class="muted">LORE · built on GitHub, $0 forever · support: <a class="link" href="mailto:${CONFIG.SUPPORT}">${CONFIG.SUPPORT}</a></span></div>`;
 };
@@ -702,6 +743,7 @@ function saveProfile(){
 
 /* ============ COMPOSE ============ */
 function openCompose(topic){
+  if(requireLogin()) return;
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
       <h2>✒ Add to the Lore</h2>
@@ -728,6 +770,45 @@ function submitPost(){
   if(LIVE) api("/post",p);
 }
 
+/* ============ ADMIN DASHBOARD (@androbeet only) ============ */
+routes.admin = ()=>{
+  if(S.me!==CONFIG.ADMIN){ header("Admin"); $("#content").innerHTML=`<div class="empty"><span class="big">🛡</span>Admins only. This area belongs to @${CONFIG.ADMIN}.<br><span class="muted">(And the Worker double-checks server-side — nice try.)</span></div>`; return; }
+  header("🛡 Admin Dashboard","aNDROBEET only");
+  const users=Object.keys(SEED.users);
+  $("#content").innerHTML = `
+    ${LIVE?"":`<div class="notice"><b>Demo preview.</b> In live mode these buttons call the Worker's /admin endpoints for real bans, shadowbans and Seal awards.</div>`}
+    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">⭐ Award Androbeet Seal</h2>
+      <div style="display:flex; gap:8px"><input id="ad_seal" placeholder="username or post id"><button class="btn sm" onclick="adminAct('seal')">Award</button></div>
+    </div>
+    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">🔨 Ban / Shadowban</h2>
+      <div style="display:flex; gap:8px; flex-wrap:wrap"><input id="ad_ban" placeholder="username" style="flex:1; min-width:140px">
+      <button class="btn sm" onclick="adminAct('ban')">Toggle ban</button>
+      <button class="btn ghost sm" onclick="adminAct('shadowban')">Toggle shadowban</button></div>
+      <p class="muted" style="margin-top:10px">Ban = all actions rejected. Shadowban = their posts visible only to themselves.</p>
+    </div>
+    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">👥 Users (${users.length})</h2>
+      ${users.map(u=>`<div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid var(--border)">
+        ${avatarHTML(u,30)} <b style="cursor:pointer" onclick="nav('#/u/${u}')">@${u}</b>
+        ${SEED.users[u].seal?'<span class="badge seal">⭐</span>':""}
+        <span class="muted" style="margin-left:auto">joined ${SEED.users[u].joined}</span>
+      </div>`).join("")}
+    </div>
+    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">📋 Activity Log</h2>
+      <p class="muted">Live mode: every signup, login, post, vote and admin action is appended to <b>admin/logs/&lt;date&gt;.json</b> in your lore-data repo — open it on GitHub anytime. Failed logins are flagged too.</p>
+    </div>
+    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">🚩 Reports queue</h2>
+      <p class="muted">User reports land in <b>data/admin/reports.json</b>. Review → delete the post file or shadowban the author.</p>
+    </div>`;
+};
+async function adminAct(kind){
+  const val=(kind==="seal"?$("#ad_seal"):$("#ad_ban")).value.trim().toLowerCase();
+  if(!val){ toast("Enter a username first"); return; }
+  if(!LIVE){ toast("Demo: in live mode this would "+kind+" '"+val+"' for real"); return; }
+  const d= kind==="seal" ? await api("/admin/seal", val.startsWith("p_")?{post:val}:{target:val})
+                         : await api("/admin/ban",{target:val, mode:kind==="shadowban"?"shadowban":"ban"});
+  if(d&&d.ok) toast("✓ done: "+kind+" → "+val);
+}
+
 /* ============ INIT ============ */
 document.body.dataset.theme=S.theme;
 if(!location.hash) location.hash="#/explore";
@@ -736,5 +817,5 @@ render();
 if("serviceWorker" in navigator && location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a287fc5cb86629',t:'MTc4MTIwMDk5Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
