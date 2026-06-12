@@ -9,18 +9,21 @@
  *   1. https://dash.cloudflare.com → Workers & Pages → Create Worker
  *   2. Paste this file, click Deploy
  *   3. Settings → Variables → add secrets:
- *        GITHUB_TOKEN  = a fine-grained PAT with "Contents: write"
- *                        on your lore-data repo (and lore-dms repo)
- *        DATA_REPO     = "yourname/lore-data"
- *        DMS_REPO      = "yourname/lore-dms"      (private repo)
- *        ADMIN_USER    = "androbeet"
+ *        GITHUB_TOKEN   = a fine-grained PAT with "Contents: write"
+ *                         on your lore-data repo (and lore-dms repo)
+ *        DATA_REPO      = "yourname/lore-data"
+ *        DMS_REPO       = "yourname/lore-dms"      (private repo)
+ *        ADMIN_USER     = "androbeet"
+ *        SESSION_SECRET = any long random string you invent
+ *                         (e.g. mash the keyboard for 40 chars).
+ *                         This signs login session tokens.
  *   4. Copy the worker URL into CONFIG.WORKER_URL in index.html
  *
- * AUTH NOTE: endpoints accept a Firebase ID token (Authorization:
- * Bearer <token>) if you wire up Firebase Auth (free, 50k MAU), or
- * fall back to a signed username for early/seed testing. Harden
- * before public launch: verify the Firebase JWT signature against
- * Google's public keys (verifyFirebaseToken below sketches this).
+ * BUILT-IN ACCOUNTS: /signup and /login give users real accounts
+ * (email + password). Passwords are salted & hashed 10,000× before
+ * storage — never stored in plain text. Sessions are signed tokens
+ * valid 30 days. Banned users are rejected on every request.
+ * Admin endpoints (/admin/ban, /admin/seal) only work for ADMIN_USER.
  */
 
 const JSON_HEADERS = {
@@ -41,6 +44,12 @@ export default {
       if (request.method !== "POST") return reply({ ok: true, service: "LORE API" });
 
       const body = await request.json();
+
+      // --- public endpoints (no login needed) ---
+      if (route === "/signup") return await signup(body, env);
+      if (route === "/login")  return await login(body, env);
+
+      // --- everything below requires a valid session token ---
       const user = await identify(request, body, env); // throws if invalid
 
       switch (route) {
@@ -50,8 +59,12 @@ export default {
         case "/follow":          return await follow(user, body, env);
         case "/join-community":  return await joinCommunity(user, body, env);
         case "/update-profile":  return await updateProfile(user, body, env);
+        case "/upload-pfp":      return await uploadPfp(user, body, env);
         case "/message":         return await dm(user, body, env);
         case "/request-tag":     return await requestTag(user, body, env);
+        // --- admin-only (aNDROBEET) ---
+        case "/admin/ban":       return await adminBan(user, body, env);
+        case "/admin/seal":      return await adminSeal(user, body, env);
         default:                 return reply({ error: "unknown endpoint" }, 404);
       }
     } catch (e) {
@@ -64,21 +77,130 @@ function reply(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: JSON_HEADERS });
 }
 
-/* ---------- identity ---------- */
-async function identify(request, body, env) {
-  // PRODUCTION: verify Firebase ID token here (signature + audience).
-  // Sketch: fetch Google's certs, verify JWT, map firebase UID -> username
-  // via /config/uidmap.json in the data repo.
-  const auth = request.headers.get("Authorization") || "";
-  if (auth.startsWith("Bearer ") && auth.length > 40) {
-    // TODO: verifyFirebaseToken(auth.slice(7), env)
+/* ---------- crypto helpers (password hashing & session tokens) ---------- */
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function hashPassword(password, salt) {
+  // 10k iterations of salted SHA-256 (simple, dependency-free, fine at this scale)
+  let h = salt + ":" + password;
+  for (let i = 0; i < 10000; i++) h = await sha256hex(h);
+  return h;
+}
+async function makeToken(username, env) {
+  // HMAC-style token: username.expiry.signature — stateless, no DB needed
+  const exp = Date.now() + 1000 * 60 * 60 * 24 * 30; // 30 days
+  const sig = await sha256hex(`${username}.${exp}.${env.SESSION_SECRET}`);
+  return `${username}.${exp}.${sig}`;
+}
+async function verifyToken(token, env) {
+  const [username, exp, sig] = (token || "").split(".");
+  if (!username || !exp || !sig) throw new Error("not logged in");
+  if (Date.now() > Number(exp)) throw new Error("session expired — log in again");
+  const expect = await sha256hex(`${username}.${exp}.${env.SESSION_SECRET}`);
+  if (sig !== expect) throw new Error("invalid session");
+  return username;
+}
+
+/* ---------- ACCOUNTS: signup / login ---------- */
+async function signup(body, env) {
+  const username = (body.username || "").toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 20);
+  const email = String(body.email || "").trim().toLowerCase().slice(0, 100);
+  const password = String(body.password || "");
+  if (username.length < 3) throw new Error("username must be 3+ characters (a-z, 0-9, _)");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("valid email required");
+  if (password.length < 8) throw new Error("password must be 8+ characters");
+  const reserved = ["admin", "lore", "system", "mod", "root", "support"];
+  if (reserved.includes(username)) throw new Error("username reserved");
+
+  // already taken?
+  const existing = await ghGetJSON(env, env.DATA_REPO, `users/${username}.json`);
+  if (existing.json) throw new Error("username already taken");
+
+  const salt = crypto.randomUUID();
+  const profile = {
+    bio: "New to LORE. Writing my first pages.",
+    pfp: "", voice: "", tags: [], followers: [], following: [],
+    joined: new Date().toISOString().slice(0, 10),
+    streak: { count: 0, tier: "—" }, seal: false,
+    echoes: 0, resonance: 0, pioneer: 0, ranks: {}, theme: "maroon",
+    banned: false, shadowbanned: false,
+  };
+  await ghPutJSON(env, env.DATA_REPO, `users/${username}.json`, profile, null, `signup ${username}`);
+  // credentials live in a separate file (never sent to the frontend)
+  await ghPutJSON(env, env.DATA_REPO, `auth/${username}.json`,
+    { email, salt, hash: await hashPassword(password, salt), created: new Date().toISOString() },
+    null, `auth ${username}`);
+
+  // add to search index
+  const idx = await ghGetJSON(env, env.DATA_REPO, "config/userindex.json");
+  const list = idx.json || [];
+  if (!list.includes(username)) {
+    list.push(username);
+    await ghPutJSON(env, env.DATA_REPO, "config/userindex.json", list, idx.sha, `index ${username}`);
   }
+  await log(env, username, "signup", { email });
+  return reply({ ok: true, token: await makeToken(username, env), username });
+}
+
+async function login(body, env) {
   const username = (body.username || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
-  if (!username) throw new Error("missing username");
-  // banned check
+  const { json: creds } = await ghGetJSON(env, env.DATA_REPO, `auth/${username}.json`);
+  if (!creds) throw new Error("no such account");
+  const hash = await hashPassword(String(body.password || ""), creds.salt);
+  if (hash !== creds.hash) {
+    await log(env, username, "login_failed", {});
+    throw new Error("wrong password");
+  }
+  const { json: u } = await ghGetJSON(env, env.DATA_REPO, `users/${username}.json`);
+  if (u && u.banned) throw new Error("account banned — contact " + "andrewz772k6@gmail.com");
+  await log(env, username, "login", {});
+  return reply({ ok: true, token: await makeToken(username, env), username });
+}
+
+/* ---------- identity (session token check on every action) ---------- */
+async function identify(request, body, env) {
+  const auth = request.headers.get("Authorization") || "";
+  if (!auth.startsWith("Bearer ")) throw new Error("not logged in");
+  const username = await verifyToken(auth.slice(7), env);
   const u = await ghGetJSON(env, env.DATA_REPO, `users/${username}.json`).catch(() => null);
   if (u && u.json && u.json.banned) throw new Error("account banned");
   return username;
+}
+
+/* ---------- ADMIN endpoints (only ADMIN_USER passes) ---------- */
+function assertAdmin(user, env) {
+  if (user !== (env.ADMIN_USER || "androbeet")) throw new Error("admins only");
+}
+async function adminBan(user, body, env) {
+  assertAdmin(user, env);
+  const target = String(body.target || "").toLowerCase();
+  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`);
+  if (!json) throw new Error("user not found");
+  if (body.mode === "shadowban") json.shadowbanned = !json.shadowbanned;
+  else json.banned = !json.banned;
+  await ghPutJSON(env, env.DATA_REPO, `users/${target}.json`, json, sha, `admin action ${target}`);
+  await log(env, user, "admin_" + (body.mode || "ban"), { target });
+  return reply({ ok: true, banned: json.banned, shadowbanned: json.shadowbanned });
+}
+async function adminSeal(user, body, env) {
+  assertAdmin(user, env);
+  if (body.post) {
+    const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
+    if (!json) throw new Error("post not found");
+    json.seal = true;
+    await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, json, sha, `seal post`);
+    await notify(env, json.author, { type: "seal", from: user, post: json.id });
+  } else if (body.target) {
+    const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `users/${body.target}.json`);
+    if (!json) throw new Error("user not found");
+    json.seal = !json.seal;
+    await ghPutJSON(env, env.DATA_REPO, `users/${body.target}.json`, json, sha, `seal user`);
+    await notify(env, body.target, { type: "seal", from: user });
+  }
+  await log(env, user, "admin_seal", body);
+  return reply({ ok: true });
 }
 
 /* ---------- GitHub API helpers ---------- */
@@ -237,6 +359,41 @@ async function updateProfile(user, body, env) {
     await ghPutJSON(env, env.DATA_REPO, "config/userindex.json", list, idx.sha, `index ${user}`);
   }
   return reply({ ok: true });
+}
+
+/* ---------- PROFILE PICTURE UPLOAD (stored right in the data repo) ----------
+   The frontend sends a base64 JPEG (already cropped to 256x256 client-side).
+   We commit it as pfp/<username>.jpg — served free via raw.githubusercontent.
+   Size cap: 150 KB encoded (~110 KB binary) keeps the repo lean forever:
+   even 10,000 users ≈ ~1 GB, equal to GitHub's recommended repo size. */
+async function uploadPfp(user, body, env) {
+  await checkRate(env, user, "pfp", 60); // max 1 change/min
+  let b64 = String(body.image || "");
+  const m = b64.match(/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/);
+  if (!m) throw new Error("send a base64 data-URL image");
+  b64 = m[2];
+  if (b64.length > 150_000) throw new Error("image too large — must be under ~110KB");
+  // basic sanity: decodes as base64?
+  try { atob(b64.slice(0, 100)); } catch { throw new Error("invalid image data"); }
+
+  const path = `pfp/${user}.jpg`;
+  // need existing sha if overwriting
+  const head = await gh(env, env.DATA_REPO, path);
+  let sha;
+  if (head.status === 200) sha = (await head.json()).sha;
+  const res = await gh(env, env.DATA_REPO, path, "PUT", {
+    message: `pfp ${user}`, content: b64, sha: sha || undefined,
+  });
+  if (!res.ok) throw new Error("upload failed " + res.status);
+
+  // point the profile at the raw URL (cache-busted by commit timestamp)
+  const url = `https://raw.githubusercontent.com/${env.DATA_REPO}/main/pfp/${user}.jpg?v=${Date.now()}`;
+  const { json, sha: usha } = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
+  const u = json || {};
+  u.pfp = url;
+  await ghPutJSON(env, env.DATA_REPO, `users/${user}.json`, u, usha, `pfp link ${user}`);
+  await log(env, user, "pfp_upload", {});
+  return reply({ ok: true, url });
 }
 
 async function dm(user, body, env) {
