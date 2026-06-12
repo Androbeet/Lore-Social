@@ -64,6 +64,12 @@ export default {
         case "/dm-thread":       return await dmThread(user, body, env);
         case "/dm-inbox":        return await dmInbox(user, body, env);
         case "/request-tag":     return await requestTag(user, body, env);
+        case "/report":          return await report(user, body, env);
+        case "/delete-post":     return await deletePost(user, body, env);
+        case "/set-privacy":     return await setPrivacy(user, body, env);
+        case "/group-create":    return await groupCreate(user, body, env);
+        case "/group-message":   return await groupMessage(user, body, env);
+        case "/group-thread":    return await groupThread(user, body, env);
         // --- admin-only (aNDROBEET) ---
         case "/admin/ban":       return await adminBan(user, body, env);
         case "/admin/seal":      return await adminSeal(user, body, env);
@@ -321,7 +327,9 @@ async function comment(user, body, env) {
   const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
   if (!post) throw new Error("post not found");
   if (post.comments.length === 0) post.pioneer = user; // PIONEER badge
-  post.comments.push({ a: user, t: String(body.text || "").slice(0, 1000), ts: Date.now() });
+  post.comments.push({ a: user, t: String(body.text || "").slice(0, 1000), ts: Date.now(),
+    parent: body.parent != null ? String(body.parent).slice(0, 30) : null,
+    cid: "c" + Date.now() + Math.random().toString(36).slice(2, 6) });
   await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, sha, `comment ${user}`);
   if (post.author !== user)
     await notify(env, post.author, { type: "comment", from: user, post: post.id, snippet: String(body.text).slice(0, 60) });
@@ -364,6 +372,14 @@ async function updateProfile(user, body, env) {
   u.voice = String(body.voice || "").slice(0, 500);
   u.tags = (body.tags || []).slice(0, 12).map((t) => String(t).slice(0, 30));
   u.theme = body.theme || u.theme;
+  u.banner = String(body.banner || u.banner || "").slice(0, 500);
+  if (body.socials && typeof body.socials === "object") {
+    u.socials = {};
+    for (const k of ["instagram", "x", "youtube", "snapchat", "facebook", "tiktok", "discord", "website"])
+      if (body.socials[k]) u.socials[k] = String(body.socials[k]).slice(0, 200);
+  }
+  if (Array.isArray(body.showcase)) u.showcase = body.showcase.slice(0, 3).map((x) => String(x).slice(0, 30));
+  if (Array.isArray(body.claimed)) u.claimed = [...new Set(body.claimed.map((x) => String(x).slice(0, 30)))].slice(0, 100);
   await ghPutJSON(env, env.DATA_REPO, `users/${user}.json`, u, sha, `profile ${user}`);
 
   // keep username index fresh (for client-side search)
@@ -468,6 +484,91 @@ async function dmThread(user, body, env) {
 async function dmInbox(user, body, env) {
   const { json } = await ghGetJSON(env, env.DMS_REPO, `inbox/${user}.json`);
   return reply({ ok: true, threads: (json && json.threads) || [] });
+}
+
+/* ---------- reports / delete / privacy ---------- */
+async function report(user, body, env) {
+  await checkRate(env, user, "report", 20);
+  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, "admin/reports.json");
+  const arr = json || [];
+  arr.push({ by: user, target: String(body.target || "").slice(0, 60),
+    kind: String(body.kind || "post").slice(0, 12),
+    reason: String(body.reason || "").slice(0, 24),
+    note: String(body.note || "").slice(0, 500),
+    ts: new Date().toISOString(), status: "pending" });
+  await ghPutJSON(env, env.DATA_REPO, "admin/reports.json", arr, sha, `report by ${user}`);
+  return reply({ ok: true });
+}
+
+async function deletePost(user, body, env) {
+  const id = String(body.post || "");
+  const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${id}.json`);
+  if (!post) throw new Error("post not found");
+  if (post.author !== user && user !== (env.ADMIN_USER || "androbeet")) throw new Error("not your post");
+  // delete the file
+  const head = await gh(env, env.DATA_REPO, `posts/${id}.json`);
+  const fsha = (await head.json()).sha;
+  await fetch(`https://api.github.com/repos/${env.DATA_REPO}/contents/posts/${id}.json`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "lore-worker", Accept: "application/vnd.github+json" },
+    body: JSON.stringify({ message: `delete ${id}`, sha: fsha }),
+  });
+  // remove from feed
+  const f = await ghGetJSON(env, env.DATA_REPO, "config/feed.json");
+  await ghPutJSON(env, env.DATA_REPO, "config/feed.json", (f.json || []).filter((e) => e.id !== id), f.sha, `unfeed ${id}`);
+  await log(env, user, "post_deleted", { id });
+  return reply({ ok: true });
+}
+
+async function setPrivacy(user, body, env) {
+  const id = String(body.post || "");
+  const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${id}.json`);
+  if (!post) throw new Error("post not found");
+  if (post.author !== user) throw new Error("not your post");
+  post.private = !!body.private;
+  await ghPutJSON(env, env.DATA_REPO, `posts/${id}.json`, post, sha, `privacy ${id}`);
+  const f = await ghGetJSON(env, env.DATA_REPO, "config/feed.json");
+  let feed = f.json || [];
+  if (post.private) feed = feed.filter((e) => e.id !== id);
+  else if (!feed.some((e) => e.id === id))
+    feed.unshift({ id, author: post.author, topic: post.topic, snippet: post.text.slice(0, 280), img: post.img, ts: post.ts, up: post.up.length, down: post.down.length, comments: post.comments.length, echo: post.echo });
+  await ghPutJSON(env, env.DATA_REPO, "config/feed.json", feed.slice(0, 500), f.sha, `feed privacy ${id}`);
+  return reply({ ok: true, private: post.private });
+}
+
+/* ---------- group chats (stored in DMS repo) ---------- */
+async function groupCreate(user, body, env) {
+  await checkRate(env, user, "group", 60);
+  const name = String(body.name || "").toLowerCase().replace(/[^a-z0-9-_]/g, "").slice(0, 30);
+  if (name.length < 3) throw new Error("group name 3+ chars");
+  const id = "g_" + name;
+  const exists = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
+  if (exists.json) throw new Error("group name taken");
+  const members = [...new Set([user, ...(body.members || []).map((m) => String(m).toLowerCase()).slice(0, 20)])];
+  await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`,
+    { id, name, owner: user, members, messages: [] }, null, `group ${id}`);
+  for (const m of members) await updateInbox(env, m, "👥 " + name, "Group created by @" + user, m !== user);
+  return reply({ ok: true, id });
+}
+async function groupMessage(user, body, env) {
+  await checkRate(env, user, "dm", 3);
+  const id = String(body.group || "");
+  const { json: g, sha } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
+  if (!g) throw new Error("group not found");
+  if (!g.members.includes(user)) throw new Error("not a member");
+  const text = String(body.text || "").slice(0, 2000).trim();
+  if (!text) throw new Error("empty message");
+  g.messages.push({ from: user, text, ts: Date.now() });
+  g.messages = g.messages.slice(-500);
+  await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`, g, sha, `gmsg ${id}`);
+  return reply({ ok: true });
+}
+async function groupThread(user, body, env) {
+  const id = String(body.group || "");
+  const { json: g } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
+  if (!g) throw new Error("group not found");
+  if (!g.members.includes(user)) throw new Error("not a member");
+  return reply({ ok: true, name: g.name, members: g.members, messages: g.messages });
 }
 
 async function requestTag(user, body, env) {
