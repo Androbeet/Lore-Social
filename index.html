@@ -632,7 +632,8 @@ routes.post=(id)=>{
   if(p&&p.live){ // live feed entry: fetch the full post (real comments/votes)
     loadLivePost(id).then(full=>{
       if(full){const i=SEED.posts.findIndex(x=>x.id===id);
-        if(i>=0)SEED.posts[i]={...full,live:false};render();}
+        if(i>=0)SEED.posts[i]={...full,live:false};render();
+        ensureUsers([full.author,...(full.comments||[]).map(c=>c.a)]);}
     });
   }
   if(!p){head("Post");$("#content").innerHTML=`<div class="empty">${ic("doc")}This post isn't part of the Lore (yet).</div>`;return;}
@@ -838,6 +839,7 @@ function doSearch(){
   const q=($("#q")?.value||"").trim().toLowerCase();
   const base=LIVEUSERS||Object.keys(SEED.users).concat(SEED.users[S.me]?[]:[S.me]);
   const users=[...new Set(base)].filter(u=>u.toLowerCase().includes(q.replace("@",""))).slice(0,30);
+  ensureUsers(users,doSearch); // load their pfps/bios as they appear
   const posts=q?allPosts().filter(p=>p.text.toLowerCase().includes(q)||p.topic.toLowerCase().includes(q)):[];
   let h=`<h3 style="font-size:12px;letter-spacing:1.4px;color:var(--muted);margin-bottom:10px">PEOPLE</h3>`;
   h+=users.map(u=>`<div class="card hov" style="display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer" onclick="nav('#/u/${esc(u)}')">
@@ -1110,11 +1112,30 @@ function submitPost(){
 
 /* ============ LIVE DATA LOADER ============ */
 let LIVEFEED=null, LIVEUSERS=null;
+function RAWBASE(){return "https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";}
+
+/* lazy user-profile loader: fetches users/<name>.json for any unknown
+   authors so PFPs, bios and seals show for EVERYONE, everywhere */
+const UPENDING={};
+async function ensureUsers(names,cb){
+  if(!LIVE)return;
+  const need=[...new Set(names)].filter(n=>n&&n!=="·"&&!SEED.users[n]&&!UPENDING[n]);
+  if(!need.length)return;
+  need.forEach(n=>UPENDING[n]=1);
+  let changed=false;
+  await Promise.all(need.map(async n=>{
+    try{
+      const r=await fetch(RAWBASE()+"/users/"+n+".json");
+      if(r.ok){const u=await r.json();SEED.users[n]={...u,color:userColor(n)};changed=true;}
+    }catch(e){}
+  }));
+  if(changed)(cb||render)();
+}
+
 async function loadLive(){
   if(!LIVE)return;
   try{
-    // bust jsDelivr cache hourly; fall back to raw for freshness
-    const raw="https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";
+    const raw=RAWBASE();
     const[f,u,t]=await Promise.all([
       fetch(raw+"/config/feed.json").then(r=>r.json()).catch(()=>null),
       fetch(raw+"/config/userindex.json").then(r=>r.json()).catch(()=>null),
@@ -1124,11 +1145,22 @@ async function loadLive(){
     if(Array.isArray(u))LIVEUSERS=u;
     if(Array.isArray(f)){
       LIVEFEED=f;
-      // map live feed entries into post objects
       SEED.posts=f.map(e=>({id:e.id,author:e.author,topic:e.topic,ts:e.ts,text:e.snippet,img:e.img||"",
         up:Array(e.up||0).fill("·"),down:Array(e.down||0).fill("·"),shares:e.shares||0,
         echo:e.echo||"",pioneer:"",comments:Array(e.comments||0).fill({a:"",t:"",ts:0}),live:true}));
       render();
+      ensureUsers(f.map(e=>e.author)); // load authors' pfps/bios
+    }
+    // sync my own profile from the server (pfp set on another device, etc.)
+    if(S.token&&S.me){
+      try{
+        const me=await fetch(raw+"/users/"+S.me+".json").then(r=>r.ok?r.json():null);
+        if(me){
+          SEED.users[S.me]={...me,color:userColor(S.me)};
+          if(me.pfp&&me.pfp!==S.profile.pfp){S.profile.pfp=me.pfp;save();render();}
+          if(me.bio&&S.profile.bio==="New to LORE. Writing my first pages."){S.profile.bio=me.bio;save();}
+        }
+      }catch(e){}
     }
   }catch(e){}
 }
@@ -1153,8 +1185,9 @@ async function loadLiveUser(name){
 document.body.dataset.theme=S.theme;
 if(!location.hash)location.hash="#/explore";
 if(LIVE){
-  // live platform: real data only — clear the sample content
-  SEED.posts=[];SEED.users={androbeet:SEED.users.androbeet};
+  // live platform: real data only — clear ALL sample content
+  // (androbeet too — the real profile is fetched from the database)
+  SEED.posts=[];SEED.users={};
   SEED.notifications=[];SEED.communities=[];
   loadLive();setInterval(loadLive,30000); // refresh feed every 30s
 }
