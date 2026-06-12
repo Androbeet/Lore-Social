@@ -67,6 +67,8 @@ export default {
         case "/report":          return await report(user, body, env);
         case "/delete-post":     return await deletePost(user, body, env);
         case "/set-privacy":     return await setPrivacy(user, body, env);
+        case "/block":           return await blockUser(user, body, env);
+        case "/edit-post":       return await editPost(user, body, env);
         case "/group-create":    return await groupCreate(user, body, env);
         case "/group-message":   return await groupMessage(user, body, env);
         case "/group-thread":    return await groupThread(user, body, env);
@@ -287,6 +289,17 @@ async function notify(env, target, item) {
   } catch (e) {}
 }
 
+/* feed updates retry on write conflicts (two posts at the same time) */
+async function updateFeed(env, mutate) {
+  for (let i = 0; i < 3; i++) {
+    try {
+      const { json, sha } = await ghGetJSON(env, env.DATA_REPO, "config/feed.json");
+      await ghPutJSON(env, env.DATA_REPO, "config/feed.json", mutate(json || []), sha, "feed update");
+      return;
+    } catch (e) { if (i === 2) throw e; await new Promise((r) => setTimeout(r, 400)); }
+  }
+}
+
 /* ---------- endpoints ---------- */
 async function createPost(user, body, env) {
   await checkRate(env, user, "post", 60); // max 1 post/min
@@ -296,16 +309,18 @@ async function createPost(user, body, env) {
     text: String(body.text || "").slice(0, 4000),
     img: String(body.img || "").slice(0, 500),
     ts: Date.now(), up: [], down: [], shares: 0, echo: "", pioneer: "", comments: [],
+    private: !!body.private,
   };
   if (!post.text) throw new Error("empty post");
   await ghPutJSON(env, env.DATA_REPO, `posts/${id}.json`, post, null, `post by ${user}`);
 
-  // update feed index (last 500 posts, single fetch for explore page)
-  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, "config/feed.json");
-  const feed = json || [];
-  feed.unshift({ id, author: user, topic: post.topic, snippet: post.text.slice(0, 280), img: post.img, ts: post.ts, up: 0, down: 0, comments: 0, echo: "" });
-  await ghPutJSON(env, env.DATA_REPO, "config/feed.json", feed.slice(0, 500), sha, `feed ${id}`);
-  await log(env, user, "post_created", { id });
+  if (!post.private) {
+    await updateFeed(env, (feed) => {
+      feed.unshift({ id, author: user, topic: post.topic, snippet: post.text.slice(0, 280), img: post.img, ts: post.ts, up: 0, down: 0, comments: 0, echo: "" });
+      return feed.slice(0, 500);
+    });
+  }
+  await log(env, user, "post_created", { id, private: post.private });
   return reply({ ok: true, id });
 }
 
@@ -344,6 +359,8 @@ async function follow(user, body, env) {
   const a = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
   const b = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`);
   if (!b.json) throw new Error("user not found");
+  if ((b.json.blocked || []).includes(user)) throw new Error("you can't follow this user");
+  if ((a.json.blocked || []).includes(target)) throw new Error("unblock them first");
   a.json.following = a.json.following || [];
   b.json.followers = b.json.followers || [];
   const unfollow = a.json.following.includes(target);
@@ -373,6 +390,7 @@ async function updateProfile(user, body, env) {
   u.tags = (body.tags || []).slice(0, 12).map((t) => String(t).slice(0, 30));
   u.theme = body.theme || u.theme;
   u.banner = String(body.banner || u.banner || "").slice(0, 500);
+  if (typeof body.privateProfile === "boolean") u.privateProfile = body.privateProfile;
   if (body.socials && typeof body.socials === "object") {
     u.socials = {};
     for (const k of ["instagram", "x", "youtube", "snapchat", "facebook", "tiktok", "discord", "website"])
@@ -431,9 +449,14 @@ async function dm(user, body, env) {
   await checkRate(env, user, "dm", 3); // max 1 msg / 3s
   const other = String(body.to || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
   if (!other || other === user) throw new Error("missing recipient");
-  // recipient must exist
+  // recipient must exist + block + privacy checks
   const rec = await ghGetJSON(env, env.DATA_REPO, `users/${other}.json`);
   if (!rec.json) throw new Error("user not found");
+  if ((rec.json.blocked || []).includes(user)) throw new Error("you can't message this user");
+  const me = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
+  if (me.json && (me.json.blocked || []).includes(other)) throw new Error("you blocked this user — unblock first");
+  if (rec.json.privateProfile && !(rec.json.following || []).includes(user))
+    throw new Error("private profile — they can only be messaged by people they follow");
   const text = String(body.text || "").slice(0, 2000).trim();
   if (!text) throw new Error("empty message");
 
@@ -569,6 +592,54 @@ async function groupThread(user, body, env) {
   if (!g) throw new Error("group not found");
   if (!g.members.includes(user)) throw new Error("not a member");
   return reply({ ok: true, name: g.name, members: g.members, messages: g.messages });
+}
+
+/* ---------- block users ---------- */
+async function blockUser(user, body, env) {
+  const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  if (!target || target === user) throw new Error("bad target");
+  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
+  if (!json) throw new Error("profile missing");
+  json.blocked = json.blocked || [];
+  const was = json.blocked.includes(target);
+  json.blocked = was ? json.blocked.filter((b) => b !== target) : [...json.blocked, target].slice(0, 500);
+  // blocking also force-unfollows both directions
+  if (!was) {
+    json.following = (json.following || []).filter((f) => f !== target);
+    json.followers = (json.followers || []).filter((f) => f !== target);
+    const t = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`);
+    if (t.json) {
+      t.json.following = (t.json.following || []).filter((f) => f !== user);
+      t.json.followers = (t.json.followers || []).filter((f) => f !== user);
+      await ghPutJSON(env, env.DATA_REPO, `users/${target}.json`, t.json, t.sha, `unlink ${target}`);
+    }
+  }
+  await ghPutJSON(env, env.DATA_REPO, `users/${user}.json`, json, sha, `block ${user}`);
+  await log(env, user, was ? "unblock" : "block", { target });
+  return reply({ ok: true, blocked: !was });
+}
+
+/* DM block enforcement lives in dm(): */
+
+/* ---------- edit post ---------- */
+async function editPost(user, body, env) {
+  const id = String(body.post || "");
+  const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${id}.json`);
+  if (!post) throw new Error("post not found");
+  if (post.author !== user) throw new Error("not your post");
+  post.text = String(body.text || "").slice(0, 4000);
+  post.topic = String(body.topic || post.topic).slice(0, 40);
+  post.edited = Date.now();
+  await ghPutJSON(env, env.DATA_REPO, `posts/${id}.json`, post, sha, `edit ${id}`);
+  if (!post.private) {
+    await updateFeed(env, (feed) => {
+      const e = feed.find((x) => x.id === id);
+      if (e) { e.snippet = post.text.slice(0, 280); e.topic = post.topic; }
+      return feed;
+    });
+  }
+  await log(env, user, "post_edited", { id });
+  return reply({ ok: true });
 }
 
 async function requestTag(user, body, env) {
