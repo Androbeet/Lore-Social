@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>LORE — every post is part of the Lore</title>
-<meta name="description" content="LORE — a zero-budget social network built on GitHub. Profiles, voice cards, topics, ranks, streaks. Admin: aNDROBEET.">
-<meta name="theme-color" content="#1a0505">
-<!-- Social link previews (Twitter/Discord/WhatsApp cards) -->
+<meta name="description" content="LORE — a zero-budget social network built on GitHub. Profiles, voice cards, topics, ranks, streaks. Admin: ANDROBEET.">
+<meta name="theme-color" content="#13040a">
 <meta property="og:title" content="LORE — every post is part of the Lore">
 <meta property="og:description" content="A social network built entirely on GitHub. Profiles, voice cards, topic ranks, streaks & monthly charts. $0 forever.">
 <meta property="og:type" content="website">
@@ -15,244 +14,374 @@
 <meta name="twitter:image" content="assets/og-banner.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icon-512.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%231a0505' stroke='%23c41e3a' stroke-width='6'/><text x='50' y='66' font-size='48' text-anchor='middle' fill='white' font-family='Georgia'>L</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%2313040a' stroke='%23e63956' stroke-width='6'/><text x='50' y='66' font-size='48' text-anchor='middle' fill='white' font-family='Georgia'>L</text></svg>">
 <style>
-/* ============ THEMES (CSS variables) ============ */
-:root, [data-theme="maroon"]{
-  --bg:#120303; --bg2:#1a0505; --bg3:#240a0a; --card:#1e0707; --card2:#2a0c0c;
-  --text:#ffffff; --text2:#d8b9b9; --muted:#9c7474;
-  --accent:#c41e3a; --accent2:#8b0000; --accent-soft:rgba(196,30,58,.16);
-  --glow:0 0 18px rgba(196,30,58,.45), 0 0 40px rgba(139,0,0,.25);
-  --glow-soft:0 0 10px rgba(196,30,58,.30);
-  --border:#3a1111; --green:#3ddc84; --down:#7a8cff;
+/* ================== 5 THEMES — colour psychology ==================
+   maroon   Maroon Glow   — power, depth, intimacy (default)
+   obsidian Obsidian      — pure focus, zero distraction
+   ivory    Ivory         — clarity, daylight reading
+   nocturne Nocturne      — deep-blue calm, late-night trust
+   velvet   Royal Velvet  — purple+gold: luxury, creativity
+==================================================================== */
+:root,[data-theme="maroon"]{
+  --bg:#0c0205; --bg2:#140409; --card:#190710; --card2:#22091395;
+  --raise:#23091466; --text:#f6edf0; --text2:#cfb3bc; --muted:#8d6b77;
+  --accent:#e63956; --accent2:#8f0f2a; --acc-ink:#fff;
+  --soft:rgba(230,57,86,.10); --soft2:rgba(230,57,86,.16);
+  --border:#321019; --border2:#481723; --green:#2fd180; --down:#6f87ff; --gold:#eab308;
+  --glow:0 0 22px rgba(230,57,86,.28); --shadow:0 8px 28px rgba(0,0,0,.45);
 }
-[data-theme="mono"]{
-  --bg:#000000; --bg2:#0a0a0a; --bg3:#141414; --card:#101010; --card2:#1a1a1a;
-  --text:#ffffff; --text2:#cccccc; --muted:#888888;
-  --accent:#ffffff; --accent2:#aaaaaa; --accent-soft:rgba(255,255,255,.10);
-  --glow:0 0 14px rgba(255,255,255,.25); --glow-soft:0 0 8px rgba(255,255,255,.18);
-  --border:#2a2a2a; --green:#3ddc84; --down:#9aa4b5;
+[data-theme="obsidian"]{
+  --bg:#000; --bg2:#0a0a0a; --card:#101010; --card2:#16161695;
+  --raise:#18181866; --text:#f5f5f5; --text2:#c9c9c9; --muted:#7e7e7e;
+  --accent:#fff; --accent2:#9c9c9c; --acc-ink:#000;
+  --soft:rgba(255,255,255,.07); --soft2:rgba(255,255,255,.12);
+  --border:#222; --border2:#333; --green:#2fd180; --down:#9aa4b5; --gold:#eab308;
+  --glow:0 0 18px rgba(255,255,255,.12); --shadow:0 8px 28px rgba(0,0,0,.6);
 }
-[data-theme="light"]{
-  --bg:#f6f4f2; --bg2:#ffffff; --bg3:#efe9e7; --card:#ffffff; --card2:#f3eded;
-  --text:#141414; --text2:#3c3c3c; --muted:#7c7c7c;
-  --accent:#8b0000; --accent2:#c41e3a; --accent-soft:rgba(139,0,0,.08);
-  --glow:0 4px 18px rgba(139,0,0,.14); --glow-soft:0 2px 8px rgba(0,0,0,.10);
-  --border:#ddd2d2; --green:#1f9e5f; --down:#3551d1;
+[data-theme="ivory"]{
+  --bg:#f4f1ee; --bg2:#fbfaf8; --card:#ffffff; --card2:#fffffff2;
+  --raise:#00000008; --text:#1c1116; --text2:#4c3a42; --muted:#92808a;
+  --accent:#a01535; --accent2:#d03a58; --acc-ink:#fff;
+  --soft:rgba(160,21,53,.07); --soft2:rgba(160,21,53,.12);
+  --border:#e5dcd8; --border2:#d4c6c1; --green:#108a55; --down:#3551d1; --gold:#b07d08;
+  --glow:0 6px 22px rgba(160,21,53,.13); --shadow:0 8px 28px rgba(40,20,28,.10);
 }
-/* ============ BASE ============ */
-*{box-sizing:border-box; margin:0; padding:0}
-html,body{height:100%}
+[data-theme="nocturne"]{
+  --bg:#050a14; --bg2:#091022; --card:#0d1528; --card2:#101b3595;
+  --raise:#12204066; --text:#eef3fb; --text2:#b9c8e2; --muted:#6e7fa0;
+  --accent:#4da6ff; --accent2:#1b5fd9; --acc-ink:#fff;
+  --soft:rgba(77,166,255,.09); --soft2:rgba(77,166,255,.15);
+  --border:#16223e; --border2:#22335c; --green:#2fd180; --down:#ff7d9c; --gold:#eab308;
+  --glow:0 0 22px rgba(77,166,255,.22); --shadow:0 8px 28px rgba(0,0,0,.5);
+}
+[data-theme="velvet"]{
+  --bg:#0b0612; --bg2:#120a1d; --card:#170d26; --card2:#1e123295;
+  --raise:#22143a66; --text:#f4eefb; --text2:#cfc0e4; --muted:#8d7aa8;
+  --accent:#b27aff; --accent2:#6d28d9; --acc-ink:#fff;
+  --soft:rgba(178,122,255,.10); --soft2:rgba(178,122,255,.16);
+  --border:#27173f; --border2:#3a2459; --green:#2fd180; --down:#ffb454; --gold:#e8b23a;
+  --glow:0 0 22px rgba(178,122,255,.24); --shadow:0 8px 28px rgba(0,0,0,.5);
+}
+
+/* ================== BASE ================== */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{
   background:var(--bg); color:var(--text);
-  font-family:'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
-  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, var(--accent-soft), transparent);
+  font-family:Inter,'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 420px at 70% -8%, var(--soft), transparent 70%);
   background-attachment:fixed;
 }
-a{color:inherit; text-decoration:none}
-button{font-family:inherit; cursor:pointer}
-input,textarea,select{font-family:inherit; color:var(--text); background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; outline:none; width:100%}
-input:focus,textarea:focus{border-color:var(--accent); box-shadow:var(--glow-soft)}
-::placeholder{color:var(--muted)}
-::-webkit-scrollbar{width:9px} ::-webkit-scrollbar-thumb{background:var(--border); border-radius:9px}
-/* ============ LAYOUT ============ */
-#app{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:230px 1fr; gap:0; min-height:100vh}
-@media(max-width:880px){ #app{grid-template-columns:1fr} .sidebar{display:none} .mobilebar{display:flex!important} body{padding-bottom:64px} }
-.sidebar{
-  border-right:1px solid var(--border); padding:22px 16px; position:sticky; top:0; height:100vh;
-  display:flex; flex-direction:column; gap:6px; background:linear-gradient(180deg, var(--bg2), transparent);
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;color:inherit;background:none;border:none}
+img{display:block}
+input,textarea,select{
+  font-family:inherit;color:var(--text);background:var(--bg2);
+  border:1px solid var(--border2);border-radius:12px;padding:11px 14px;font-size:14px;outline:none;width:100%;
+  transition:border-color .15s, box-shadow .15s;
 }
-.logo{font-family:Georgia,'Times New Roman',serif; font-size:34px; letter-spacing:6px; font-weight:bold; padding:4px 12px 18px; text-shadow:var(--glow); user-select:none}
-.logo span{color:var(--accent)}
-.navbtn{display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:12px; font-size:15px; color:var(--text2); border:1px solid transparent; background:none; width:100%; text-align:left; transition:.15s}
-.navbtn:hover{background:var(--accent-soft); color:var(--text)}
-.navbtn.active{background:var(--accent-soft); color:var(--text); border-color:var(--border); box-shadow:var(--glow-soft); font-weight:600}
-.navbtn .ico{width:22px; text-align:center; font-size:17px}
-.navbadge{margin-left:auto; background:var(--accent); color:#fff; font-size:11px; min-width:19px; height:19px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px; font-weight:700}
-[data-theme="mono"] .navbadge{color:#000}
-.postbtn{margin-top:14px; background:linear-gradient(135deg, var(--accent2), var(--accent)); color:#fff; border:none; border-radius:14px; padding:13px; font-size:15px; font-weight:700; letter-spacing:1px; box-shadow:var(--glow); transition:.2s}
-[data-theme="mono"] .postbtn{color:#000}
-.postbtn:hover{transform:translateY(-1px); filter:brightness(1.15)}
-.sidefoot{margin-top:auto; font-size:11px; color:var(--muted); padding:10px 12px; line-height:1.7}
-.sidefoot a{color:var(--accent2); text-decoration:underline dotted}
-.mobilebar{display:none; position:fixed; bottom:0; left:0; right:0; background:var(--bg2); border-top:1px solid var(--border); z-index:60; justify-content:space-around; padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
-.mobilebar button{background:none; border:none; color:var(--text2); font-size:21px; padding:6px 14px; border-radius:10px; position:relative}
-.mobilebar button.active{color:var(--accent); background:var(--accent-soft)}
-.mobilebar .navbadge{position:absolute; top:0; right:4px}
-main{padding:0 0 60px; min-width:0}
-.topbar{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px); background:color-mix(in srgb, var(--bg) 78%, transparent); border-bottom:1px solid var(--border); padding:14px 22px; display:flex; align-items:center; gap:14px}
-.topbar h1{font-size:19px; font-weight:700; letter-spacing:.5px}
-.topbar .sub{font-size:12px; color:var(--muted)}
-.content{padding:20px 22px; max-width:760px}
-.wide .content{max-width:none}
-/* ============ COMPONENTS ============ */
-.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:14px; transition:.15s}
-.card:hover{border-color:color-mix(in srgb, var(--accent) 45%, var(--border)); box-shadow:var(--glow-soft)}
-.tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap}
-.tab{background:var(--bg3); border:1px solid var(--border); color:var(--text2); padding:8px 18px; border-radius:999px; font-size:13.5px; font-weight:600; transition:.15s}
-.tab.active{background:linear-gradient(135deg,var(--accent2),var(--accent)); color:#fff; border-color:transparent; box-shadow:var(--glow-soft)}
-[data-theme="mono"] .tab.active{color:#000}
-.avatar{border-radius:50%; object-fit:cover; flex-shrink:0; background:var(--bg3); border:2px solid var(--border)}
-.av-gen{border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; border:2px solid var(--border); font-family:Georgia,serif; user-select:none}
-.posthead{display:flex; align-items:center; gap:11px; margin-bottom:10px}
-.posthead .uname{font-weight:700; font-size:14.5px}
-.posthead .uname:hover{color:var(--accent); cursor:pointer}
-.posthead .meta{font-size:12px; color:var(--muted)}
-.topicchip{font-size:11px; background:var(--accent-soft); color:var(--accent); border:1px solid color-mix(in srgb, var(--accent) 35%, transparent); padding:2.5px 10px; border-radius:999px; font-weight:700; cursor:pointer}
-[data-theme="mono"] .topicchip{color:var(--text)}
-.posttext{font-size:15px; line-height:1.65; color:var(--text); white-space:pre-wrap; word-wrap:break-word}
-.postimg{width:100%; max-height:420px; object-fit:cover; border-radius:12px; margin-top:12px; border:1px solid var(--border)}
-.actions{display:flex; gap:6px; margin-top:14px; align-items:center; flex-wrap:wrap}
-.act{display:flex; align-items:center; gap:7px; background:var(--bg3); border:1px solid var(--border); color:var(--text2); padding:7px 14px; border-radius:999px; font-size:13px; font-weight:600; transition:.15s}
-.act:hover{border-color:var(--accent); color:var(--text); box-shadow:var(--glow-soft)}
-.act.on-up{background:var(--accent-soft); color:var(--accent); border-color:var(--accent)}
-[data-theme="mono"] .act.on-up{color:var(--text)}
-.act.on-down{background:rgba(122,140,255,.12); color:var(--down); border-color:var(--down)}
-.badge{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; letter-spacing:.5px}
-.badge.echo{background:rgba(255,170,0,.15); color:#ffaa33; border:1px solid rgba(255,170,0,.4)}
-.badge.resonance{background:rgba(190,80,255,.15); color:#c879ff; border:1px solid rgba(190,80,255,.4)}
-.badge.seal{background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent)}
-.badge.pioneer{background:rgba(61,220,132,.12); color:var(--green); border:1px solid rgba(61,220,132,.4)}
-.badge.streak{background:rgba(255,120,40,.13); color:#ff8c42; border:1px solid rgba(255,120,40,.4)}
-.badge.mutual{background:rgba(61,220,132,.10); color:var(--green); border:1px solid rgba(61,220,132,.35)}
-[data-theme="light"] .badge.echo{color:#9a6400} 
-.btn{background:linear-gradient(135deg,var(--accent2),var(--accent)); color:#fff; border:none; border-radius:11px; padding:10px 22px; font-size:14px; font-weight:700; transition:.15s; box-shadow:var(--glow-soft)}
-[data-theme="mono"] .btn{color:#000}
-.btn:hover{filter:brightness(1.15)}
-.btn.ghost{background:var(--bg3); color:var(--text); border:1px solid var(--border); box-shadow:none}
-.btn.sm{padding:7px 16px; font-size:13px; border-radius:9px}
-.empty{text-align:center; color:var(--muted); padding:50px 20px; font-size:14px; line-height:1.8}
-.empty .big{font-size:40px; display:block; margin-bottom:10px}
-/* profile */
-.banner{height:130px; border-radius:18px 18px 0 0; background:linear-gradient(120deg, var(--accent2), var(--accent), #4a0a14); position:relative; overflow:hidden}
-.banner::after{content:''; position:absolute; inset:0; background:radial-gradient(circle at 80% 20%, rgba(255,255,255,.22), transparent 55%)}
-.profilecard{background:var(--card); border:1px solid var(--border); border-radius:18px; margin-bottom:16px; overflow:hidden}
-.pbody{padding:0 22px 20px; margin-top:-46px; position:relative}
-.pfp-ring{width:96px; height:96px; border-radius:50%; padding:3px; background:conic-gradient(var(--accent), #ff8c42, var(--accent2), var(--accent)); box-shadow:var(--glow); display:inline-block; animation:ringspin 6s linear infinite}
-@keyframes ringspin{to{filter:hue-rotate(20deg)}}
-.statrow{display:flex; gap:26px; margin:14px 0; flex-wrap:wrap}
-.stat b{font-size:17px} .stat span{font-size:12.5px; color:var(--muted); margin-left:5px}
-.stat{cursor:default}
-.tagrow{display:flex; gap:7px; flex-wrap:wrap; margin-top:12px}
-.voicecard{display:flex; align-items:center; gap:12px; background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:10px 14px; margin-top:12px; max-width:340px}
-.playbtn{width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--accent2),var(--accent)); border:none; color:#fff; font-size:15px; flex-shrink:0; box-shadow:var(--glow-soft)}
-.wavebar{display:flex; gap:2.5px; align-items:center; height:26px; flex:1}
-.wavebar i{width:3px; background:var(--accent); border-radius:3px; opacity:.65}
-.ranks{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
-.rankchip{background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:6px 12px; font-size:12.5px}
-.rankchip b{color:var(--accent)} [data-theme="mono"] .rankchip b{color:var(--text)}
-/* leaderboard circle */
-.lbwrap{display:flex; gap:24px; align-items:center; flex-wrap:wrap; justify-content:center}
-.lblegend{display:flex; flex-direction:column; gap:9px; min-width:210px}
-.lbrow{display:flex; align-items:center; gap:10px; font-size:13.5px; padding:7px 12px; border-radius:10px; background:var(--bg3); border:1px solid var(--border); cursor:pointer; transition:.15s}
-.lbrow:hover{box-shadow:var(--glow-soft); border-color:var(--accent)}
-.lbdot{width:11px; height:11px; border-radius:50%; flex-shrink:0}
-.lbrow .pct{margin-left:auto; color:var(--muted); font-size:12px; font-weight:700}
-svg.donut .seg{transition:opacity .15s, stroke-width .15s; cursor:pointer}
-svg.donut .seg:hover{stroke-width:34}
-/* modal */
-.overlay{position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(4px); z-index:100; display:flex; align-items:flex-start; justify-content:center; padding:60px 16px}
-.modal{background:var(--bg2); border:1px solid var(--border); border-radius:18px; width:100%; max-width:540px; padding:22px; box-shadow:var(--glow); animation:pop .18s ease}
-@keyframes pop{from{transform:scale(.96); opacity:0}}
-.modal h2{font-size:18px; margin-bottom:16px}
-.field{margin-bottom:14px}
-.field label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; font-weight:600; letter-spacing:.3px}
-.toast{position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--card2); border:1px solid var(--accent); color:var(--text); padding:11px 22px; border-radius:999px; font-size:13.5px; z-index:200; box-shadow:var(--glow); animation:pop .2s}
-/* notifications */
-.notifrow{display:flex; gap:12px; align-items:flex-start; padding:13px 14px; border-radius:12px; border:1px solid var(--border); background:var(--card); margin-bottom:9px; font-size:14px}
-.notifrow.unread{border-color:var(--accent); background:var(--accent-soft)}
-.notifrow .t{font-size:11.5px; color:var(--muted); margin-top:3px}
-/* themes settings */
-.themegrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px}
-.themeopt{border:2px solid var(--border); border-radius:14px; padding:14px; cursor:pointer; text-align:center; transition:.15s}
-.themeopt.active{border-color:var(--accent); box-shadow:var(--glow-soft)}
-.swatch{height:54px; border-radius:9px; margin-bottom:10px; border:1px solid var(--border); position:relative; overflow:hidden}
-.comment{display:flex; gap:10px; padding:12px 0; border-top:1px solid var(--border); font-size:14px}
-.searchbox{position:relative; margin-bottom:18px}
-.commgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px}
-.hr{border:none; border-top:1px solid var(--border); margin:16px 0}
-.muted{color:var(--muted); font-size:12.5px}
-.link{color:var(--accent); cursor:pointer; font-weight:600}
-[data-theme="mono"] .link{color:var(--text); text-decoration:underline}
-.notice{background:var(--accent-soft); border:1px solid color-mix(in srgb,var(--accent) 40%, transparent); border-radius:13px; padding:13px 16px; font-size:13px; line-height:1.65; margin-bottom:18px; color:var(--text2)}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--soft2)}
+::placeholder{color:var(--muted)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;border:2px solid var(--bg)}
+svg.ic{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* ================== SHELL: 3-COLUMN ================== */
+#shell{
+  display:grid;grid-template-columns:264px minmax(0,1fr) 332px;
+  gap:26px;max-width:1460px;margin:0 auto;padding:0 22px;
+  align-items:start;min-height:100vh;
+}
+/* left rail */
+#leftrail{
+  position:sticky;top:0;height:100dvh;display:flex;flex-direction:column;
+  padding:26px 6px 18px;gap:3px;
+}
+.logo{font-family:Georgia,'Times New Roman',serif;font-size:31px;letter-spacing:7px;font-weight:700;
+  padding:2px 14px 22px;user-select:none;cursor:pointer}
+.logo b{color:var(--accent);text-shadow:var(--glow)}
+.nbtn{display:flex;align-items:center;gap:14px;padding:11.5px 14px;border-radius:13px;font-size:15px;
+  color:var(--text2);width:100%;text-align:left;transition:background .15s,color .15s;position:relative;font-weight:500}
+.nbtn:hover{background:var(--soft);color:var(--text)}
+.nbtn.on{background:var(--soft2);color:var(--text);font-weight:700}
+.nbtn.on svg.ic{stroke-width:2.3;color:var(--accent)}
+.nbadge{margin-left:auto;background:var(--accent);color:var(--acc-ink);font-size:11px;font-weight:800;
+  min-width:20px;height:20px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.newpost{margin-top:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);
+  border-radius:14px;padding:14px;font-size:14.5px;font-weight:800;letter-spacing:.8px;
+  box-shadow:var(--glow);transition:transform .15s,filter .15s;display:flex;align-items:center;justify-content:center;gap:9px}
+.newpost:hover{transform:translateY(-1px);filter:brightness(1.12)}
+.mecard{margin-top:auto;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:14px;
+  border:1px solid var(--border);background:var(--card);cursor:pointer;transition:border-color .15s}
+.mecard:hover{border-color:var(--border2)}
+.mecard .nm{font-weight:700;font-size:13.5px}
+.mecard .hd{font-size:11.5px;color:var(--muted)}
+
+/* center */
+#main{padding:18px 0 90px;min-width:0}
+.pagehead{display:flex;align-items:baseline;gap:12px;padding:8px 2px 16px}
+.pagehead h1{font-size:21px;font-weight:800;letter-spacing:.2px}
+.pagehead .sub{font-size:12.5px;color:var(--muted)}
+
+/* right rail */
+#rightrail{position:sticky;top:0;height:100dvh;overflow-y:auto;padding:26px 0 30px;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin}
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px}
+.rcard h3{font-size:12px;letter-spacing:1.6px;color:var(--muted);font-weight:800;margin-bottom:13px;text-transform:uppercase}
+.rrow{display:flex;align-items:center;gap:11px;padding:8px 6px;border-radius:11px;cursor:pointer;transition:background .14s}
+.rrow:hover{background:var(--soft)}
+.rrow .t1{font-weight:700;font-size:13.5px}
+.rrow .t2{font-size:11.5px;color:var(--muted)}
+.rfoot{font-size:11.5px;color:var(--muted);line-height:2;padding:2px 8px}
+.rfoot a,.rfoot span.lk{color:var(--text2);cursor:pointer}
+.rfoot a:hover,.rfoot span.lk:hover{color:var(--accent)}
+
+/* mobile bars */
+#mtop{display:none;position:sticky;top:0;z-index:70;background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+  padding:12px 16px;align-items:center;justify-content:space-between}
+#mtop .logo{font-size:22px;letter-spacing:5px;padding:0}
+#mtop .acts{display:flex;gap:6px}
+.iconbtn{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;
+  color:var(--text2);transition:background .15s;position:relative}
+.iconbtn:hover{background:var(--soft);color:var(--text)}
+#tabbar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:70;
+  background:color-mix(in srgb,var(--bg2) 92%,transparent);backdrop-filter:blur(14px);
+  border-top:1px solid var(--border);justify-content:space-around;
+  padding:6px 8px calc(8px + env(safe-area-inset-bottom))}
+#tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 4px;
+  color:var(--muted);font-size:10px;font-weight:600;border-radius:12px;position:relative;max-width:88px}
+#tabbar button.on{color:var(--accent)}
+#tabbar .fab{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);
+  border-radius:14px;max-width:64px;margin:0 4px;box-shadow:var(--glow)}
+#tabbar .nbadge{position:absolute;top:2px;right:16px}
+
+@media(max-width:1180px){#shell{grid-template-columns:240px minmax(0,1fr)}#rightrail{display:none}}
+@media(max-width:860px){
+  #shell{grid-template-columns:1fr;padding:0 14px;gap:0}
+  #leftrail{display:none}
+  #mtop{display:flex}
+  #tabbar{display:flex}
+  #main{padding:10px 0 92px}
+}
+
+/* ================== COMPONENTS ================== */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;
+  transition:border-color .15s, box-shadow .2s}
+.card.hov:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{background:var(--card);border:1px solid var(--border);color:var(--text2);padding:8.5px 19px;border-radius:999px;
+  font-size:13.5px;font-weight:600;transition:all .15s}
+.tab:hover{border-color:var(--border2);color:var(--text)}
+.tab.on{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);border-color:transparent;font-weight:700}
+.btn{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);border-radius:12px;
+  padding:11px 24px;font-size:14px;font-weight:700;transition:filter .15s,transform .15s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--border2)}
+.btn.sm{padding:8px 16px;font-size:13px;border-radius:10px}
+.av{border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--bg2);border:1px solid var(--border2)}
+.avg{border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;
+  font-family:Georgia,serif;user-select:none;border:1px solid rgba(255,255,255,.14)}
+.chip{font-size:11.5px;background:var(--soft);color:var(--accent);border:1px solid transparent;
+  padding:3.5px 12px;border-radius:999px;font-weight:700;cursor:pointer;transition:all .14s;display:inline-flex;align-items:center;gap:5px}
+.chip:hover{border-color:var(--accent)}
+[data-theme="obsidian"] .chip{color:var(--text)}
+.muted{color:var(--muted);font-size:12.5px}
+.link{color:var(--accent);cursor:pointer;font-weight:600}
+.hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+.notice{background:var(--soft);border:1px solid var(--border2);border-radius:14px;padding:13px 16px;
+  font-size:13px;line-height:1.65;margin-bottom:16px;color:var(--text2)}
 .notice b{color:var(--text)}
+.empty{text-align:center;color:var(--muted);padding:56px 20px;font-size:14px;line-height:1.9}
+.empty svg.ic{width:44px;height:44px;margin:0 auto 12px;opacity:.4}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--card);
+  border:1px solid var(--accent);color:var(--text);padding:12px 24px;border-radius:999px;font-size:13.5px;
+  z-index:300;box-shadow:var(--glow);animation:pop .2s;max-width:88vw;text-align:center}
+@keyframes pop{from{transform:translateX(-50%) scale(.94);opacity:0}}
+
+/* posts */
+.post{padding:18px 20px 14px}
+.phead{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.phead .un{font-weight:700;font-size:14.5px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.phead .un:hover{color:var(--accent)}
+.phead .tm{font-size:12px;color:var(--muted);margin-top:1px}
+.ptext{font-size:15px;line-height:1.68;white-space:pre-wrap;word-wrap:break-word;color:var(--text)}
+.pimg{width:100%;max-height:440px;object-fit:cover;border-radius:14px;margin-top:13px;border:1px solid var(--border)}
+.pacts{display:flex;gap:7px;margin-top:14px;align-items:center}
+.pact{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--border);
+  color:var(--text2);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;transition:all .14s}
+.pact svg.ic{width:16px;height:16px}
+.pact:hover{border-color:var(--border2);background:var(--soft);color:var(--text)}
+.pact.up{background:var(--soft2);color:var(--accent);border-color:var(--accent)}
+[data-theme="obsidian"] .pact.up{color:var(--text)}
+.pact.dn{background:transparent;color:var(--down);border-color:var(--down)}
+.score{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;padding:3px 10px;
+  border-radius:999px;letter-spacing:.6px}
+.badge.echo{background:rgba(255,170,0,.13);color:#f5a623;border:1px solid rgba(255,170,0,.35)}
+.badge.reso{background:rgba(190,80,255,.13);color:#c879ff;border:1px solid rgba(190,80,255,.35)}
+.badge.seal{background:var(--soft2);color:var(--accent);border:1px solid var(--accent)}
+[data-theme="obsidian"] .badge.seal{color:var(--text)}
+.badge.pio{background:rgba(47,209,128,.1);color:var(--green);border:1px solid rgba(47,209,128,.35)}
+.badge.strk{background:rgba(255,120,40,.11);color:#ff8c42;border:1px solid rgba(255,120,40,.35)}
+.badge.mut{background:rgba(47,209,128,.08);color:var(--green);border:1px solid rgba(47,209,128,.3)}
+[data-theme="ivory"] .badge.echo{color:#9a6400}
+
+/* comments */
+.cmt{display:flex;gap:11px;padding:13px 0;border-top:1px solid var(--border);font-size:14px}
+.cmt .who{font-weight:700;cursor:pointer}
+.cmt .who:hover{color:var(--accent)}
+
+/* profile */
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:20px;margin-bottom:16px;overflow:hidden}
+.pbanner{height:148px;position:relative}
+.pbanner::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 82% 18%,rgba(255,255,255,.18),transparent 55%)}
+.pbody{padding:0 24px 22px;margin-top:-44px;position:relative}
+.ring{width:96px;height:96px;border-radius:50%;padding:3px;display:inline-block;
+  background:conic-gradient(var(--accent),var(--gold),var(--accent2),var(--accent));box-shadow:var(--glow)}
+.pstats{display:flex;gap:8px;margin:16px 0 4px;flex-wrap:wrap}
+.pstat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:9px 16px;text-align:center;min-width:84px}
+.pstat b{font-size:16px;display:block}
+.pstat span{font-size:11px;color:var(--muted);letter-spacing:.4px}
+.voice{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:13px;padding:10px 14px;margin-top:14px;max-width:360px}
+.playb{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));
+  color:var(--acc-ink);flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:var(--glow)}
+.wave{display:flex;gap:2.5px;align-items:center;height:26px;flex:1}
+.wave i{width:3px;background:var(--accent);border-radius:3px;opacity:.6}
+.rankchip{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:6px 13px;font-size:12.5px}
+.rankchip b{color:var(--accent)}
+[data-theme="obsidian"] .rankchip b{color:var(--text)}
+
+/* leaderboard */
+.lb{display:flex;gap:26px;align-items:center;flex-wrap:wrap;justify-content:center}
+.lbleg{display:flex;flex-direction:column;gap:8px;min-width:220px;flex:1}
+.lbrow{display:flex;align-items:center;gap:10px;font-size:13.5px;padding:8px 13px;border-radius:11px;
+  background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all .14s}
+.lbrow:hover{border-color:var(--accent)}
+.lbdot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.lbrow .pc{margin-left:auto;color:var(--muted);font-size:12px;font-weight:700}
+svg.donut .seg{transition:stroke-width .15s;cursor:pointer}
+svg.donut .seg:hover{stroke-width:33}
+
+/* grids */
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
+
+/* notifications */
+.nrow{display:flex;gap:13px;align-items:flex-start;padding:15px 17px;border-radius:15px;border:1px solid var(--border);
+  background:var(--card);margin-bottom:9px;font-size:14px;transition:border-color .14s}
+.nrow:hover{border-color:var(--border2)}
+.nrow.unread{border-left:3px solid var(--accent);background:var(--card2)}
+.nrow .ni{width:36px;height:36px;border-radius:11px;background:var(--soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)}
+[data-theme="obsidian"] .nrow .ni{color:var(--text)}
+.nrow .tm{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(5px);z-index:200;
+  display:flex;align-items:flex-start;justify-content:center;padding:8vh 16px 16px;overflow-y:auto}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:560px;
+  padding:26px;box-shadow:var(--shadow);animation:mpop .2s ease}
+@keyframes mpop{from{transform:translateY(10px) scale(.97);opacity:0}}
+.modal h2{font-size:18px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:7px;font-weight:700;letter-spacing:.8px}
+
+/* themes grid */
+.thgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:13px}
+.thopt{border:2px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;transition:all .15s;text-align:left}
+.thopt:hover{border-color:var(--border2)}
+.thopt.on{border-color:var(--accent);box-shadow:var(--glow)}
+.thsw{height:58px;border-radius:11px;margin-bottom:11px;position:relative;overflow:hidden;border:1px solid rgba(128,128,128,.25)}
+.thname{font-size:13.5px;font-weight:700}
+.thpsy{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5}
 </style>
 </head>
 <body data-theme="maroon">
-<div id="app">
-  <nav class="sidebar">
-    <div class="logo">L<span>O</span>RE</div>
-    <button class="navbtn" data-nav="explore"><span class="ico">⌂</span> Explore</button>
-    <button class="navbtn" data-nav="topics"><span class="ico">#</span> Topics</button>
-    <button class="navbtn" data-nav="communities"><span class="ico">◉</span> Communities</button>
-    <button class="navbtn" data-nav="search"><span class="ico">⌕</span> Search</button>
-    <button class="navbtn" data-nav="notifications"><span class="ico">🔔</span> Notifications <span class="navbadge" id="bellbadge" style="display:none">0</span></button>
-    <button class="navbtn" data-nav="dms"><span class="ico">✉</span> Messages</button>
-    <button class="navbtn" data-nav="me"><span class="ico">◈</span> My Profile</button>
-    <button class="navbtn" data-nav="settings"><span class="ico">⚙</span> Settings</button>
-    <button class="postbtn" onclick="openCompose()">+ NEW POST</button>
-    <div class="sidefoot">
-      Admin: <b>aNDROBEET</b> ⭐<br>
-      Support: <a href="/cdn-cgi/l/email-protection#96f7f8f2e4f3e1eca1a1a4fda0d6f1fbf7fffab8f5f9fb"><span class="__cf_email__" data-cfemail="45242b213720323f7272772e73052228242c296b262a28">[email&#160;protected]</span></a><br>
-      Built on GitHub · $0 budget
-    </div>
-  </nav>
-  <main>
-    <div class="topbar"><h1 id="pagetitle">Explore</h1><span class="sub" id="pagesub"></span></div>
-    <div class="content" id="content"></div>
+
+<header id="mtop">
+  <div class="logo" onclick="nav('#/explore')">L<b>O</b>RE</div>
+  <div class="acts">
+    <button class="iconbtn" onclick="nav('#/search')" aria-label="Search"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></button>
+    <button class="iconbtn" onclick="nav('#/settings')" aria-label="Settings"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg></button>
+  </div>
+</header>
+
+<div id="shell">
+  <nav id="leftrail"></nav>
+  <main id="main">
+    <div class="pagehead"><h1 id="ptitle">Explore</h1><span class="sub" id="psub"></span></div>
+    <div id="content"></div>
   </main>
+  <aside id="rightrail"></aside>
 </div>
-<div class="mobilebar">
-  <button data-nav="explore">⌂</button>
-  <button data-nav="topics">#</button>
-  <button onclick="openCompose()" style="color:var(--accent); font-size:26px">＋</button>
-  <button data-nav="notifications">🔔<span class="navbadge" id="bellbadge2" style="display:none">0</span></button>
-  <button data-nav="me">◈</button>
-</div>
+
+<nav id="tabbar"></nav>
 <div id="modalroot"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* =====================================================================
-   LORE — zero-budget social network frontend
-   Admin: aNDROBEET · Support: andrewz772k6@gmail.com
-   ---------------------------------------------------------------------
-   MODES:
-   · DEMO MODE (default): runs fully client-side with seed data +
-     localStorage. Works the second GitHub Pages goes live. Perfect for
-     screenshots, soft-launch demos, and Show HN.
-   · LIVE MODE: set CONFIG.WORKER_URL to your deployed Cloudflare Worker
-     and CONFIG.DATA_BASE to your jsDelivr data-repo URL. The app then
-     reads JSON from the data repo and sends writes to the Worker.
-     (Worker source is in /worker/worker.js of this repo.)
+   LORE v2 — professional rebuild
+   Admin: ANDROBEET · Support: andrewz772k6@gmail.com
+   3-column layout · SVG icon system · 5 themes · fixed router
    ===================================================================== */
 const CONFIG = {
   WORKER_URL: "",   // e.g. "https://lore-api.yourname.workers.dev"
-  DATA_BASE:  "",   // e.g. "https://cdn.jsdelivr.net/gh/yourname/lore-data@main"
+  DATA_BASE:  "",   // e.g. "https://cdn.jsdelivr.net/gh/Androbeet/lore-data@main"
   ADMIN: "androbeet",
+  ADMIN_DISPLAY: "ANDROBEET",
   SUPPORT: "andrewz772k6@gmail.com"
 };
 const LIVE = !!(CONFIG.WORKER_URL && CONFIG.DATA_BASE);
 
-/* ============ SEED DATA (demo mode database) ============ */
-const SEED = {
+/* ============ ICONS (inline SVG — crisp on every device) ============ */
+const I = {
+  explore:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>',
+  topics:'<svg class="ic" viewBox="0 0 24 24"><path d="M9 3 7 21M17 3l-2 18M4 8.5h17M3 15.5h17"/></svg>',
+  comm:'<svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19c.7-3.2 3.2-5 6.2-5s5.5 1.8 6.2 5"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.6c2.3.3 4.3 1.8 5 4.4"/></svg>',
+  search:'<svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg>',
+  alerts:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 12.5 7 9l3.5 6L14 5l3 7.5h3"/></svg>',
+  msg:'<svg class="ic" viewBox="0 0 24 24"><path d="M21 11.5c0 4.1-4 7.5-9 7.5-1.2 0-2.4-.2-3.4-.6L3 20l1.8-3.6C3.7 15 3 13.3 3 11.5 3 7.4 7 4 12 4s9 3.4 9 7.5Z"/></svg>',
+  user:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg>',
+  gear:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg>',
+  plus:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  up:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 19V6M5.5 12.5 12 6l6.5 6.5"/></svg>',
+  down:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v13M5.5 11.5 12 18l6.5-6.5"/></svg>',
+  cmt:'<svg class="ic" viewBox="0 0 24 24"><path d="M21 11.5c0 4.1-4 7.5-9 7.5-1.2 0-2.4-.2-3.4-.6L3 20l1.8-3.6C3.7 15 3 13.3 3 11.5 3 7.4 7 4 12 4s9 3.4 9 7.5Z"/></svg>',
+  share:'<svg class="ic" viewBox="0 0 24 24"><path d="M14 4.5 20 10l-6 5.5v-3.6C8.8 11.9 5.6 13.7 4 17c0-5.2 3.3-8.6 10-9V4.5Z"/></svg>',
+  play:'<svg class="ic" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M8 5.5v13l11-6.5z"/></svg>',
+  seal:'<svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="m12 2 2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.3 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8L12 2Z"/></svg>',
+  flame:'<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M12 22c4 0 7-2.7 7-6.5 0-3-2-5-3.5-7C14 6.5 13.5 4.5 14 2c-3 1.5-5 4-5.5 6.5C8.2 10 8 11 7 12c-.8-.8-1.2-1.8-1-3-1.7 1.5-3 3.6-3 6C3 19.3 8 22 12 22Z"/></svg>',
+  shield:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 2 4 5.5v5C4 16 7.4 20.4 12 22c4.6-1.6 8-6 8-11.5v-5L12 2Z"/></svg>',
+  logout:'<svg class="ic" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 17l5-5-5-5M15 12H3"/></svg>',
+  mail:'<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>',
+  trend:'<svg class="ic" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8M15 7h6v6"/></svg>',
+  pin:'<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M12 17v5M7 4h10l-1.5 7.5L18 14H6l2.5-2.5L7 4Z"/></svg>',
+  doc:'<svg class="ic" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2Z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>',
+};
+function ic(n,sz){ let s=I[n]||I.doc; return sz?s.replace('class="ic"',`class="ic" style="width:${sz}px;height:${sz}px"`):s; }
+
+/* ============ SEED DATA (demo mode) ============ */
+const SEED={
 tags:["Philosophy","Tech","Music","Art","Confessions","Memes","Books","Films","Gaming","Science","Poetry","Fitness","Food","Travel","History","Space","Coding","AI","Dreams","Late Night Thoughts"],
 users:{
- androbeet:{bio:"Founder & philosopher-admin of LORE. Building a social network on $0 and pure GitHub sorcery. Every post you make is part of the Lore.",pfp:"",banner:"",voice:"demo",tags:["Philosophy","Tech","Late Night Thoughts"],followers:["nyxwrites","pixel_monk","sable","quietstorm","verse9"],following:["nyxwrites","sable"],joined:"2026-03-01",streak:{count:71,tier:"Silver"},seal:true,echoes:4,resonance:1,pioneer:2,ranks:{Philosophy:1,Tech:3},color:"#c41e3a"},
- nyxwrites:{bio:"Poetry at 3am. Confessions before sunrise. I write the things you're afraid to say.",pfp:"",tags:["Poetry","Confessions","Late Night Thoughts"],followers:["androbeet","sable","verse9"],following:["androbeet","quietstorm"],joined:"2026-03-04",streak:{count:23,tier:"Bronze"},seal:false,echoes:2,resonance:0,pioneer:1,ranks:{Poetry:1,Confessions:2},color:"#9b59b6"},
- pixel_monk:{bio:"I make pixel art and over-engineer side projects. Currently rendering enlightenment at 16×16.",pfp:"",tags:["Art","Coding","Gaming"],followers:["androbeet"],following:["androbeet","nyxwrites"],joined:"2026-03-11",streak:{count:9,tier:"—"},seal:false,echoes:1,resonance:0,pioneer:0,ranks:{Art:2},color:"#e67e22"},
- sable:{bio:"Film, noir, and the spaces between frames. Watching everything so you don't have to.",pfp:"",tags:["Films","Music","History"],followers:["androbeet","nyxwrites"],following:["androbeet"],joined:"2026-03-15",streak:{count:34,tier:"Silver"},seal:false,echoes:1,resonance:0,pioneer:1,ranks:{Films:1},color:"#16a085"},
- quietstorm:{bio:"Science, space, and the occasional existential spiral. Ask me about black holes.",pfp:"",tags:["Science","Space","AI"],followers:["nyxwrites"],following:["androbeet","nyxwrites"],joined:"2026-04-02",streak:{count:5,tier:"—"},seal:false,echoes:0,resonance:0,pioneer:0,ranks:{Science:1,Space:2},color:"#2980d9"},
- verse9:{bio:"Memes are modern folklore. I'm just the archivist.",pfp:"",tags:["Memes","Music","Gaming"],followers:[],following:["androbeet","nyxwrites"],joined:"2026-04-20",streak:{count:12,tier:"—"},seal:false,echoes:1,resonance:0,pioneer:0,ranks:{Memes:1},color:"#d35490"}
+ androbeet:{bio:"Founder & philosopher-admin of LORE. Building a social network on $0 and pure GitHub sorcery. Every post you make is part of the Lore.",pfp:"",voice:"demo",tags:["Philosophy","Tech","Late Night Thoughts"],followers:["nyxwrites","pixel_monk","sable","quietstorm","verse9"],following:["nyxwrites","sable"],joined:"2026-03-01",streak:{count:71,tier:"Silver"},seal:true,echoes:4,resonance:1,pioneer:2,ranks:{Philosophy:1,Tech:3},color:"#e63956"},
+ nyxwrites:{bio:"Poetry at 3am. Confessions before sunrise. I write the things you're afraid to say.",pfp:"",voice:"",tags:["Poetry","Confessions","Late Night Thoughts"],followers:["androbeet","sable","verse9"],following:["androbeet","quietstorm"],joined:"2026-03-04",streak:{count:23,tier:"Bronze"},seal:false,echoes:2,resonance:0,pioneer:1,ranks:{Poetry:1,Confessions:2},color:"#9b59b6"},
+ pixel_monk:{bio:"I make pixel art and over-engineer side projects. Currently rendering enlightenment at 16×16.",pfp:"",voice:"",tags:["Art","Coding","Gaming"],followers:["androbeet"],following:["androbeet","nyxwrites"],joined:"2026-03-11",streak:{count:9,tier:"—"},seal:false,echoes:1,resonance:0,pioneer:0,ranks:{Art:2},color:"#e67e22"},
+ sable:{bio:"Film, noir, and the spaces between frames. Watching everything so you don't have to.",pfp:"",voice:"",tags:["Films","Music","History"],followers:["androbeet","nyxwrites"],following:["androbeet"],joined:"2026-03-15",streak:{count:34,tier:"Silver"},seal:false,echoes:1,resonance:0,pioneer:1,ranks:{Films:1},color:"#16a085"},
+ quietstorm:{bio:"Science, space, and the occasional existential spiral. Ask me about black holes.",pfp:"",voice:"",tags:["Science","Space","AI"],followers:["nyxwrites"],following:["androbeet","nyxwrites"],joined:"2026-04-02",streak:{count:5,tier:"—"},seal:false,echoes:0,resonance:0,pioneer:0,ranks:{Science:1,Space:2},color:"#2980d9"},
+ verse9:{bio:"Memes are modern folklore. I'm just the archivist.",pfp:"",voice:"",tags:["Memes","Music","Gaming"],followers:[],following:["androbeet","nyxwrites"],joined:"2026-04-20",streak:{count:12,tier:"—"},seal:false,echoes:1,resonance:0,pioneer:0,ranks:{Memes:1},color:"#d35490"}
 },
 posts:[
- {id:"p1",author:"androbeet",topic:"Philosophy",ts:Date.now()-1000*60*42,text:"Welcome to LORE.\n\nThis entire platform runs on $0 — GitHub is the database, a free Worker is the backend, and Actions is the scheduled brain.\n\nEvery post you make here is permanent. Every profile is a page in a shared mythology. You're not posting content. You're building your Lore.",img:"",up:["nyxwrites","sable","pixel_monk","quietstorm","verse9"],down:[],shares:14,echo:"ECHO",pioneer:"nyxwrites",comments:[{a:"nyxwrites",t:"first. forever part of the Lore now 🔥",ts:Date.now()-1000*60*40},{a:"sable",t:"a social network with an actual aesthetic. finally.",ts:Date.now()-1000*60*31},{a:"pixel_monk",t:"the fact this runs on a repo is insane",ts:Date.now()-1000*60*22}]},
- {id:"p2",author:"nyxwrites",topic:"Poetry",ts:Date.now()-1000*60*60*3,text:"i archive myself in fragments —\na bio, a voice card, a maroon glow.\nif the servers ever forget me,\nat least the commit history won't.",img:"",up:["androbeet","sable","verse9","quietstorm"],down:[],shares:11,echo:"ECHO",pioneer:"sable",comments:[{a:"sable",t:"\"the commit history won't\" — chills",ts:Date.now()-1000*60*60*2.8},{a:"androbeet",t:"this is exactly what LORE is for. Sealed. ⭐",ts:Date.now()-1000*60*60*2}]},
- {id:"p3",author:"quietstorm",topic:"Space",ts:Date.now()-1000*60*60*7,text:"Fun fact: the data you post here is replicated across GitHub's global infrastructure — meaning your shower thought is now technically more redundantly backed up than most government records.",img:"",up:["androbeet","verse9","nyxwrites"],down:[],shares:6,echo:"",pioneer:"verse9",comments:[{a:"verse9",t:"my 2am takes deserve enterprise-grade durability tbh",ts:Date.now()-1000*60*60*6}]},
- {id:"p4",author:"pixel_monk",topic:"Art",ts:Date.now()-1000*60*60*11,text:"Made a pixel banner for my LORE profile tonight. The decoration system accepting any image URL means my profile is now 90% animated gradient, 10% restraint.",img:"",up:["androbeet","sable"],down:["verse9"],shares:3,echo:"",pioneer:"",comments:[]},
- {id:"p5",author:"sable",topic:"Films",ts:Date.now()-1000*60*60*26,text:"Hot take: the monthly leaderboard chart is the most cinematic feature here. A circle of colored arcs deciding who ruled the topic this month? That's literally the third act of a heist movie.",img:"",up:["androbeet","nyxwrites","pixel_monk","verse9","quietstorm"],down:[],shares:8,echo:"",pioneer:"androbeet",comments:[{a:"androbeet",t:"wait till you see the rank-change notifications",ts:Date.now()-1000*60*60*24}]},
- {id:"p6",author:"verse9",topic:"Memes",ts:Date.now()-1000*60*60*30,text:"\"what's your tech stack?\"\n\nme, whispering: a markdown file and a dream",img:"",up:["androbeet","nyxwrites","pixel_monk","sable"],down:[],shares:19,echo:"ECHO",pioneer:"pixel_monk",comments:[{a:"pixel_monk",t:"PIONEER claimed. this one's going viral",ts:Date.now()-1000*60*60*29}]},
- {id:"p7",author:"androbeet",topic:"Tech",ts:Date.now()-1000*60*60*49,text:"How LORE stays free forever:\n\n→ Reads: jsDelivr CDN caching the data repo\n→ Writes: one Cloudflare Worker (100k req/day free)\n→ Cron brain: GitHub Actions — streaks, ranks, monthly charts\n→ Media: you link it (Imgur / Catbox), we never store it\n\nNo servers. No bills. No excuses.",img:"",up:["quietstorm","pixel_monk","sable"],down:[],shares:9,echo:"",pioneer:"quietstorm",comments:[{a:"quietstorm",t:"the Actions-as-scheduled-brain trick is genuinely 990 IQ",ts:Date.now()-1000*60*60*48}]},
- {id:"p8",author:"nyxwrites",topic:"Confessions",ts:Date.now()-1000*60*60*55,text:"confession: i check my topic rank more often than my actual messages. #3 in Confessions and i can taste #2.",img:"",up:["verse9","androbeet"],down:[],shares:2,echo:"",pioneer:"",comments:[{a:"verse9",t:"the rank system has us all in a chokehold",ts:Date.now()-1000*60*60*54}]}
+ {id:"p1",author:"androbeet",topic:"Philosophy",ts:Date.now()-2520000,text:"Welcome to LORE.\n\nThis entire platform runs on $0 — GitHub is the database, a free Worker is the backend, and Actions is the scheduled brain.\n\nEvery post you make here is permanent. Every profile is a page in a shared mythology. You're not posting content. You're building your Lore.",img:"",up:["nyxwrites","sable","pixel_monk","quietstorm","verse9"],down:[],shares:14,echo:"ECHO",pioneer:"nyxwrites",comments:[{a:"nyxwrites",t:"first. forever part of the Lore now",ts:Date.now()-2400000},{a:"sable",t:"a social network with an actual aesthetic. finally.",ts:Date.now()-1860000},{a:"pixel_monk",t:"the fact this runs on a repo is insane",ts:Date.now()-1320000}]},
+ {id:"p2",author:"nyxwrites",topic:"Poetry",ts:Date.now()-10800000,text:"i archive myself in fragments —\na bio, a voice card, a maroon glow.\nif the servers ever forget me,\nat least the commit history won't.",img:"",up:["androbeet","sable","verse9","quietstorm"],down:[],shares:11,echo:"ECHO",pioneer:"sable",comments:[{a:"sable",t:"\"the commit history won't\" — chills",ts:Date.now()-10000000},{a:"androbeet",t:"this is exactly what LORE is for. Sealed.",ts:Date.now()-7200000}]},
+ {id:"p3",author:"quietstorm",topic:"Space",ts:Date.now()-25200000,text:"Fun fact: the data you post here is replicated across GitHub's global infrastructure — meaning your shower thought is now technically more redundantly backed up than most government records.",img:"",up:["androbeet","verse9","nyxwrites"],down:[],shares:6,echo:"",pioneer:"verse9",comments:[{a:"verse9",t:"my 2am takes deserve enterprise-grade durability tbh",ts:Date.now()-21600000}]},
+ {id:"p4",author:"pixel_monk",topic:"Art",ts:Date.now()-39600000,text:"Made a pixel banner for my LORE profile tonight. The decoration system accepting any image URL means my profile is now 90% animated gradient, 10% restraint.",img:"",up:["androbeet","sable"],down:["verse9"],shares:3,echo:"",pioneer:"",comments:[]},
+ {id:"p5",author:"sable",topic:"Films",ts:Date.now()-93600000,text:"Hot take: the monthly leaderboard chart is the most cinematic feature here. A circle of colored arcs deciding who ruled the topic this month? That's literally the third act of a heist movie.",img:"",up:["androbeet","nyxwrites","pixel_monk","verse9","quietstorm"],down:[],shares:8,echo:"",pioneer:"androbeet",comments:[{a:"androbeet",t:"wait till you see the rank-change notifications",ts:Date.now()-86400000}]},
+ {id:"p6",author:"verse9",topic:"Memes",ts:Date.now()-108000000,text:"\"what's your tech stack?\"\n\nme, whispering: a markdown file and a dream",img:"",up:["androbeet","nyxwrites","pixel_monk","sable"],down:[],shares:19,echo:"ECHO",pioneer:"pixel_monk",comments:[{a:"pixel_monk",t:"PIONEER claimed. this one's going viral",ts:Date.now()-104400000}]},
+ {id:"p7",author:"androbeet",topic:"Tech",ts:Date.now()-176400000,text:"How LORE stays free forever:\n\n→ Reads: jsDelivr CDN caching the data repo\n→ Writes: one Cloudflare Worker (100k req/day free)\n→ Cron brain: GitHub Actions — streaks, ranks, monthly charts\n→ Media: you link it (Imgur / Catbox), we never store it\n\nNo servers. No bills. No excuses.",img:"",up:["quietstorm","pixel_monk","sable"],down:[],shares:9,echo:"",pioneer:"quietstorm",comments:[{a:"quietstorm",t:"the Actions-as-scheduled-brain trick is genuinely 990 IQ",ts:Date.now()-172800000}]},
+ {id:"p8",author:"nyxwrites",topic:"Confessions",ts:Date.now()-198000000,text:"confession: i check my topic rank more often than my actual messages. #3 in Confessions and i can taste #2.",img:"",up:["verse9","androbeet"],down:[],shares:2,echo:"",pioneer:"",comments:[{a:"verse9",t:"the rank system has us all in a chokehold",ts:Date.now()-194400000}]}
 ],
 communities:[
  {name:"midnight-circle",desc:"Late night thoughts, confessions, and the things only 3am understands.",members:["androbeet","nyxwrites","quietstorm"],posts:18},
@@ -261,561 +390,614 @@ communities:[
  {name:"verse-vault",desc:"Poetry drops every day. Bring your fragments.",members:["nyxwrites","androbeet","verse9"],posts:25}
 ],
 leaderboard:{month:"May 2026",topic:"Philosophy",rows:[
- {user:"androbeet",engagement:38,color:"#c41e3a"},
- {user:"nyxwrites",engagement:24,color:"#9b59b6"},
- {user:"quietstorm",engagement:17,color:"#2980d9"},
- {user:"sable",engagement:12,color:"#16a085"},
+ {user:"androbeet",engagement:38,color:"#e63956"},{user:"nyxwrites",engagement:24,color:"#9b59b6"},
+ {user:"quietstorm",engagement:17,color:"#2980d9"},{user:"sable",engagement:12,color:"#16a085"},
  {user:"pixel_monk",engagement:9,color:"#e67e22"}],
- mostUp:"androbeet", mostDown:"verse9"},
+ mostUp:"androbeet",mostDown:"verse9"},
 notifications:[
- {type:"follow",from:"quietstorm",ts:Date.now()-1000*60*18,read:false},
- {type:"upvote",from:"sable",post:"p1",ts:Date.now()-1000*60*52,read:false},
- {type:"comment",from:"pixel_monk",post:"p1",snippet:"the fact this runs on a repo is insane",ts:Date.now()-1000*60*65,read:false},
- {type:"seal",from:"androbeet",post:"p2",ts:Date.now()-1000*60*60*2,read:true},
- {type:"rank_change",topic:"Philosophy",oldRank:2,newRank:1,ts:Date.now()-1000*60*60*26,read:true}
-]
-};
+ {type:"follow",from:"quietstorm",ts:Date.now()-1080000,read:false},
+ {type:"upvote",from:"sable",post:"p1",ts:Date.now()-3120000,read:false},
+ {type:"comment",from:"pixel_monk",post:"p1",snippet:"the fact this runs on a repo is insane",ts:Date.now()-3900000,read:false},
+ {type:"seal",from:"androbeet",post:"p2",ts:Date.now()-7200000,read:true},
+ {type:"rank_change",topic:"Philosophy",oldRank:2,newRank:1,ts:Date.now()-93600000,read:true}
+]};
 
-/* ============ LOCAL STATE (demo persistence) ============ */
-const LS_KEY="lore_state_v1";
-let S = loadState();
+/* ============ STATE ============ */
+const LS="lore_state_v2";
+let S=loadState();
 function loadState(){
-  try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.me) return s; }catch(e){}
-  return { me:"you", theme:"maroon", token:"",
+  try{const s=JSON.parse(localStorage.getItem(LS));if(s&&s.me)return s;}catch(e){}
+  try{const o=JSON.parse(localStorage.getItem("lore_state_v1"));if(o&&o.me)return {...o,token:o.token||""};}catch(e){}
+  return {me:"you",theme:"maroon",token:"",
     profile:{bio:"New to LORE. Writing my first pages.",pfp:"",tags:["Tech"],voice:"",joined:new Date().toISOString().slice(0,10)},
-    myPosts:[], votes:{}, follows:["androbeet"], comments:{}, joined:[], readNotifs:false, shares:{} };
+    myPosts:[],votes:{},follows:["androbeet"],comments:{},joined:[],readNotifs:false,shares:{}};
 }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+function save(){localStorage.setItem(LS,JSON.stringify(S));}
 
 /* ============ HELPERS ============ */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return"just now";if(d<3600)return Math.floor(d/60)+"m ago";if(d<86400)return Math.floor(d/3600)+"h ago";if(d<604800)return Math.floor(d/86400)+"d ago";return new Date(ts).toLocaleDateString();}
-function userColor(u){ if(SEED.users[u]) return SEED.users[u].color; let h=0; for(const c of u) h=(h*31+c.charCodeAt(0))%360; return `hsl(${h},62%,46%)`; }
-function avatarHTML(u,size){
-  const url = u===S.me ? S.profile.pfp : (SEED.users[u]?.pfp||"");
-  if(url) return `<img class="avatar" src="${esc(url)}" width="${size}" height="${size}" alt="${esc(u)}" onerror="this.outerHTML=genAv('${esc(u)}',${size})">`;
-  return genAv(u,size);
+function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return"now";if(d<3600)return Math.floor(d/60)+"m";if(d<86400)return Math.floor(d/3600)+"h";if(d<604800)return Math.floor(d/86400)+"d";return new Date(ts).toLocaleDateString();}
+function dispName(u){return u===CONFIG.ADMIN?CONFIG.ADMIN_DISPLAY:u;}
+function userColor(u){if(SEED.users[u])return SEED.users[u].color;let h=0;for(const c of u)h=(h*31+c.charCodeAt(0))%360;return`hsl(${h},60%,48%)`;}
+function genAv(u,s){return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008)">${esc((u[0]||"?").toUpperCase())}</div>`;}
+function avatarHTML(u,s){
+  const url=u===S.me?S.profile.pfp:(SEED.users[u]?.pfp||"");
+  if(url)return`<img class="av" src="${esc(url)}" width="${s}" height="${s}" alt="" onerror="this.outerHTML=genAv('${esc(u)}',${s})">`;
+  return genAv(u,s);
 }
-function genAv(u,size){ return `<div class="av-gen" style="width:${size}px;height:${size}px;font-size:${size*0.42}px;background:linear-gradient(135deg,${userColor(u)},#000c)">${esc(u[0].toUpperCase())}</div>`; }
-function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2400); }
+function toast(m){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
 function allPosts(){
-  const mine = S.myPosts.map(p=>({...p}));
-  const seeded = SEED.posts.map(p=>{
-    const v=S.votes[p.id], extra=S.comments[p.id]||[];
-    const up=[...p.up], down=[...p.down];
-    if(v==="up")up.push(S.me); if(v==="down")down.push(S.me);
-    return {...p, up, down, comments:[...p.comments, ...extra], shares:p.shares+(S.shares[p.id]||0)};
+  const mine=S.myPosts.map(p=>({...p}));
+  const seeded=SEED.posts.map(p=>{
+    const v=S.votes[p.id],ex=S.comments[p.id]||[];
+    const up=[...p.up],down=[...p.down];
+    if(v==="up")up.push(S.me);if(v==="down")down.push(S.me);
+    return{...p,up,down,comments:[...p.comments,...ex],shares:p.shares+(S.shares[p.id]||0)};
   });
-  return [...mine, ...seeded].sort((a,b)=>b.ts-a.ts);
+  return[...mine,...seeded].sort((a,b)=>b.ts-a.ts);
 }
 function getUser(u){
-  if(u===S.me) return {bio:S.profile.bio,pfp:S.profile.pfp,tags:S.profile.tags,voice:S.profile.voice,followers:[],following:S.follows,joined:S.profile.joined,streak:{count:S.myPosts.length,tier:S.myPosts.length>=30?"Silver":S.myPosts.length>=7?"Bronze":"—"},seal:false,echoes:0,resonance:0,pioneer:0,ranks:{},color:"#c41e3a"};
+  if(u===S.me&&!SEED.users[u])return{bio:S.profile.bio,pfp:S.profile.pfp,tags:S.profile.tags,voice:S.profile.voice,followers:[],following:S.follows,joined:S.profile.joined,streak:{count:S.myPosts.length,tier:S.myPosts.length>=30?"Silver":S.myPosts.length>=7?"Bronze":"—"},seal:false,echoes:0,resonance:0,pioneer:0,ranks:{},color:userColor(u)};
   return SEED.users[u];
 }
-function unreadCount(){ return S.readNotifs?0:SEED.notifications.filter(n=>!n.read).length; }
-function refreshBadges(){
-  const n=unreadCount();
-  for(const id of["bellbadge","bellbadge2"]){const el=document.getElementById(id); if(el){el.style.display=n?"inline-flex":"none"; el.textContent=n;}}
-}
+function unread(){return S.readNotifs?0:SEED.notifications.filter(n=>!n.read).length;}
 
-/* ============ ROUTER ============ */
+/* ============ ROUTER (bulletproof: works even if hash unchanged) ============ */
 const routes={};
-function nav(hash){ location.hash=hash; }
-window.addEventListener("hashchange",render);
-document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>nav("#/"+b.dataset.nav)));
-function setActive(name){
-  document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===name));
+let CUR="";
+function nav(h){
+  if(location.hash===h){render();}
+  else location.hash=h;   // hashchange will render
 }
-function header(title,sub){ $("#pagetitle").textContent=title; $("#pagesub").textContent=sub||""; }
-
+window.addEventListener("hashchange",render);
 function render(){
   const h=(location.hash||"#/explore").slice(2);
-  const [page,arg]=h.split("/").map(decodeURIComponent);
-  refreshBadges();
-  window.scrollTo(0,0);
+  const[page,...rest]=h.split("/").map(decodeURIComponent);
+  CUR=page;
+  drawChrome();
   const fn=routes[page]||routes.explore;
-  setActive(page==="u"?"":page);
-  fn(arg);
+  try{fn(rest.join("/"));}catch(e){$("#content").innerHTML=`<div class="empty">Something glitched. <span class="link" onclick="nav('#/explore')">Back to Explore</span></div>`;}
+  window.scrollTo({top:0,behavior:"instant"});
 }
+function head(t,s){$("#ptitle").textContent=t;$("#psub").textContent=s||"";}
 
-/* ============ POST CARD ============ */
-function postCard(p, full){
-  const score=p.up.length-p.down.length;
-  const myVote=p.up.includes(S.me)?"up":p.down.includes(S.me)?"down":"";
-  const echoBadge=p.echo==="RESONANCE"?`<span class="badge resonance">⚡ RESONANCE</span>`:p.echo==="ECHO"?`<span class="badge echo">〰 ECHO</span>`:"";
-  return `<div class="card" ${full?"":`onclick="if(!event.target.closest('button,.uname,.topicchip,a'))nav('#/post/${p.id}')"`} style="${full?"":"cursor:pointer"}">
-    <div class="posthead">
-      ${avatarHTML(p.author,40)}
-      <div>
-        <div class="uname" onclick="event.stopPropagation();nav('#/u/${esc(p.author)}')">@${esc(p.author)} ${SEED.users[p.author]?.seal?'<span class="badge seal" title="Androbeet Seal">⭐</span>':""}</div>
-        <div class="meta">${timeAgo(p.ts)}</div>
-      </div>
-      <div style="margin-left:auto; display:flex; gap:7px; align-items:center">
-        ${echoBadge}
-        <span class="topicchip" onclick="event.stopPropagation();nav('#/topic/${esc(p.topic)}')">#${esc(p.topic)}</span>
+/* ============ CHROME: left rail, right rail, tabbar ============ */
+const NAVS=[["explore","Explore","explore"],["topics","Topics","topics"],["communities","Communities","comm"],
+["search","Search","search"],["notifications","Activity","alerts"],["dms","Messages","msg"],["me","Profile","user"],["settings","Settings","gear"]];
+function drawChrome(){
+  const n=unread();
+  $("#leftrail").innerHTML=`
+    <div class="logo" onclick="nav('#/explore')">L<b>O</b>RE</div>
+    ${NAVS.map(([id,label,icon])=>`<button class="nbtn ${CUR===id||(CUR==="u"&&id==="me")?"on":""}" onclick="nav('#/${id}')">
+      ${ic(icon)} ${label} ${id==="notifications"&&n?`<span class="nbadge">${n}</span>`:""}
+      ${id==="settings"&&S.me===CONFIG.ADMIN?'':''}</button>`).join("")}
+    ${S.me===CONFIG.ADMIN?`<button class="nbtn ${CUR==="admin"?"on":""}" onclick="nav('#/admin')">${ic("shield")} Admin</button>`:""}
+    <button class="newpost" onclick="openCompose()">${ic("plus",18)} NEW POST</button>
+    <div class="mecard" onclick="nav('#/me')">
+      ${avatarHTML(S.me,38)}
+      <div><div class="nm">@${esc(S.me)}</div><div class="hd">${LIVE?(S.token?"logged in":"guest"):"demo mode"}</div></div>
+    </div>`;
+  $("#tabbar").innerHTML=[
+    ["explore","Home","explore"],["topics","Topics","topics"],["__post","","plus"],
+    ["notifications","Activity","alerts"],["me","Profile","user"]
+  ].map(([id,label,icon])=>id==="__post"
+    ?`<button class="fab" onclick="openCompose()">${ic("plus")}</button>`
+    :`<button class="${CUR===id||(CUR==="u"&&id==="me")?"on":""}" onclick="nav('#/${id}')">${ic(icon)}${label?`<span>${label}</span>`:""}${id==="notifications"&&n?`<span class="nbadge">${n}</span>`:""}</button>`
+  ).join("");
+  drawRight();
+}
+function drawRight(){
+  const posts=allPosts();
+  const topicCount={};posts.forEach(p=>topicCount[p.topic]=(topicCount[p.topic]||0)+1);
+  const trending=Object.entries(topicCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const userScore={};posts.forEach(p=>userScore[p.author]=(userScore[p.author]||0)+p.up.length-p.down.length);
+  const tops=Object.entries(userScore).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  $("#rightrail").innerHTML=`
+    <div class="rcard" style="padding:12px">
+      <div style="position:relative">
+        <input id="rq" placeholder="Search the Lore…" style="padding-left:40px" onkeydown="if(event.key==='Enter'){sessionStorage.setItem('q',this.value);nav('#/search')}">
+        <span style="position:absolute;left:13px;top:11px;color:var(--muted)">${ic("search",17)}</span>
       </div>
     </div>
-    <div class="posttext">${esc(p.text)}</div>
-    ${p.img?`<img class="postimg" src="${esc(p.img)}" alt="post image" loading="lazy" onerror="this.style.display='none'">`:""}
-    <div class="actions">
-      <button class="act ${myVote==="up"?"on-up":""}" onclick="event.stopPropagation();vote('${p.id}','up')">▲ ${p.up.length}</button>
-      <button class="act ${myVote==="down"?"on-down":""}" onclick="event.stopPropagation();vote('${p.id}','down')">▼ ${p.down.length}</button>
-      <button class="act" onclick="event.stopPropagation();nav('#/post/${p.id}')">💬 ${p.comments.length}</button>
-      <button class="act" onclick="event.stopPropagation();sharePost('${p.id}')">↗ ${p.shares}</button>
-      <span class="muted" style="margin-left:auto">${score>=0?"+":""}${score}</span>
+    <div class="rcard">
+      <h3>${ic("trend",14)} Trending Topics</h3>
+      ${trending.map(([t,c],i)=>`<div class="rrow" onclick="nav('#/topic/${esc(t)}')">
+        <span style="color:var(--muted);font-weight:800;font-size:12px;width:16px">${i+1}</span>
+        <div><div class="t1">#${esc(t)}</div><div class="t2">${c} post${c===1?"":"s"}</div></div>
+      </div>`).join("")}
     </div>
-  </div>`;
+    <div class="rcard">
+      <h3>Top of the Lore</h3>
+      ${tops.map(([u,s])=>`<div class="rrow" onclick="nav('#/u/${esc(u)}')">
+        ${avatarHTML(u,34)}
+        <div><div class="t1">@${esc(u)} ${SEED.users[u]?.seal?`<span class="badge seal">${ic("seal")}</span>`:""}</div><div class="t2">+${s} this week</div></div>
+      </div>`).join("")}
+    </div>
+    <div class="rcard">
+      <h3>Monthly Chart</h3>
+      <div class="rrow" onclick="nav('#/topic/Philosophy')">
+        <div style="width:34px;height:34px;border-radius:50%;background:conic-gradient(#e63956 0 38%,#9b59b6 0 62%,#2980d9 0 79%,#16a085 0 91%,#e67e22 0);flex-shrink:0"></div>
+        <div><div class="t1">#Philosophy · ${SEED.leaderboard.month}</div><div class="t2">@${dispName(SEED.leaderboard.mostUp).toLowerCase()} leads — view chart →</div></div>
+      </div>
+    </div>
+    <div class="rfoot">
+      Admin <b>${CONFIG.ADMIN_DISPLAY}</b> · <a href="mailto:${CONFIG.SUPPORT}">Support</a><br>
+      <span class="lk" onclick="nav('#/settings')">Themes</span> · <span class="lk" onclick="toast('Rules: docs/RULES.md in the repo')">Rules</span> · Built on GitHub · $0 forever
+    </div>`;
 }
 
-function vote(id,dir){
-  const mine=S.myPosts.find(p=>p.id===id);
-  if(mine){
-    const arr=dir==="up"?mine.up:mine.down, other=dir==="up"?mine.down:mine.up;
-    const i=arr.indexOf(S.me);
-    if(i>=0)arr.splice(i,1); else {arr.push(S.me); const j=other.indexOf(S.me); if(j>=0)other.splice(j,1);}
-  } else {
-    S.votes[id]=S.votes[id]===dir?"":dir;
-  }
-  save(); render();
-  if(LIVE) api("/vote",{post:id,dir});
-}
-function sharePost(id){
-  S.shares[id]=(S.shares[id]||0)+1; save();
-  const url=location.origin+location.pathname+"#/post/"+id;
-  if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast("Permalink copied — shared!")).catch(()=>toast("Share link: "+url));
-  else toast("Share link: "+url);
-  render();
-}
+/* ============ LIVE API ============ */
 async function api(path,body){
   try{
     const r=await fetch(CONFIG.WORKER_URL+path,{method:"POST",
       headers:{"Content-Type":"application/json",...(S.token?{"Authorization":"Bearer "+S.token}:{})},
       body:JSON.stringify(body)});
     const d=await r.json();
-    if(d.error){ toast("⚠ "+d.error); if(/logged in|session/i.test(d.error)) openAuth(); }
+    if(d.error){toast("⚠ "+d.error);if(/logged in|session/i.test(d.error))openAuth();}
     return d;
-  }catch(e){ return {error:String(e)}; }
+  }catch(e){return{error:String(e)};}
 }
 
-/* ============ ACCOUNTS (live mode) ============ */
+/* ============ AUTH ============ */
 function openAuth(mode){
   mode=mode||"login";
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
-      <div class="logo" style="font-size:26px; padding:0 0 14px">L<span>O</span>RE</div>
+      <div class="logo" style="font-size:24px;padding:0 0 16px">L<b>O</b>RE</div>
       <div class="tabs">
-        <button class="tab ${mode==="login"?"active":""}" onclick="openAuth('login')">Log in</button>
-        <button class="tab ${mode==="signup"?"active":""}" onclick="openAuth('signup')">Create account</button>
+        <button class="tab ${mode==="login"?"on":""}" onclick="openAuth('login')">Log in</button>
+        <button class="tab ${mode==="signup"?"on":""}" onclick="openAuth('signup')">Create account</button>
       </div>
-      <div class="field"><label>USERNAME</label><input id="a_user" placeholder="a-z, 0-9, _ only"></div>
-      ${mode==="signup"?`<div class="field"><label>EMAIL</label><input id="a_email" type="email" placeholder="you@gmail.com"></div>`:""}
-      <div class="field"><label>PASSWORD ${mode==="signup"?"(8+ characters)":""}</label><input id="a_pass" type="password" onkeydown="if(event.key==='Enter')submitAuth('${mode}')"></div>
-      <button class="btn" style="width:100%" onclick="submitAuth('${mode}')">${mode==="signup"?"Join the Lore →":"Log in →"}</button>
-      <div class="muted" style="margin-top:12px; text-align:center">Forgot password? Email ${CONFIG.SUPPORT}</div>
+      <div class="field"><label>USERNAME</label><input id="a_user" placeholder="a–z, 0–9, _ only" autocomplete="username"></div>
+      ${mode==="signup"?`<div class="field"><label>EMAIL</label><input id="a_email" type="email" placeholder="you@gmail.com" autocomplete="email"></div>`:""}
+      <div class="field"><label>PASSWORD ${mode==="signup"?"(8+ CHARACTERS)":""}</label><input id="a_pass" type="password" autocomplete="${mode==="signup"?"new-password":"current-password"}" onkeydown="if(event.key==='Enter')submitAuth('${mode}')"></div>
+      <button class="btn" style="width:100%" onclick="submitAuth('${mode}')">${mode==="signup"?"Join the Lore":"Log in"}</button>
+      <div class="muted" style="margin-top:14px;text-align:center">Forgot password? ${CONFIG.SUPPORT}</div>
     </div></div>`;
-  setTimeout(()=>$("#a_user").focus(),50);
+  setTimeout(()=>$("#a_user")&&$("#a_user").focus(),60);
 }
 async function submitAuth(mode){
-  const body={username:$("#a_user").value.trim(), password:$("#a_pass").value};
-  if(mode==="signup") body.email=$("#a_email").value.trim();
+  const body={username:$("#a_user").value.trim(),password:$("#a_pass").value};
+  if(mode==="signup")body.email=$("#a_email").value.trim();
   const d=await api("/"+mode,body);
-  if(d&&d.token){
-    S.token=d.token; S.me=d.username; save(); closeModal();
-    toast(mode==="signup"?"Welcome to the Lore, @"+d.username+" ✓":"Logged in as @"+d.username+" ✓");
-    render();
-  }
+  if(d&&d.token){S.token=d.token;S.me=d.username;save();closeModal();
+    toast(mode==="signup"?"Welcome to the Lore, @"+d.username:"Logged in as @"+d.username);render();}
 }
-function logout(){ S.token=""; save(); toast("Logged out"); render(); if(LIVE) openAuth(); }
-function requireLogin(){ if(LIVE && !S.token){ openAuth(); return true; } return false; }
+function logout(){S.token="";save();toast("Logged out");render();if(LIVE)openAuth();}
+function requireLogin(){if(LIVE&&!S.token){openAuth();return true;}return false;}
+
+/* ============ POST CARD ============ */
+function postCard(p,full){
+  const score=p.up.length-p.down.length;
+  const my=p.up.includes(S.me)?"up":p.down.includes(S.me)?"down":"";
+  const eb=p.echo==="RESONANCE"?`<span class="badge reso">RESONANCE</span>`:p.echo==="ECHO"?`<span class="badge echo">ECHO</span>`:"";
+  return`<article class="card hov post" ${full?"":`onclick="if(!event.target.closest('button,.un,.chip,a,img'))nav('#/post/${p.id}')" style="cursor:pointer"`}>
+    <div class="phead">
+      ${avatarHTML(p.author,42)}
+      <div>
+        <div class="un" onclick="event.stopPropagation();nav('#/u/${esc(p.author)}')">@${esc(p.author)}${SEED.users[p.author]?.seal?`<span class="badge seal" title="ANDROBEET Seal">${ic("seal")}</span>`:""}</div>
+        <div class="tm">${timeAgo(p.ts)} ago</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:7px;align-items:center">
+        ${eb}<span class="chip" onclick="event.stopPropagation();nav('#/topic/${esc(p.topic)}')">#${esc(p.topic)}</span>
+      </div>
+    </div>
+    <div class="ptext">${esc(p.text)}</div>
+    ${p.img?`<img class="pimg" src="${esc(p.img)}" alt="" loading="lazy" onerror="this.style.display='none'">`:""}
+    <div class="pacts">
+      <button class="pact ${my==="up"?"up":""}" onclick="event.stopPropagation();vote('${p.id}','up')">${ic("up")} ${p.up.length}</button>
+      <button class="pact ${my==="down"?"dn":""}" onclick="event.stopPropagation();vote('${p.id}','down')">${ic("down")} ${p.down.length}</button>
+      <button class="pact" onclick="event.stopPropagation();nav('#/post/${p.id}')">${ic("cmt")} ${p.comments.length}</button>
+      <button class="pact" onclick="event.stopPropagation();sharePost('${p.id}')">${ic("share")} ${p.shares}</button>
+      <span class="score">${score>=0?"+":""}${score}</span>
+    </div>
+  </article>`;
+}
+function vote(id,dir){
+  if(requireLogin())return;
+  const mine=S.myPosts.find(p=>p.id===id);
+  if(mine){
+    const arr=dir==="up"?mine.up:mine.down,other=dir==="up"?mine.down:mine.up;
+    const i=arr.indexOf(S.me);
+    if(i>=0)arr.splice(i,1);else{arr.push(S.me);const j=other.indexOf(S.me);if(j>=0)other.splice(j,1);}
+  }else S.votes[id]=S.votes[id]===dir?"":dir;
+  save();render();
+  if(LIVE)api("/vote",{post:id,dir});
+}
+function sharePost(id){
+  S.shares[id]=(S.shares[id]||0)+1;save();
+  const url=location.origin+location.pathname+"#/post/"+id;
+  if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>toast("Link copied — shared")).catch(()=>toast(url));
+  else toast(url);
+  render();
+}
 
 /* ============ PAGES ============ */
-routes.explore = ()=>{
-  header("Explore","the latest Lore");
-  const tab = sessionStorage.getItem("exptab")||"Hot";
-  const posts=allPosts();
-  let sorted=[...posts];
-  if(tab==="Hot") sorted.sort((a,b)=>(b.up.length-b.down.length)-(a.up.length-a.down.length));
-  if(tab==="Rising") sorted.sort((a,b)=>((b.up.length+b.comments.length)/Math.max(1,(Date.now()-b.ts)/3.6e6))-((a.up.length+a.comments.length)/Math.max(1,(Date.now()-a.ts)/3.6e6)));
-  if(tab==="Random") sorted.sort(()=>Math.random()-0.5);
-  $("#content").innerHTML = `
-    ${LIVE?"":`<div class="notice"><b>Demo mode.</b> This build runs fully on GitHub Pages with sample data — votes, posts and follows persist in your browser. Connect a Cloudflare Worker in <span class="link" onclick="nav('#/settings')">Settings → Go Live</span> to turn on the real shared database.</div>`}
-    <div class="tabs">${["Hot","Rising","New","Random"].map(t=>`<button class="tab ${t===tab?"active":""}" onclick="sessionStorage.setItem('exptab','${t}');render()">${t}</button>`).join("")}</div>
-    ${sorted.map(p=>postCard(p)).join("")||`<div class="empty"><span class="big">🕳</span>No posts yet. Be the first page of the Lore.</div>`}`;
+routes.explore=()=>{
+  head("Explore","the latest Lore");
+  const tab=sessionStorage.getItem("exptab")||"Hot";
+  let posts=allPosts();
+  if(tab==="Hot")posts.sort((a,b)=>(b.up.length-b.down.length)-(a.up.length-a.down.length));
+  if(tab==="Rising")posts.sort((a,b)=>((b.up.length+b.comments.length)/Math.max(1,(Date.now()-b.ts)/36e5))-((a.up.length+a.comments.length)/Math.max(1,(Date.now()-a.ts)/36e5)));
+  if(tab==="Random")posts.sort(()=>Math.random()-0.5);
+  $("#content").innerHTML=`
+    ${LIVE?"":`<div class="notice"><b>Demo mode.</b> Sample data — your actions persist in this browser. Connect the Worker (<span class="link" onclick="nav('#/settings')">Settings → Go Live</span>) to switch on the shared database.</div>`}
+    <div class="tabs">${["Hot","Rising","New","Random"].map(t=>`<button class="tab ${t===tab?"on":""}" onclick="sessionStorage.setItem('exptab','${t}');render()">${t}</button>`).join("")}</div>
+    ${posts.map(p=>postCard(p)).join("")||`<div class="empty">${ic("explore")}No posts yet. Be the first page of the Lore.</div>`}`;
 };
 
-routes.post = (id)=>{
+routes.post=(id)=>{
   const p=allPosts().find(x=>x.id===id);
-  if(!p){ $("#content").innerHTML=`<div class="empty"><span class="big">🕳</span>This post isn't part of the Lore (yet).</div>`; header("Post"); return; }
-  header("Post","by @"+p.author);
-  $("#content").innerHTML = postCard(p,true) + `
+  if(!p){head("Post");$("#content").innerHTML=`<div class="empty">${ic("doc")}This post isn't part of the Lore (yet).</div>`;return;}
+  head("Post","by @"+p.author);
+  $("#content").innerHTML=postCard(p,true)+`
     <div class="card">
-      <div style="display:flex; gap:10px">
+      <div style="display:flex;gap:10px;align-items:center">
         ${avatarHTML(S.me,36)}
-        <input id="cmtbox" placeholder="Add to the thread…" onkeydown="if(event.key==='Enter')addComment('${p.id}')">
+        <input id="cbox" placeholder="Add to the thread…" onkeydown="if(event.key==='Enter')addComment('${p.id}')">
         <button class="btn sm" onclick="addComment('${p.id}')">Reply</button>
       </div>
-      <div style="margin-top:14px">
-        ${p.comments.map((c,i)=>`<div class="comment">
+      <div style="margin-top:16px">
+        ${p.comments.map((c,i)=>`<div class="cmt">
           ${avatarHTML(c.a,32)}
-          <div><b style="cursor:pointer" onclick="nav('#/u/${esc(c.a)}')">@${esc(c.a)}</b>
-          ${p.pioneer===c.a&&i===0?'<span class="badge pioneer">🚩 PIONEER</span>':""}
+          <div><span class="who" onclick="nav('#/u/${esc(c.a)}')">@${esc(c.a)}</span>
+          ${p.pioneer===c.a&&i===0?'<span class="badge pio">PIONEER</span>':""}
           <span class="muted" style="margin-left:6px">${timeAgo(c.ts)}</span>
-          <div style="margin-top:4px">${esc(c.t)}</div></div>
-        </div>`).join("")||`<div class="muted" style="padding:10px 0">No replies yet. Claim the PIONEER badge.</div>`}
+          <div style="margin-top:4px;color:var(--text2)">${esc(c.t)}</div></div>
+        </div>`).join("")||`<div class="muted" style="padding:12px 0">No replies yet. Claim the PIONEER badge.</div>`}
       </div>
     </div>`;
 };
 function addComment(id){
-  const v=$("#cmtbox").value.trim(); if(!v)return;
+  if(requireLogin())return;
+  const v=$("#cbox").value.trim();if(!v)return;
   const mine=S.myPosts.find(p=>p.id===id);
   const c={a:S.me,t:v,ts:Date.now()};
-  if(mine) mine.comments.push(c); else (S.comments[id]=S.comments[id]||[]).push(c);
-  save(); render(); toast("Reply added");
-  if(LIVE) api("/comment",{post:id,text:v});
+  if(mine)mine.comments.push(c);else(S.comments[id]=S.comments[id]||[]).push(c);
+  save();render();toast("Reply added");
+  if(LIVE)api("/comment",{post:id,text:v});
 }
 
-routes.topics = ()=>{
-  header("Topics","every topic is a hall in the Lore");
+routes.topics=()=>{
+  head("Topics","every topic is a hall in the Lore");
   const posts=allPosts();
-  $("#content").innerHTML = `<div class="commgrid">` + SEED.tags.map(t=>{
+  $("#content").innerHTML=`<div class="grid2">`+SEED.tags.map(t=>{
     const n=posts.filter(p=>p.topic===t).length;
-    return `<div class="card" style="cursor:pointer;margin:0" onclick="nav('#/topic/${esc(t)}')">
-      <div style="font-size:17px;font-weight:800">#${esc(t)}</div>
-      <div class="muted" style="margin-top:6px">${n} post${n===1?"":"s"} ${t==="Philosophy"?"· 📊 monthly chart pinned":""}</div>
-    </div>`; }).join("") + `</div>
-    <div class="card" style="margin-top:16px; text-align:center">
+    return`<div class="card hov" style="cursor:pointer;margin:0" onclick="nav('#/topic/${esc(t)}')">
+      <div style="font-size:16.5px;font-weight:800">#${esc(t)}</div>
+      <div class="muted" style="margin-top:6px">${n} post${n===1?"":"s"}${t==="Philosophy"?` · ${ic("pin")} chart pinned`:""}</div>
+    </div>`;}).join("")+`</div>
+    <div class="card" style="margin-top:16px;text-align:center">
       <div class="muted">Don't see your interest?</div>
-      <button class="btn ghost sm" style="margin-top:8px" onclick="requestTag()">＋ Request a new tag</button>
+      <button class="btn ghost sm" style="margin-top:10px" onclick="requestTag()">${ic("plus",15)} Request a new tag</button>
     </div>`;
 };
 function requestTag(){
-  const t=prompt("Suggest a new interest tag (goes to the moderation queue):");
-  if(t) toast(`"${t}" sent to aNDROBEET's moderation queue ✓`);
+  const t=prompt("Suggest a new interest tag (goes to ANDROBEET's moderation queue):");
+  if(t){toast(`"${t}" sent to the moderation queue`);if(LIVE)api("/request-tag",{tag:t});}
 }
 
-routes.topic = (name)=>{
-  header("#"+name,"topic page");
+routes.topic=(name)=>{
+  head("#"+name,"topic");
   const posts=allPosts().filter(p=>p.topic===name);
-  const lb = name===SEED.leaderboard.topic ? leaderboardCard() : "";
-  $("#content").innerHTML = lb + (posts.map(p=>postCard(p)).join("") ||
-    `<div class="empty"><span class="big">#</span>Nothing in #${esc(name)} yet.<br><span class="link" onclick="openCompose('${esc(name)}')">Write the first post →</span></div>`);
+  const lb=name===SEED.leaderboard.topic?lbCard():"";
+  $("#content").innerHTML=lb+(posts.map(p=>postCard(p)).join("")||
+    `<div class="empty">${ic("topics")}Nothing in #${esc(name)} yet.<br><span class="link" onclick="openCompose('${esc(name)}')">Write the first post →</span></div>`);
 };
 
-function leaderboardCard(){
-  const L=SEED.leaderboard;
-  const total=L.rows.reduce((a,r)=>a+r.engagement,0);
-  const R=70, C=2*Math.PI*R; let off=0;
+function lbCard(){
+  const L=SEED.leaderboard,total=L.rows.reduce((a,r)=>a+r.engagement,0);
+  const R=70,C=2*Math.PI*R;let off=0;
   const segs=L.rows.map(r=>{
-    const frac=r.engagement/total, len=frac*C;
-    const s=`<circle class="seg" r="${R}" cx="100" cy="100" fill="none" stroke="${r.color}" stroke-width="28"
+    const f=r.engagement/total,len=f*C;
+    const s=`<circle class="seg" r="${R}" cx="100" cy="100" fill="none" stroke="${r.color}" stroke-width="27"
       stroke-dasharray="${len-2} ${C-len+2}" stroke-dashoffset="${-off}" transform="rotate(-90 100 100)">
-      <title>@${r.user} — ${(frac*100).toFixed(0)}% of engagement</title></circle>`;
-    off+=len; return s;
-  }).join("");
-  return `<div class="card" style="border-color:var(--accent); box-shadow:var(--glow-soft)">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px">
-      <span class="badge seal">📌 PINNED</span><b>Monthly Chart — ${esc(L.topic)} · ${esc(L.month)}</b>
+      <title>@${r.user} — ${(f*100).toFixed(0)}%</title></circle>`;
+    off+=len;return s;}).join("");
+  return`<div class="card" style="border-color:var(--accent)">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <span class="badge seal">${ic("pin")} PINNED</span><b>Monthly Chart — ${esc(L.topic)} · ${esc(L.month)}</b>
     </div>
-    <div class="muted" style="margin-bottom:14px">Auto-posted by GitHub Actions on the 1st of every month.</div>
-    <div class="lbwrap">
-      <svg class="donut" width="200" height="200" viewBox="0 0 200 200">
-        ${segs}
-        <text x="100" y="95" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="700">ENGAGEMENT</text>
-        <text x="100" y="114" text-anchor="middle" fill="var(--muted)" font-size="11">${total} interactions</text>
+    <div class="muted" style="margin-bottom:16px">Auto-posted by GitHub Actions on the 1st of every month.</div>
+    <div class="lb">
+      <svg class="donut" width="198" height="198" viewBox="0 0 200 200">${segs}
+        <text x="100" y="95" text-anchor="middle" fill="var(--text)" font-size="12.5" font-weight="700">ENGAGEMENT</text>
+        <text x="100" y="113" text-anchor="middle" fill="var(--muted)" font-size="11">${total} interactions</text>
       </svg>
-      <div class="lblegend">
+      <div class="lbleg">
         ${L.rows.map((r,i)=>`<div class="lbrow" onclick="nav('#/u/${r.user}')">
-          <span class="lbdot" style="background:${r.color}"></span>
-          <b>#${i+1}</b> @${esc(r.user)} <span class="pct">${((r.engagement/total)*100).toFixed(0)}%</span>
-        </div>`).join("")}
-        <div class="muted" style="margin-top:4px">▲ Most upvoted: <b>@${esc(L.mostUp)}</b> &nbsp;·&nbsp; ▼ Most controversial: <b>@${esc(L.mostDown)}</b></div>
+          <span class="lbdot" style="background:${r.color}"></span><b>#${i+1}</b> @${esc(r.user)}
+          <span class="pc">${((r.engagement/total)*100).toFixed(0)}%</span></div>`).join("")}
+        <div class="muted" style="margin-top:4px">Most upvoted <b>@${esc(L.mostUp)}</b> · most controversial <b>@${esc(L.mostDown)}</b></div>
       </div>
     </div>
   </div>`;
 }
 
-routes.u = (uname)=>{ profilePage(uname); };
-routes.me = ()=>{ profilePage(S.me); };
+routes.u=(u)=>profilePage(u);
+routes.me=()=>profilePage(S.me);
 function profilePage(uname){
   const u=getUser(uname);
-  if(!u){ header("Profile"); $("#content").innerHTML=`<div class="empty"><span class="big">👤</span>@${esc(uname)} isn't part of the Lore.</div>`; return; }
+  if(!u){head("Profile");$("#content").innerHTML=`<div class="empty">${ic("user")}@${esc(uname)} isn't part of the Lore.</div>`;return;}
   const isMe=uname===S.me;
-  header(isMe?"My Profile":"@"+uname, isMe?"":"");
+  head(isMe?"Profile":"@"+uname,"");
   const posts=allPosts().filter(p=>p.author===uname);
-  const followers = isMe ? Object.values(SEED.users).filter(x=>false).length : u.followers.length + (S.follows.includes(uname)?1:0);
-  const iFollow=S.follows.includes(uname);
-  const mutual = !isMe && iFollow && (u.following||[]).includes(S.me);
-  const online = uname===CONFIG.ADMIN || uname===S.me;
-  const ranksHTML = Object.entries(u.ranks||{}).map(([t,r])=>`<span class="rankchip"><b>#${r}</b> ${esc(t)}</span>`).join("");
-  const wave = Array.from({length:34},(_,i)=>`<i style="height:${5+Math.abs(Math.sin(i*1.7))*19}px"></i>`).join("");
-  $("#content").innerHTML = `
-  <div class="profilecard">
-    <div class="banner"></div>
+  const followers=(u.followers||[]).length+((!isMe&&S.follows.includes(uname))?1:0);
+  const iF=S.follows.includes(uname);
+  const mutual=!isMe&&iF&&(u.following||[]).includes(S.me);
+  const online=uname===CONFIG.ADMIN||uname===S.me;
+  const ranks=Object.entries(u.ranks||{}).map(([t,r])=>`<span class="rankchip"><b>#${r}</b> ${esc(t)}</span>`).join("");
+  const wave=Array.from({length:36},(_,i)=>`<i style="height:${5+Math.abs(Math.sin(i*1.7))*19}px"></i>`).join("");
+  $("#content").innerHTML=`
+  <div class="pcard">
+    <div class="pbanner" style="background:linear-gradient(120deg,${userColor(uname)},var(--accent2) 60%,#000a)"></div>
     <div class="pbody">
-      <span class="pfp-ring">${u.pfp||(isMe&&S.profile.pfp)?`<img class="avatar" src="${esc(isMe?S.profile.pfp:u.pfp)}" width="90" height="90" style="border:3px solid var(--bg2)" onerror="this.outerHTML=genAv('${esc(uname)}',90)">`:genAv(uname,90)}</span>
-      <div style="display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap">
+      <span class="ring">${(isMe?S.profile.pfp:u.pfp)?`<img class="av" src="${esc(isMe?S.profile.pfp:u.pfp)}" width="90" height="90" style="border:3px solid var(--card)" onerror="this.outerHTML=genAv('${esc(uname)}',90)">`:genAv(uname,90)}</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">
         <h2 style="font-size:21px">@${esc(uname)}</h2>
-        ${u.seal?'<span class="badge seal">⭐ ANDROBEET SEAL</span>':""}
-        ${mutual?'<span class="badge mutual">⇄ MUTUAL</span>':""}
-        ${online?'<span style="color:var(--green); font-size:12.5px; font-weight:700">● online</span>':'<span class="muted">○ offline</span>'}
+        ${u.seal?`<span class="badge seal">${ic("seal")} ${CONFIG.ADMIN_DISPLAY} SEAL</span>`:""}
+        ${mutual?'<span class="badge mut">MUTUAL</span>':""}
         ${uname===CONFIG.ADMIN?'<span class="badge seal">ADMIN</span>':""}
+        ${online?'<span style="color:var(--green);font-size:12px;font-weight:700">● online</span>':'<span class="muted">○ offline</span>'}
       </div>
-      ${u.streak&&u.streak.count>0?`<div style="margin-top:8px"><span class="badge streak">🔥 ${u.streak.count}-day streak ${u.streak.tier!=="—"?"· "+u.streak.tier:""}</span></div>`:""}
-      <p style="margin-top:12px; color:var(--text2); line-height:1.65; max-width:520px">${esc(u.bio)}</p>
-      ${u.voice?`<div class="voicecard">
-        <button class="playbtn" id="vplay" onclick="playVoice('${esc(uname)}')">▶</button>
-        <div class="wavebar">${wave}</div>
-        <span class="muted">voice card · 0:06</span>
-      </div>`:""}
-      <div class="tagrow">${(u.tags||[]).map(t=>`<span class="topicchip" onclick="nav('#/topic/${esc(t)}')">#${esc(t)}</span>`).join("")}
-        ${isMe?`<span class="topicchip" style="cursor:pointer" onclick="nav('#/settings')">＋ add</span>`:""}</div>
-      <div class="statrow">
-        <div class="stat"><b>${followers}</b><span>followers</span></div>
-        <div class="stat"><b>${(isMe?S.follows:u.following||[]).length}</b><span>following</span></div>
-        <div class="stat"><b>${posts.length}</b><span>posts</span></div>
-        <div class="stat"><b>${u.echoes||0}</b><span>echoes</span></div>
-        <div class="stat"><b>${u.resonance||0}</b><span>resonance</span></div>
-        <div class="stat"><b>${u.pioneer||0}</b><span>pioneer</span></div>
+      ${u.streak&&u.streak.count>0?`<div style="margin-top:9px"><span class="badge strk">${ic("flame")} ${u.streak.count}-day streak${u.streak.tier!=="—"?" · "+u.streak.tier:""}</span></div>`:""}
+      <p style="margin-top:13px;color:var(--text2);line-height:1.7;max-width:560px">${esc(u.bio)}</p>
+      ${u.voice?`<div class="voice"><button class="playb" onclick="playVoice()">${ic("play",17)}</button><div class="wave">${wave}</div><span class="muted">voice card · 0:06</span></div>`:""}
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:14px">
+        ${(u.tags||[]).map(t=>`<span class="chip" onclick="nav('#/topic/${esc(t)}')">#${esc(t)}</span>`).join("")}
+        ${isMe?`<span class="chip" onclick="nav('#/settings')">${ic("plus",12)} add</span>`:""}
       </div>
-      ${ranksHTML?`<div class="muted" style="margin-bottom:4px">TOPIC RANKS</div><div class="ranks">${ranksHTML}</div>`:""}
-      <div style="display:flex; gap:10px; margin-top:18px">
-        ${isMe?`<button class="btn" onclick="nav('#/settings')">Edit profile</button>`:`
-          <button class="btn ${iFollow?"ghost":""}" onclick="toggleFollow('${esc(uname)}')">${iFollow?"Following ✓":"+ Follow"}</button>
-          <button class="btn ghost" onclick="nav('#/dms')">✉ Message</button>`}
+      <div class="pstats">
+        <div class="pstat"><b>${followers}</b><span>FOLLOWERS</span></div>
+        <div class="pstat"><b>${(isMe?S.follows:u.following||[]).length}</b><span>FOLLOWING</span></div>
+        <div class="pstat"><b>${posts.length}</b><span>POSTS</span></div>
+        <div class="pstat"><b>${u.echoes||0}</b><span>ECHOES</span></div>
+        <div class="pstat"><b>${u.pioneer||0}</b><span>PIONEER</span></div>
       </div>
-      <div class="muted" style="margin-top:14px">Joined ${esc(u.joined||"recently")}</div>
+      ${ranks?`<div class="muted" style="margin:10px 0 6px">TOPIC RANKS</div><div style="display:flex;gap:8px;flex-wrap:wrap">${ranks}</div>`:""}
+      <div style="display:flex;gap:10px;margin-top:20px">
+        ${isMe?`<button class="btn" onclick="nav('#/settings')">Edit profile</button>${LIVE&&S.token?`<button class="btn ghost" onclick="logout()">${ic("logout",16)} Log out</button>`:""}`
+        :`<button class="btn ${iF?"ghost":""}" onclick="toggleFollow('${esc(uname)}')">${iF?"Following ✓":"Follow"}</button>
+          <button class="btn ghost" onclick="nav('#/dms')">${ic("msg",16)} Message</button>`}
+      </div>
+      <div class="muted" style="margin-top:15px">Joined ${esc(u.joined||"recently")}</div>
     </div>
   </div>
-  <div class="tabs"><button class="tab active">Posts</button></div>
-  ${posts.map(p=>postCard(p)).join("")||`<div class="empty"><span class="big">✒</span>${isMe?"Your Lore is unwritten. <br><span class='link' onclick='openCompose()'>Write your first post →</span>":"No posts yet."}</div>`}`;
+  ${posts.map(p=>postCard(p)).join("")||`<div class="empty">${ic("doc")}${isMe?"Your Lore is unwritten.<br><span class='link' onclick='openCompose()'>Write your first post →</span>":"No posts yet."}</div>`}`;
 }
 function toggleFollow(u){
+  if(requireLogin())return;
   const i=S.follows.indexOf(u);
-  if(i>=0){S.follows.splice(i,1); toast("Unfollowed @"+u);} else {S.follows.push(u); toast("Following @"+u+" ✓");}
-  save(); render();
-  if(LIVE) api("/follow",{target:u});
+  if(i>=0){S.follows.splice(i,1);toast("Unfollowed @"+u);}else{S.follows.push(u);toast("Following @"+u);}
+  save();render();
+  if(LIVE)api("/follow",{target:u});
 }
-let voiceCtx=null;
+let actx=null;
 function playVoice(){
-  // demo voice card: a short synth chime via WebAudio (no files needed)
   try{
-    voiceCtx=voiceCtx||new (window.AudioContext||window.webkitAudioContext)();
-    const now=voiceCtx.currentTime;
+    actx=actx||new(window.AudioContext||window.webkitAudioContext)();
+    const now=actx.currentTime;
     [220,277,330,440].forEach((f,i)=>{
-      const o=voiceCtx.createOscillator(), g=voiceCtx.createGain();
-      o.frequency.value=f; o.type="sine";
-      g.gain.setValueAtTime(0.0001,now+i*0.16); g.gain.exponentialRampToValueAtTime(0.12,now+i*0.16+0.03); g.gain.exponentialRampToValueAtTime(0.0001,now+i*0.16+0.5);
-      o.connect(g).connect(voiceCtx.destination); o.start(now+i*0.16); o.stop(now+i*0.16+0.55);
+      const o=actx.createOscillator(),g=actx.createGain();
+      o.frequency.value=f;o.type="sine";
+      g.gain.setValueAtTime(0.0001,now+i*0.16);g.gain.exponentialRampToValueAtTime(0.12,now+i*0.16+0.03);g.gain.exponentialRampToValueAtTime(0.0001,now+i*0.16+0.5);
+      o.connect(g).connect(actx.destination);o.start(now+i*0.16);o.stop(now+i*0.16+0.55);
     });
-    toast("▶ playing voice card");
-  }catch(e){ toast("Voice cards play audio from any URL (Catbox/Discord CDN)"); }
+    toast("Playing voice card");
+  }catch(e){toast("Voice cards play audio from any URL");}
 }
 
-routes.communities = ()=>{
-  header("Communities","circles within the Lore");
-  $("#content").innerHTML = `<div class="commgrid">`+SEED.communities.map(c=>{
-    const joined=S.joined.includes(c.name);
-    return `<div class="card" style="margin:0">
-      <div style="font-size:16.5px; font-weight:800">◉ ${esc(c.name)}</div>
-      <div class="muted" style="margin:8px 0 12px; line-height:1.55">${esc(c.desc)}</div>
-      <div class="muted">${c.members.length+(joined?1:0)} members · ${c.posts} posts</div>
-      <button class="btn sm ${joined?"ghost":""}" style="margin-top:12px" onclick="toggleJoin('${esc(c.name)}')">${joined?"Joined ✓":"Join"}</button>
+routes.communities=()=>{
+  head("Communities","circles within the Lore");
+  $("#content").innerHTML=`<div class="grid2">`+SEED.communities.map(c=>{
+    const j=S.joined.includes(c.name);
+    return`<div class="card hov" style="margin:0">
+      <div style="font-size:16px;font-weight:800">${esc(c.name)}</div>
+      <div class="muted" style="margin:8px 0 12px;line-height:1.6">${esc(c.desc)}</div>
+      <div class="muted">${c.members.length+(j?1:0)} members · ${c.posts} posts</div>
+      <button class="btn sm ${j?"ghost":""}" style="margin-top:13px" onclick="toggleJoin('${esc(c.name)}')">${j?"Joined ✓":"Join"}</button>
     </div>`;}).join("")+`</div>
-    <div class="card" style="margin-top:16px; text-align:center">
+    <div class="card" style="margin-top:16px;text-align:center">
       <div class="muted">Communities are JSON files in the data repo — members post, everyone reads.</div>
-      <button class="btn ghost sm" style="margin-top:8px" onclick="toast('Community creation opens after Worker connect (Settings → Go Live)')">＋ Create community</button>
+      <button class="btn ghost sm" style="margin-top:10px" onclick="toast('Community creation opens in live mode')">${ic("plus",15)} Create community</button>
     </div>`;
 };
 function toggleJoin(n){
+  if(requireLogin())return;
   const i=S.joined.indexOf(n);
-  if(i>=0){S.joined.splice(i,1);} else {S.joined.push(n); toast("Joined ◉ "+n);}
-  save(); render();
-  if(LIVE) api("/join-community",{community:n});
+  if(i>=0)S.joined.splice(i,1);else{S.joined.push(n);toast("Joined "+n);}
+  save();render();
+  if(LIVE)api("/join-community",{community:n});
 }
 
-routes.search = ()=>{
-  header("Search","find people & posts");
-  $("#content").innerHTML = `
-    <div class="searchbox"><input id="q" placeholder="Search @usernames or post text…" oninput="doSearch()" autofocus></div>
-    <div id="results">${searchResults("")}</div>`;
-  setTimeout(()=>$("#q")&&$("#q").focus(),50);
+routes.search=()=>{
+  head("Search","find people & posts");
+  const q0=sessionStorage.getItem("q")||"";sessionStorage.removeItem("q");
+  $("#content").innerHTML=`
+    <div style="position:relative;margin-bottom:18px">
+      <input id="q" placeholder="Search @usernames or post text…" value="${esc(q0)}" oninput="doSearch()" style="padding-left:42px">
+      <span style="position:absolute;left:14px;top:12px;color:var(--muted)">${ic("search",18)}</span>
+    </div>
+    <div id="results"></div>`;
+  doSearch();
+  setTimeout(()=>$("#q")&&$("#q").focus(),60);
 };
-function doSearch(){ $("#results").innerHTML=searchResults($("#q").value.trim().toLowerCase()); }
-function searchResults(q){
-  const users=Object.keys(SEED.users).concat([S.me]).filter(u=>u.toLowerCase().includes(q.replace("@","")));
+function doSearch(){
+  const q=($("#q")?.value||"").trim().toLowerCase();
+  const users=Object.keys(SEED.users).concat(SEED.users[S.me]?[]:[S.me]).filter(u=>u.toLowerCase().includes(q.replace("@","")));
   const posts=q?allPosts().filter(p=>p.text.toLowerCase().includes(q)||p.topic.toLowerCase().includes(q)):[];
-  let html=`<div class="muted" style="margin-bottom:10px">PEOPLE</div>`;
-  html+=users.map(u=>`<div class="card" style="display:flex; align-items:center; gap:13px; padding:13px 16px; cursor:pointer" onclick="nav('#/u/${esc(u)}')">
-    ${avatarHTML(u,42)}
-    <div><b>@${esc(u)}</b> ${SEED.users[u]?.seal?'<span class="badge seal">⭐</span>':""}
-    <div class="muted" style="margin-top:3px">${esc((getUser(u)?.bio||"").slice(0,70))}…</div></div>
-    <span style="margin-left:auto" class="link">view →</span>
+  let h=`<h3 style="font-size:12px;letter-spacing:1.4px;color:var(--muted);margin-bottom:10px">PEOPLE</h3>`;
+  h+=users.map(u=>`<div class="card hov" style="display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer" onclick="nav('#/u/${esc(u)}')">
+    ${avatarHTML(u,44)}
+    <div style="min-width:0"><b>@${esc(u)}</b> ${SEED.users[u]?.seal?`<span class="badge seal">${ic("seal")}</span>`:""}
+    <div class="muted" style="margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc((getUser(u)?.bio||""))}</div></div>
+    <span style="margin-left:auto;flex-shrink:0" class="link">view</span>
   </div>`).join("")||`<div class="muted">No users match.</div>`;
-  if(q) html+=`<div class="muted" style="margin:16px 0 10px">POSTS</div>`+(posts.map(p=>postCard(p)).join("")||`<div class="muted">No posts match.</div>`);
-  return html;
+  if(q)h+=`<h3 style="font-size:12px;letter-spacing:1.4px;color:var(--muted);margin:18px 0 10px">POSTS</h3>`+(posts.map(p=>postCard(p)).join("")||`<div class="muted">No posts match.</div>`);
+  $("#results").innerHTML=h;
 }
 
-routes.notifications = ()=>{
-  header("Notifications","");
-  const icons={follow:"👤",upvote:"▲",comment:"💬",seal:"⭐",rank_change:"📈",mention:"@"};
+routes.notifications=()=>{
+  head("Activity","what's happening around you");
+  const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg"};
   const msg=n=>{
-    if(n.type==="follow")return `<b>@${n.from}</b> started following you`;
-    if(n.type==="upvote")return `<b>@${n.from}</b> upvoted your post`;
-    if(n.type==="comment")return `<b>@${n.from}</b> replied: “${esc(n.snippet)}”`;
-    if(n.type==="seal")return `<b>@${n.from}</b> awarded your post the <b>Androbeet Seal</b> ⭐`;
-    if(n.type==="rank_change")return `You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${n.topic} 🔥`;
-    return "activity";
-  };
-  $("#content").innerHTML = `
-    <div style="display:flex; justify-content:flex-end; margin-bottom:12px"><button class="btn ghost sm" onclick="S.readNotifs=true;save();render()">Mark all read</button></div>
-    ${SEED.notifications.map(n=>`<div class="notifrow ${(!n.read&&!S.readNotifs)?"unread":""}">
-      <span style="font-size:18px">${icons[n.type]||"•"}</span>
-      <div>${msg(n)}<div class="t">${timeAgo(n.ts)}</div></div>
+    if(n.type==="follow")return`<b>@${n.from}</b> started following you`;
+    if(n.type==="upvote")return`<b>@${n.from}</b> upvoted your post`;
+    if(n.type==="comment")return`<b>@${n.from}</b> replied: “${esc(n.snippet)}”`;
+    if(n.type==="seal")return`<b>${CONFIG.ADMIN_DISPLAY}</b> awarded your post the <b>Seal</b>`;
+    if(n.type==="rank_change")return`You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${n.topic}`;
+    return"activity";};
+  $("#content").innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn ghost sm" onclick="S.readNotifs=true;save();render()">Mark all read</button></div>
+    ${SEED.notifications.map(n=>`<div class="nrow ${(!n.read&&!S.readNotifs)?"unread":""}">
+      <span class="ni">${ic(icon[n.type]||"doc",17)}</span>
+      <div>${msg(n)}<div class="tm">${timeAgo(n.ts)} ago</div></div>
     </div>`).join("")}`;
 };
 
-routes.dms = ()=>{
-  header("Messages","private threads");
-  $("#content").innerHTML = `
-    <div class="notice"><b>DMs go live with the Worker.</b> Message threads are stored in a separate <b>private</b> GitHub repo — only the Worker can read/write them, and it validates that you're one of the two participants. Polling every 5s makes it feel near-real-time, at $0.</div>
-    ${["nyxwrites","sable"].map(u=>`<div class="card" style="display:flex; gap:13px; align-items:center; cursor:pointer; opacity:.75" onclick="toast('Connect your Worker in Settings → Go Live to start messaging')">
+routes.dms=()=>{
+  head("Messages","private threads");
+  $("#content").innerHTML=`
+    <div class="notice"><b>DMs go live with the Worker.</b> Threads are stored in a separate <b>private</b> repo — only the Worker can read/write them, and it validates you're a participant. Polling every 5s ≈ near-real-time, at $0.</div>
+    ${["nyxwrites","sable"].map(u=>`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer;opacity:.8" onclick="toast('Connect the Worker (Settings → Go Live) to start messaging')">
       ${avatarHTML(u,44)}
       <div><b>@${u}</b><div class="muted" style="margin-top:3px">Tap to start a thread…</div></div>
-      <span style="margin-left:auto" class="muted">🔒</span>
+      <span style="margin-left:auto;color:var(--muted)">${ic("msg",18)}</span>
     </div>`).join("")}`;
 };
 
-routes.settings = ()=>{
-  header("Settings","make the Lore yours");
-  const themes=[["maroon","Maroon Glow","#1a0505","#c41e3a"],["mono","Monochrome","#000000","#ffffff"],["light","Light","#ffffff","#8b0000"]];
-  $("#content").innerHTML = `
-  <div class="card"><h2 style="font-size:16px; margin-bottom:14px">🎨 Theme</h2>
-    <div class="themegrid">${themes.map(([id,name,bg,ac])=>`
-      <div class="themeopt ${S.theme===id?"active":""}" onclick="setTheme('${id}')">
-        <div class="swatch" style="background:${bg}"><div style="position:absolute;left:10px;top:10px;right:10px;height:8px;border-radius:4px;background:${ac}"></div><div style="position:absolute;left:10px;top:26px;width:60%;height:6px;border-radius:3px;background:${id==="light"?"#999":"#fff"};opacity:.6"></div></div>
-        <b style="font-size:13px">${name}</b>${id==="maroon"?'<div class="muted">default</div>':""}
+routes.settings=()=>{
+  head("Settings","make the Lore yours");
+  const TH=[
+    ["maroon","Maroon Glow","#0c0205","#e63956","Power & intimacy — the signature LORE look."],
+    ["obsidian","Obsidian","#000000","#ffffff","Pure focus. Zero color, zero distraction."],
+    ["ivory","Ivory","#f4f1ee","#a01535","Daylight clarity for long reading sessions."],
+    ["nocturne","Nocturne","#050a14","#4da6ff","Deep-blue calm — trusted by every late-night mind."],
+    ["velvet","Royal Velvet","#0b0612","#b27aff","Purple & gold — luxury, creativity, royalty."]];
+  $("#content").innerHTML=`
+  <div class="card"><h2 style="font-size:16px;margin-bottom:15px">Theme</h2>
+    <div class="thgrid">${TH.map(([id,nm,bg,ac,psy])=>`
+      <div class="thopt ${S.theme===id?"on":""}" onclick="setTheme('${id}')">
+        <div class="thsw" style="background:${bg}">
+          <div style="position:absolute;left:10px;top:10px;right:34%;height:9px;border-radius:5px;background:${ac}"></div>
+          <div style="position:absolute;left:10px;top:27px;width:55%;height:6px;border-radius:3px;background:${id==="ivory"?"#9b8a94":"#ffffff88"}"></div>
+          <div style="position:absolute;left:10px;top:39px;width:38%;height:6px;border-radius:3px;background:${id==="ivory"?"#cabcc4":"#ffffff44"}"></div>
+        </div>
+        <div class="thname">${nm}${id==="maroon"?' <span class="muted">· default</span>':""}</div>
+        <div class="thpsy">${psy}</div>
       </div>`).join("")}</div>
   </div>
-  <div class="card"><h2 style="font-size:16px; margin-bottom:14px">◈ Profile</h2>
-    <div class="field"><label>USERNAME</label><input id="f_name" value="${esc(S.me)}" ${S.me!=="you"?"":""} placeholder="pick a username"></div>
+  <div class="card"><h2 style="font-size:16px;margin-bottom:15px">Profile</h2>
+    <div class="field"><label>USERNAME</label><input id="f_name" value="${esc(S.me)}" ${LIVE&&S.token?"disabled":""} placeholder="pick a username"></div>
     <div class="field"><label>BIO</label><textarea id="f_bio" rows="3">${esc(S.profile.bio)}</textarea></div>
-    <div class="field"><label>PFP URL <span style="font-weight:400">(Imgur / Catbox / any image link)</span></label><input id="f_pfp" value="${esc(S.profile.pfp)}" placeholder="https://i.imgur.com/…"></div>
-    <div class="field"><label>VOICE CARD URL <span style="font-weight:400">(mp3/ogg link — Catbox.moe is free & permanent)</span></label><input id="f_voice" value="${esc(S.profile.voice)}" placeholder="https://files.catbox.moe/….mp3"></div>
+    <div class="field"><label>PFP URL (IMGUR / CATBOX / ANY IMAGE LINK)</label><input id="f_pfp" value="${esc(S.profile.pfp)}" placeholder="https://i.imgur.com/…"></div>
+    <div class="field"><label>VOICE CARD URL (MP3/OGG — CATBOX.MOE IS FREE & PERMANENT)</label><input id="f_voice" value="${esc(S.profile.voice)}" placeholder="https://files.catbox.moe/….mp3"></div>
     <div class="field"><label>INTEREST TAGS</label>
-      <div class="tagrow">${SEED.tags.map(t=>`<span class="topicchip" style="cursor:pointer; ${S.profile.tags.includes(t)?"background:var(--accent); color:#fff; border-color:var(--accent)":""}" onclick="toggleTag('${esc(t)}')">#${esc(t)}</span>`).join("")}
-      <span class="topicchip" onclick="requestTag()">＋ request new</span></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">${SEED.tags.map(t=>`<span class="chip" style="${S.profile.tags.includes(t)?"background:var(--accent);color:var(--acc-ink)":""}" onclick="toggleTag('${esc(t)}')">#${esc(t)}</span>`).join("")}
+      <span class="chip" onclick="requestTag()">${ic("plus",12)} request new</span></div>
     </div>
     <button class="btn" onclick="saveProfile()">Save profile</button>
   </div>
-  <div class="card"><h2 style="font-size:16px; margin-bottom:10px">🚀 Go Live</h2>
-    <p class="muted" style="line-height:1.7">This build ships in <b>demo mode</b> — perfect for GitHub Pages with zero setup. To switch on the real shared backend:</p>
-    <ol style="font-size:13px; color:var(--text2); line-height:2; margin:10px 0 0 20px">
-      <li>Deploy <b>worker/worker.js</b> (in this repo) to Cloudflare Workers — free tier.</li>
-      <li>Create a public <b>lore-data</b> repo (seed files are in <b>data/</b> here).</li>
-      <li>Open <b>index.html</b>, fill in <b>CONFIG.WORKER_URL</b> and <b>CONFIG.DATA_BASE</b>.</li>
-      <li>Push. Done — full deploy guide in the README.</li>
+  <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Account</h2>
+    ${LIVE?(S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn ghost sm" style="margin-top:10px" onclick="logout()">${ic("logout",15)} Log out</button>`
+      :`<p class="muted">You're browsing as a guest.</p><button class="btn sm" style="margin-top:10px" onclick="openAuth()">Log in / Create account</button>`)
+      :`<p class="muted">Accounts activate in live mode (see Go Live below). In demo mode you are <b>@${esc(S.me)}</b> locally.</p>`}
+  </div>
+  <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Go Live</h2>
+    <p class="muted" style="line-height:1.8">This build ships in <b>demo mode</b>. To switch on the real shared backend (accounts, shared posts):</p>
+    <ol style="font-size:13px;color:var(--text2);line-height:2.1;margin:10px 0 0 20px">
+      <li>Deploy <b>worker/worker.js</b> to Cloudflare Workers (free)</li>
+      <li>Create a public <b>lore-data</b> repo (seed files in <b>data/</b>)</li>
+      <li>Fill <b>CONFIG.WORKER_URL</b> + <b>CONFIG.DATA_BASE</b> in index.html</li>
+      <li>Full walkthrough: <b>docs/GO-LIVE-AND-ADMIN.md</b></li>
     </ol>
   </div>
-  <div class="card"><h2 style="font-size:16px; margin-bottom:10px">👤 Account</h2>
-    ${LIVE?(S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn ghost sm" style="margin-top:10px" onclick="logout()">Log out</button>`:`<p class="muted">You're browsing as a guest.</p><button class="btn sm" style="margin-top:10px" onclick="openAuth()">Log in / Create account</button>`):`<p class="muted">Accounts activate in live mode (see "Go Live" above). In demo mode you're <b>@${esc(S.me)}</b> locally.</p>`}
+  <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Admin</h2>
+    <p class="muted" style="line-height:1.8">Moderation (logs, bans, Seal awards) is restricted to <b>${CONFIG.ADMIN_DISPLAY}</b> and verified server-side. ${S.me===CONFIG.ADMIN?`<span class="link" onclick="nav('#/admin')">Open dashboard →</span>`:"You are not the admin."}</p>
   </div>
-  <div class="card"><h2 style="font-size:16px; margin-bottom:10px">🛡 Admin</h2>
-    <p class="muted" style="line-height:1.7">The moderation dashboard (activity logs, sus-activity flags, reports, bans, Seal awards) is restricted to <b>@${CONFIG.ADMIN}</b> and double-checked server-side by the Worker. ${S.me===CONFIG.ADMIN?'<span class="link" onclick="nav(\'#/admin\')">Open dashboard →</span>':"You are not the admin."}</p>
-  </div>
-  <div class="card" style="text-align:center"><span class="muted">LORE · built on GitHub, $0 forever · support: <a class="link" href="mailto:${CONFIG.SUPPORT}">${CONFIG.SUPPORT}</a></span></div>`;
+  <div class="card" style="text-align:center"><span class="muted">LORE · built on GitHub · $0 forever · <a class="link" href="mailto:${CONFIG.SUPPORT}">${CONFIG.SUPPORT}</a></span></div>`;
 };
-function setTheme(t){ S.theme=t; save(); document.body.dataset.theme=t; render(); }
-function toggleTag(t){
-  const i=S.profile.tags.indexOf(t);
-  if(i>=0)S.profile.tags.splice(i,1); else S.profile.tags.push(t);
-  save(); render();
-}
+function setTheme(t){S.theme=t;save();document.body.dataset.theme=t;
+  document.querySelector('meta[name="theme-color"]').content=getComputedStyle(document.body).getPropertyValue("--bg2").trim()||"#13040a";render();}
+function toggleTag(t){const i=S.profile.tags.indexOf(t);if(i>=0)S.profile.tags.splice(i,1);else S.profile.tags.push(t);save();render();}
 function saveProfile(){
-  const name=$("#f_name").value.trim().toLowerCase().replace(/[^a-z0-9_]/g,"");
-  if(name) S.me=name;
+  if(!(LIVE&&S.token)){const n=$("#f_name").value.trim().toLowerCase().replace(/[^a-z0-9_]/g,"");if(n)S.me=n;}
   S.profile.bio=$("#f_bio").value.trim();
   S.profile.pfp=$("#f_pfp").value.trim();
   S.profile.voice=$("#f_voice").value.trim();
-  save(); toast("Profile saved ✓"); render();
-  if(LIVE) api("/update-profile",{...S.profile,username:S.me});
+  save();toast("Profile saved");render();
+  if(LIVE&&S.token)api("/update-profile",{bio:S.profile.bio,pfp:S.profile.pfp,voice:S.profile.voice,tags:S.profile.tags,theme:S.theme});
+}
+
+/* ============ ADMIN ============ */
+routes.admin=()=>{
+  if(S.me!==CONFIG.ADMIN){head("Admin");$("#content").innerHTML=`<div class="empty">${ic("shield")}Admins only. This area belongs to ${CONFIG.ADMIN_DISPLAY}.<br><span class="muted">(The Worker double-checks server-side — nice try.)</span></div>`;return;}
+  head("Admin","ANDROBEET command center");
+  const users=Object.keys(SEED.users);
+  $("#content").innerHTML=`
+    ${LIVE?"":`<div class="notice"><b>Demo preview.</b> In live mode these call the Worker's /admin endpoints for real.</div>`}
+    <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("seal")} Award ${CONFIG.ADMIN_DISPLAY} Seal</h2>
+      <div style="display:flex;gap:8px"><input id="ad_seal" placeholder="username or post id"><button class="btn sm" onclick="adminAct('seal')">Award</button></div></div>
+    <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("shield",16)} Ban / Shadowban</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="ad_ban" placeholder="username" style="flex:1;min-width:150px">
+      <button class="btn sm" onclick="adminAct('ban')">Toggle ban</button>
+      <button class="btn ghost sm" onclick="adminAct('shadowban')">Toggle shadowban</button></div>
+      <p class="muted" style="margin-top:10px">Ban = all actions rejected. Shadowban = their posts visible only to themselves.</p></div>
+    <div class="card"><h2 style="font-size:15px;margin-bottom:12px">Users (${users.length})</h2>
+      ${users.map(u=>`<div style="display:flex;align-items:center;gap:11px;padding:9px 0;border-top:1px solid var(--border)">
+        ${avatarHTML(u,32)}<b style="cursor:pointer" onclick="nav('#/u/${u}')">@${u}</b>
+        ${SEED.users[u].seal?`<span class="badge seal">${ic("seal")}</span>`:""}
+        <span class="muted" style="margin-left:auto">joined ${SEED.users[u].joined}</span></div>`).join("")}</div>
+    <div class="card"><h2 style="font-size:15px;margin-bottom:11px">Activity log</h2>
+      <p class="muted">Live mode: every signup, login, post, vote and admin action lands in <b>admin/logs/&lt;date&gt;.json</b> in lore-data — open it on GitHub anytime. Failed logins flagged.</p></div>
+    <div class="card"><h2 style="font-size:15px;margin-bottom:11px">Reports queue</h2>
+      <p class="muted">User reports land in <b>data/admin/reports.json</b>. Review → delete the post file or shadowban.</p></div>`;
+};
+async function adminAct(kind){
+  const val=(kind==="seal"?$("#ad_seal"):$("#ad_ban")).value.trim().toLowerCase();
+  if(!val){toast("Enter a username first");return;}
+  if(!LIVE){toast("Demo: live mode would "+kind+" '"+val+"' for real");return;}
+  const d=kind==="seal"?await api("/admin/seal",val.startsWith("p_")?{post:val}:{target:val})
+                       :await api("/admin/ban",{target:val,mode:kind==="shadowban"?"shadowban":"ban"});
+  if(d&&d.ok)toast("Done: "+kind+" → "+val);
 }
 
 /* ============ COMPOSE ============ */
 function openCompose(topic){
-  if(requireLogin()) return;
+  if(requireLogin())return;
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
-      <h2>✒ Add to the Lore</h2>
-      <div class="field"><textarea id="c_text" rows="5" placeholder="What's on your mind, @${esc(S.me)}?" autofocus></textarea></div>
-      <div class="field"><label>TOPIC (required)</label>
+      <h2>${ic("plus",18)} Add to the Lore</h2>
+      <div class="field"><textarea id="c_text" rows="5" placeholder="What's on your mind, @${esc(S.me)}?"></textarea></div>
+      <div class="field"><label>TOPIC (REQUIRED)</label>
         <select id="c_topic">${SEED.tags.map(t=>`<option ${t===topic?"selected":""}>${esc(t)}</option>`).join("")}</select></div>
-      <div class="field"><label>IMAGE LINK (optional — Imgur/Catbox URL, we never store files)</label><input id="c_img" placeholder="https://…"></div>
-      <div style="display:flex; gap:10px; justify-content:flex-end">
+      <div class="field"><label>IMAGE LINK (OPTIONAL — IMGUR/CATBOX URL)</label><input id="c_img" placeholder="https://…"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
         <button class="btn ghost" onclick="closeModal()">Cancel</button>
         <button class="btn" onclick="submitPost()">Post</button>
       </div>
     </div></div>`;
-  setTimeout(()=>$("#c_text").focus(),50);
+  setTimeout(()=>$("#c_text").focus(),60);
 }
-function closeModal(){ $("#modalroot").innerHTML=""; }
+function closeModal(){$("#modalroot").innerHTML="";}
 function submitPost(){
   const text=$("#c_text").value.trim();
-  if(!text){ toast("Write something first"); return; }
-  const p={id:"my_"+Date.now(), author:S.me, topic:$("#c_topic").value, ts:Date.now(),
-    text, img:$("#c_img").value.trim(), up:[], down:[], shares:0, echo:"", pioneer:"", comments:[]};
-  S.myPosts.unshift(p); save(); closeModal();
-  nav("#/explore"); sessionStorage.setItem("exptab","New"); render();
-  toast("Posted — it's part of the Lore now ✓");
-  if(LIVE) api("/post",p);
-}
-
-/* ============ ADMIN DASHBOARD (@androbeet only) ============ */
-routes.admin = ()=>{
-  if(S.me!==CONFIG.ADMIN){ header("Admin"); $("#content").innerHTML=`<div class="empty"><span class="big">🛡</span>Admins only. This area belongs to @${CONFIG.ADMIN}.<br><span class="muted">(And the Worker double-checks server-side — nice try.)</span></div>`; return; }
-  header("🛡 Admin Dashboard","aNDROBEET only");
-  const users=Object.keys(SEED.users);
-  $("#content").innerHTML = `
-    ${LIVE?"":`<div class="notice"><b>Demo preview.</b> In live mode these buttons call the Worker's /admin endpoints for real bans, shadowbans and Seal awards.</div>`}
-    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">⭐ Award Androbeet Seal</h2>
-      <div style="display:flex; gap:8px"><input id="ad_seal" placeholder="username or post id"><button class="btn sm" onclick="adminAct('seal')">Award</button></div>
-    </div>
-    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">🔨 Ban / Shadowban</h2>
-      <div style="display:flex; gap:8px; flex-wrap:wrap"><input id="ad_ban" placeholder="username" style="flex:1; min-width:140px">
-      <button class="btn sm" onclick="adminAct('ban')">Toggle ban</button>
-      <button class="btn ghost sm" onclick="adminAct('shadowban')">Toggle shadowban</button></div>
-      <p class="muted" style="margin-top:10px">Ban = all actions rejected. Shadowban = their posts visible only to themselves.</p>
-    </div>
-    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">👥 Users (${users.length})</h2>
-      ${users.map(u=>`<div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid var(--border)">
-        ${avatarHTML(u,30)} <b style="cursor:pointer" onclick="nav('#/u/${u}')">@${u}</b>
-        ${SEED.users[u].seal?'<span class="badge seal">⭐</span>':""}
-        <span class="muted" style="margin-left:auto">joined ${SEED.users[u].joined}</span>
-      </div>`).join("")}
-    </div>
-    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">📋 Activity Log</h2>
-      <p class="muted">Live mode: every signup, login, post, vote and admin action is appended to <b>admin/logs/&lt;date&gt;.json</b> in your lore-data repo — open it on GitHub anytime. Failed logins are flagged too.</p>
-    </div>
-    <div class="card"><h2 style="font-size:16px; margin-bottom:12px">🚩 Reports queue</h2>
-      <p class="muted">User reports land in <b>data/admin/reports.json</b>. Review → delete the post file or shadowban the author.</p>
-    </div>`;
-};
-async function adminAct(kind){
-  const val=(kind==="seal"?$("#ad_seal"):$("#ad_ban")).value.trim().toLowerCase();
-  if(!val){ toast("Enter a username first"); return; }
-  if(!LIVE){ toast("Demo: in live mode this would "+kind+" '"+val+"' for real"); return; }
-  const d= kind==="seal" ? await api("/admin/seal", val.startsWith("p_")?{post:val}:{target:val})
-                         : await api("/admin/ban",{target:val, mode:kind==="shadowban"?"shadowban":"ban"});
-  if(d&&d.ok) toast("✓ done: "+kind+" → "+val);
+  if(!text){toast("Write something first");return;}
+  const p={id:"my_"+Date.now(),author:S.me,topic:$("#c_topic").value,ts:Date.now(),
+    text,img:$("#c_img").value.trim(),up:[],down:[],shares:0,echo:"",pioneer:"",comments:[]};
+  S.myPosts.unshift(p);save();closeModal();
+  sessionStorage.setItem("exptab","New");nav("#/explore");render();
+  toast("Posted — it's part of the Lore now");
+  if(LIVE)api("/post",{text:p.text,topic:p.topic,img:p.img});
 }
 
 /* ============ INIT ============ */
 document.body.dataset.theme=S.theme;
-if(!location.hash) location.hash="#/explore";
+if(!location.hash)location.hash="#/explore";
 render();
-// PWA: register service worker (makes LORE installable + work offline)
-if("serviceWorker" in navigator && location.protocol==="https:")
+if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a287fc5cb86629',t:'MTc4MTIwMDk5Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
