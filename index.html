@@ -476,7 +476,7 @@ function drawChrome(){
     <button class="newpost" onclick="openCompose()">${ic("plus",18)} NEW POST</button>
     <div class="mecard" onclick="nav('#/me')">
       ${avatarHTML(S.me,38)}
-      <div><div class="nm">@${esc(S.me)}</div><div class="hd">${LIVE?(S.token?"logged in":"guest"):"demo mode"}</div></div>
+      <div><div class="nm">@${esc(S.me)}</div><div class="hd">${S.token?"logged in":"guest"}</div></div>
     </div>`;
   $("#tabbar").innerHTML=[
     ["explore","Home","explore"],["topics","Topics","topics"],["__post","","plus"],
@@ -622,13 +622,18 @@ routes.explore=()=>{
   if(tab==="Rising")posts.sort((a,b)=>((b.up.length+b.comments.length)/Math.max(1,(Date.now()-b.ts)/36e5))-((a.up.length+a.comments.length)/Math.max(1,(Date.now()-a.ts)/36e5)));
   if(tab==="Random")posts.sort(()=>Math.random()-0.5);
   $("#content").innerHTML=`
-    ${LIVE?"":`<div class="notice"><b>Demo mode.</b> Sample data — your actions persist in this browser. Connect the Worker (<span class="link" onclick="nav('#/settings')">Settings → Go Live</span>) to switch on the shared database.</div>`}
     <div class="tabs">${["Hot","Rising","New","Random"].map(t=>`<button class="tab ${t===tab?"on":""}" onclick="sessionStorage.setItem('exptab','${t}');render()">${t}</button>`).join("")}</div>
     ${posts.map(p=>postCard(p)).join("")||`<div class="empty">${ic("explore")}No posts yet. Be the first page of the Lore.</div>`}`;
 };
 
 routes.post=(id)=>{
-  const p=allPosts().find(x=>x.id===id);
+  let p=allPosts().find(x=>x.id===id);
+  if(p&&p.live){ // live feed entry: fetch the full post (real comments/votes)
+    loadLivePost(id).then(full=>{
+      if(full){const i=SEED.posts.findIndex(x=>x.id===id);
+        if(i>=0)SEED.posts[i]={...full,live:false};render();}
+    });
+  }
   if(!p){head("Post");$("#content").innerHTML=`<div class="empty">${ic("doc")}This post isn't part of the Lore (yet).</div>`;return;}
   head("Post","by @"+p.author);
   $("#content").innerHTML=postCard(p,true)+`
@@ -718,7 +723,12 @@ function lbCard(){
 routes.u=(u)=>profilePage(u);
 routes.me=()=>profilePage(S.me);
 function profilePage(uname){
-  const u=getUser(uname);
+  let u=getUser(uname);
+  if(!u&&LIVE){ // try fetching from the live database
+    head("Profile");$("#content").innerHTML=`<div class="empty">Loading @${esc(uname)}…</div>`;
+    loadLiveUser(uname).then(x=>{if(x)render();else $("#content").innerHTML=`<div class="empty">${ic("user")}@${esc(uname)} isn't part of the Lore.</div>`;});
+    return;
+  }
   if(!u){head("Profile");$("#content").innerHTML=`<div class="empty">${ic("user")}@${esc(uname)} isn't part of the Lore.</div>`;return;}
   const isMe=uname===S.me;
   head(isMe?"Profile":"@"+uname,"");
@@ -799,8 +809,8 @@ routes.communities=()=>{
       <button class="btn sm ${j?"ghost":""}" style="margin-top:13px" onclick="toggleJoin('${esc(c.name)}')">${j?"Joined ✓":"Join"}</button>
     </div>`;}).join("")+`</div>
     <div class="card" style="margin-top:16px;text-align:center">
-      <div class="muted">Communities are JSON files in the data repo — members post, everyone reads.</div>
-      <button class="btn ghost sm" style="margin-top:10px" onclick="toast('Community creation opens in live mode')">${ic("plus",15)} Create community</button>
+      <div class="muted">Want your own circle?</div>
+      <button class="btn ghost sm" style="margin-top:10px" onclick="toast('Community creation is coming soon')">${ic("plus",15)} Create community</button>
     </div>`;
 };
 function toggleJoin(n){
@@ -825,7 +835,8 @@ routes.search=()=>{
 };
 function doSearch(){
   const q=($("#q")?.value||"").trim().toLowerCase();
-  const users=Object.keys(SEED.users).concat(SEED.users[S.me]?[]:[S.me]).filter(u=>u.toLowerCase().includes(q.replace("@","")));
+  const base=LIVEUSERS||Object.keys(SEED.users).concat(SEED.users[S.me]?[]:[S.me]);
+  const users=[...new Set(base)].filter(u=>u.toLowerCase().includes(q.replace("@",""))).slice(0,30);
   const posts=q?allPosts().filter(p=>p.text.toLowerCase().includes(q)||p.topic.toLowerCase().includes(q)):[];
   let h=`<h3 style="font-size:12px;letter-spacing:1.4px;color:var(--muted);margin-bottom:10px">PEOPLE</h3>`;
   h+=users.map(u=>`<div class="card hov" style="display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer" onclick="nav('#/u/${esc(u)}')">
@@ -859,8 +870,8 @@ routes.notifications=()=>{
 routes.dms=()=>{
   head("Messages","private threads");
   $("#content").innerHTML=`
-    <div class="notice"><b>DMs go live with the Worker.</b> Threads are stored in a separate <b>private</b> repo — only the Worker can read/write them, and it validates you're a participant. Polling every 5s ≈ near-real-time, at $0.</div>
-    ${["nyxwrites","sable"].map(u=>`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer;opacity:.8" onclick="toast('Connect the Worker (Settings → Go Live) to start messaging')">
+    <div class="notice"><b>Direct messages are coming soon.</b> Private, end-to-end thread storage — only you and the other person can read them.</div>
+    ${["nyxwrites","sable"].map(u=>`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer;opacity:.8" onclick="toast('DMs are coming soon')">
       ${avatarHTML(u,44)}
       <div><b>@${u}</b><div class="muted" style="margin-top:3px">Tap to start a thread…</div></div>
       <span style="margin-left:auto;color:var(--muted)">${ic("msg",18)}</span>
@@ -891,7 +902,18 @@ routes.settings=()=>{
   <div class="card"><h2 style="font-size:16px;margin-bottom:15px">Profile</h2>
     <div class="field"><label>USERNAME</label><input id="f_name" value="${esc(S.me)}" ${LIVE&&S.token?"disabled":""} placeholder="pick a username"></div>
     <div class="field"><label>BIO</label><textarea id="f_bio" rows="3">${esc(S.profile.bio)}</textarea></div>
-    <div class="field"><label>PFP URL (IMGUR / CATBOX / ANY IMAGE LINK)</label><input id="f_pfp" value="${esc(S.profile.pfp)}" placeholder="https://i.imgur.com/…"></div>
+    <div class="field"><label>PROFILE PICTURE</label>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <span id="pfp_prev">${S.profile.pfp?`<img class="av" src="${esc(S.profile.pfp)}" width="64" height="64" onerror="this.outerHTML=genAv('${esc(S.me)}',64)">`:genAv(S.me,64)}</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn ghost sm" onclick="$('#pfp_file').click()">Upload photo</button>
+          ${S.profile.pfp?`<button class="btn ghost sm" onclick="S.profile.pfp='';save();render();toast('Photo removed')">Remove</button>`:""}
+        </div>
+        <input type="file" id="pfp_file" accept="image/*" style="display:none" onchange="pickPfp(this)">
+      </div>
+      <div class="muted" style="margin-top:8px">Auto-cropped square & compressed. Or paste an image link below.</div>
+    </div>
+    <div class="field"><label>PFP URL (OPTIONAL — IMGUR / CATBOX / ANY IMAGE LINK)</label><input id="f_pfp" value="${esc(S.profile.pfp)}" placeholder="https://i.imgur.com/…"></div>
     <div class="field"><label>VOICE CARD URL (MP3/OGG — CATBOX.MOE IS FREE & PERMANENT)</label><input id="f_voice" value="${esc(S.profile.voice)}" placeholder="https://files.catbox.moe/….mp3"></div>
     <div class="field"><label>INTEREST TAGS</label>
       <div style="display:flex;gap:7px;flex-wrap:wrap">${SEED.tags.map(t=>`<span class="chip" style="${S.profile.tags.includes(t)?"background:var(--accent);color:var(--acc-ink)":""}" onclick="toggleTag('${esc(t)}')">#${esc(t)}</span>`).join("")}
@@ -900,24 +922,45 @@ routes.settings=()=>{
     <button class="btn" onclick="saveProfile()">Save profile</button>
   </div>
   <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Account</h2>
-    ${LIVE?(S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn ghost sm" style="margin-top:10px" onclick="logout()">${ic("logout",15)} Log out</button>`
-      :`<p class="muted">You're browsing as a guest.</p><button class="btn sm" style="margin-top:10px" onclick="openAuth()">Log in / Create account</button>`)
-      :`<p class="muted">Accounts activate in live mode (see Go Live below). In demo mode you are <b>@${esc(S.me)}</b> locally.</p>`}
+    ${S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn ghost sm" style="margin-top:10px" onclick="logout()">${ic("logout",15)} Log out</button>`
+      :`<p class="muted">You're browsing as a guest. Join to post, vote and build your Lore.</p><button class="btn sm" style="margin-top:10px" onclick="openAuth()">Log in / Create account</button>`}
   </div>
-  <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Go Live</h2>
-    <p class="muted" style="line-height:1.8">This build ships in <b>demo mode</b>. To switch on the real shared backend (accounts, shared posts):</p>
-    <ol style="font-size:13px;color:var(--text2);line-height:2.1;margin:10px 0 0 20px">
-      <li>Deploy <b>worker/worker.js</b> to Cloudflare Workers (free)</li>
-      <li>Create a public <b>lore-data</b> repo (seed files in <b>data/</b>)</li>
-      <li>Fill <b>CONFIG.WORKER_URL</b> + <b>CONFIG.DATA_BASE</b> in index.html</li>
-      <li>Full walkthrough: <b>docs/GO-LIVE-AND-ADMIN.md</b></li>
-    </ol>
-  </div>
-  <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Admin</h2>
-    <p class="muted" style="line-height:1.8">Moderation (logs, bans, Seal awards) is restricted to <b>${CONFIG.ADMIN_DISPLAY}</b> and verified server-side. ${S.me===CONFIG.ADMIN?`<span class="link" onclick="nav('#/admin')">Open dashboard →</span>`:"You are not the admin."}</p>
-  </div>
+  ${S.me===CONFIG.ADMIN?`<div class="card"><h2 style="font-size:16px;margin-bottom:12px">Admin</h2>
+    <p class="muted" style="line-height:1.8"><span class="link" onclick="nav('#/admin')">Open the ${CONFIG.ADMIN_DISPLAY} dashboard →</span></p>
+  </div>`:""}
   <div class="card" style="text-align:center"><span class="muted">LORE · built on GitHub · $0 forever · <a class="link" href="mailto:${CONFIG.SUPPORT}">${CONFIG.SUPPORT}</a></span></div>`;
 };
+/* ---- PFP upload: crop square → resize 256px → JPEG ≤110KB → Worker ---- */
+function pickPfp(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  if(!/^image\//.test(file.type)){toast("That's not an image");return;}
+  const img=new Image();
+  img.onload=async()=>{
+    URL.revokeObjectURL(img.src);
+    // center-crop to square
+    const side=Math.min(img.width,img.height);
+    const sx=(img.width-side)/2, sy=(img.height-side)/2;
+    const cv=document.createElement("canvas");cv.width=cv.height=256;
+    cv.getContext("2d").drawImage(img,sx,sy,side,side,0,0,256,256);
+    // compress down until under ~110KB binary (150K base64)
+    let q=0.9,dataUrl=cv.toDataURL("image/jpeg",q);
+    while(dataUrl.length>150_000&&q>0.3){q-=0.1;dataUrl=cv.toDataURL("image/jpeg",q);}
+    if(dataUrl.length>150_000){toast("Image too complex — try a simpler photo");return;}
+    if(LIVE&&S.token){
+      toast("Uploading…");
+      const d=await api("/upload-pfp",{image:dataUrl});
+      if(d&&d.ok){S.profile.pfp=d.url;save();render();toast("Profile picture updated");}
+    }else{
+      // not logged in / backend offline: store locally
+      S.profile.pfp=dataUrl;save();render();toast("Profile picture set");
+    }
+  };
+  img.onerror=()=>toast("Couldn't read that image");
+  img.src=URL.createObjectURL(file);
+  input.value="";
+}
+
 function setTheme(t){S.theme=t;save();document.body.dataset.theme=t;
   document.querySelector('meta[name="theme-color"]').content=getComputedStyle(document.body).getPropertyValue("--bg2").trim()||"#13040a";render();}
 function toggleTag(t){const i=S.profile.tags.indexOf(t);if(i>=0)S.profile.tags.splice(i,1);else S.profile.tags.push(t);save();render();}
@@ -936,7 +979,6 @@ routes.admin=()=>{
   head("Admin","ANDROBEET command center");
   const users=Object.keys(SEED.users);
   $("#content").innerHTML=`
-    ${LIVE?"":`<div class="notice"><b>Demo preview.</b> In live mode these call the Worker's /admin endpoints for real.</div>`}
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("seal")} Award ${CONFIG.ADMIN_DISPLAY} Seal</h2>
       <div style="display:flex;gap:8px"><input id="ad_seal" placeholder="username or post id"><button class="btn sm" onclick="adminAct('seal')">Award</button></div></div>
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("shield",16)} Ban / Shadowban</h2>
@@ -957,7 +999,7 @@ routes.admin=()=>{
 async function adminAct(kind){
   const val=(kind==="seal"?$("#ad_seal"):$("#ad_ban")).value.trim().toLowerCase();
   if(!val){toast("Enter a username first");return;}
-  if(!LIVE){toast("Demo: live mode would "+kind+" '"+val+"' for real");return;}
+  if(!LIVE){toast("Backend not connected yet");return;}
   const d=kind==="seal"?await api("/admin/seal",val.startsWith("p_")?{post:val}:{target:val})
                        :await api("/admin/ban",{target:val,mode:kind==="shadowban"?"shadowban":"ban"});
   if(d&&d.ok)toast("Done: "+kind+" → "+val);
@@ -992,9 +1034,56 @@ function submitPost(){
   if(LIVE)api("/post",{text:p.text,topic:p.topic,img:p.img});
 }
 
+/* ============ LIVE DATA LOADER ============ */
+let LIVEFEED=null, LIVEUSERS=null;
+async function loadLive(){
+  if(!LIVE)return;
+  try{
+    // bust jsDelivr cache hourly; fall back to raw for freshness
+    const raw="https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";
+    const[f,u,t]=await Promise.all([
+      fetch(raw+"/config/feed.json").then(r=>r.json()).catch(()=>null),
+      fetch(raw+"/config/userindex.json").then(r=>r.json()).catch(()=>null),
+      fetch(raw+"/config/tags.json").then(r=>r.json()).catch(()=>null)
+    ]);
+    if(Array.isArray(t)&&t.length)SEED.tags=t;
+    if(Array.isArray(u))LIVEUSERS=u;
+    if(Array.isArray(f)){
+      LIVEFEED=f;
+      // map live feed entries into post objects
+      SEED.posts=f.map(e=>({id:e.id,author:e.author,topic:e.topic,ts:e.ts,text:e.snippet,img:e.img||"",
+        up:Array(e.up||0).fill("·"),down:Array(e.down||0).fill("·"),shares:e.shares||0,
+        echo:e.echo||"",pioneer:"",comments:Array(e.comments||0).fill({a:"",t:"",ts:0}),live:true}));
+      render();
+    }
+  }catch(e){}
+}
+async function loadLivePost(id){
+  if(!LIVE)return null;
+  try{
+    const raw="https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";
+    return await fetch(raw+"/posts/"+id+".json").then(r=>r.json());
+  }catch(e){return null;}
+}
+async function loadLiveUser(name){
+  if(!LIVE)return null;
+  try{
+    const raw="https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";
+    const u=await fetch(raw+"/users/"+name+".json").then(r=>r.json());
+    if(u)SEED.users[name]={...u,color:userColor(name)};
+    return u;
+  }catch(e){return null;}
+}
+
 /* ============ INIT ============ */
 document.body.dataset.theme=S.theme;
 if(!location.hash)location.hash="#/explore";
+if(LIVE){
+  // live platform: real data only — clear the sample content
+  SEED.posts=[];SEED.users={androbeet:SEED.users.androbeet};
+  SEED.notifications=[];SEED.communities=[];
+  loadLive();setInterval(loadLive,30000); // refresh feed every 30s
+}
 render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
