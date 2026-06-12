@@ -549,8 +549,9 @@ function openAuth(mode){
         <button class="tab ${mode==="login"?"on":""}" onclick="openAuth('login')">Log in</button>
         <button class="tab ${mode==="signup"?"on":""}" onclick="openAuth('signup')">Create account</button>
       </div>
-      <div class="field"><label>USERNAME</label><input id="a_user" placeholder="a–z, 0–9, _ only" autocomplete="username"></div>
-      ${mode==="signup"?`<div class="field"><label>EMAIL</label><input id="a_email" type="email" placeholder="you@gmail.com" autocomplete="email"></div>`:""}
+      <div class="field"><label>USERNAME</label><input id="a_user" placeholder="a–z, 0–9, _ only" autocomplete="username" oninput="if(this.value.trim().toLowerCase()==='${CONFIG.ADMIN}'&&document.getElementById('a_keyrow'))document.getElementById('a_keyrow').style.display='block'"></div>
+      ${mode==="signup"?`<div class="field"><label>EMAIL</label><input id="a_email" type="email" placeholder="you@gmail.com" autocomplete="email"></div>
+      <div class="field" id="a_keyrow" style="display:none"><label>ADMIN CLAIM KEY</label><input id="a_key" type="password" placeholder="founder only"></div>`:""}
       <div class="field"><label>PASSWORD ${mode==="signup"?"(8+ CHARACTERS)":""}</label><input id="a_pass" type="password" autocomplete="${mode==="signup"?"new-password":"current-password"}" onkeydown="if(event.key==='Enter')submitAuth('${mode}')"></div>
       <button class="btn" style="width:100%" onclick="submitAuth('${mode}')">${mode==="signup"?"Join the Lore":"Log in"}</button>
       <div class="muted" style="margin-top:14px;text-align:center">Forgot password? ${CONFIG.SUPPORT}</div>
@@ -559,7 +560,7 @@ function openAuth(mode){
 }
 async function submitAuth(mode){
   const body={username:$("#a_user").value.trim(),password:$("#a_pass").value};
-  if(mode==="signup")body.email=$("#a_email").value.trim();
+  if(mode==="signup"){body.email=$("#a_email").value.trim();const k=$("#a_key");if(k&&k.value)body.adminKey=k.value;}
   const d=await api("/"+mode,body);
   if(d&&d.token){S.token=d.token;S.me=d.username;save();closeModal();
     toast(mode==="signup"?"Welcome to the Lore, @"+d.username:"Logged in as @"+d.username);render();}
