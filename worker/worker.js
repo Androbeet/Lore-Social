@@ -61,6 +61,8 @@ export default {
         case "/update-profile":  return await updateProfile(user, body, env);
         case "/upload-pfp":      return await uploadPfp(user, body, env);
         case "/message":         return await dm(user, body, env);
+        case "/dm-thread":       return await dmThread(user, body, env);
+        case "/dm-inbox":        return await dmInbox(user, body, env);
         case "/request-tag":     return await requestTag(user, body, env);
         // --- admin-only (aNDROBEET) ---
         case "/admin/ban":       return await adminBan(user, body, env);
@@ -410,16 +412,62 @@ async function uploadPfp(user, body, env) {
 }
 
 async function dm(user, body, env) {
-  const other = String(body.to || "").toLowerCase();
-  if (!other) throw new Error("missing recipient");
+  await checkRate(env, user, "dm", 3); // max 1 msg / 3s
+  const other = String(body.to || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  if (!other || other === user) throw new Error("missing recipient");
+  // recipient must exist
+  const rec = await ghGetJSON(env, env.DATA_REPO, `users/${other}.json`);
+  if (!rec.json) throw new Error("user not found");
+  const text = String(body.text || "").slice(0, 2000).trim();
+  if (!text) throw new Error("empty message");
+
   const pair = [user, other].sort().join("_");
   const path = `threads/${pair}.json`;
   const { json, sha } = await ghGetJSON(env, env.DMS_REPO, path);
   const thread = json || { participants: [user, other].sort(), messages: [] };
   if (!thread.participants.includes(user)) throw new Error("not your thread");
-  thread.messages.push({ from: user, text: String(body.text || "").slice(0, 2000), ts: Date.now() });
+  thread.messages.push({ from: user, text, ts: Date.now() });
+  thread.messages = thread.messages.slice(-500); // keep threads lean
   await ghPutJSON(env, env.DMS_REPO, path, thread, sha, `dm ${pair}`);
+
+  // update both inboxes (thread list + unread count)
+  await updateInbox(env, user, other, text, false);
+  await updateInbox(env, other, user, text, true);
   return reply({ ok: true });
+}
+
+async function updateInbox(env, owner, withUser, lastText, isUnread) {
+  try {
+    const path = `inbox/${owner}.json`;
+    const { json, sha } = await ghGetJSON(env, env.DMS_REPO, path);
+    const inbox = json || { threads: [] };
+    let t = inbox.threads.find((x) => x.with === withUser);
+    if (!t) { t = { with: withUser, unread: 0 }; inbox.threads.push(t); }
+    t.last = lastText.slice(0, 80);
+    t.ts = Date.now();
+    t.unread = isUnread ? (t.unread || 0) + 1 : 0;
+    inbox.threads.sort((a, b) => b.ts - a.ts);
+    await ghPutJSON(env, env.DMS_REPO, path, inbox, sha, `inbox ${owner}`);
+  } catch (e) {}
+}
+
+/* read a full thread — ONLY participants can */
+async function dmThread(user, body, env) {
+  const other = String(body.with || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  if (!other) throw new Error("missing user");
+  const pair = [user, other].sort().join("_");
+  const { json } = await ghGetJSON(env, env.DMS_REPO, `threads/${pair}.json`);
+  if (!json) return reply({ ok: true, messages: [] });
+  if (!json.participants.includes(user)) throw new Error("not your thread");
+  // mark read in inbox
+  await updateInbox(env, user, other, (json.messages.slice(-1)[0] || { text: "" }).text || "", false);
+  return reply({ ok: true, messages: json.messages });
+}
+
+/* list my threads */
+async function dmInbox(user, body, env) {
+  const { json } = await ghGetJSON(env, env.DMS_REPO, `inbox/${user}.json`);
+  return reply({ ok: true, threads: (json && json.threads) || [] });
 }
 
 async function requestTag(user, body, env) {
