@@ -421,68 +421,119 @@ notifications:[
  {type:"rank_change",topic:"Philosophy",oldRank:2,newRank:1,ts:Date.now()-93600000,read:true}
 ]};
 
+/* ============ ACHIEVEMENT ICONS (SVG — no emojis) ============ */
+const AICON={
+ pen:'<path d="M4 20l4-1L20 7.5 16.5 4 5 15.5 4 20Z"/><path d="m14 6 3.5 3.5"/>',
+ doc:'<path d="M6 2h9l5 5v15H6V2Z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>',
+ docs:'<path d="M8 4h8l4 4v12H8V4Z"/><path d="M4 8v14h12"/>',
+ key:'<circle cx="8" cy="15" r="4.5"/><path d="m11.5 11.5 8-8M16 4l3 3M13.5 6.5l3 3"/>',
+ hundred:'<circle cx="12" cy="12" r="9.5"/><path d="M7.5 9.5v5M11 9.5c-1 0-1.5.7-1.5 2.5s.5 2.5 1.5 2.5 1.5-.7 1.5-2.5-.5-2.5-1.5-2.5ZM16 9.5c-1 0-1.5.7-1.5 2.5s.5 2.5 1.5 2.5 1.5-.7 1.5-2.5-.5-2.5-1.5-2.5Z"/>',
+ pillar:'<path d="M4 21h16M5 8h14M6 8v13M18 8v13M10 8v13M14 8v13M12 2 4 8h16L12 2Z"/>',
+ star:'<path d="m12 2 2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.3 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8L12 2Z"/>',
+ eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/>',
+ horn:'<path d="M3 11v4l4 1 11 5V4L7 9l-4 2Z"/><path d="M20 9.5a4 4 0 0 1 0 5"/>',
+ magnet:'<path d="M5 3v8a7 7 0 0 0 14 0V3h-5v8a2 2 0 0 1-4 0V3H5Z"/><path d="M5 7h5M14 7h5"/>',
+ wave:'<path d="M2 12c2.5 0 2.5-4 5-4s2.5 6 5 6 2.5-8 5-8 2.5 6 5 6"/>',
+ crown:'<path d="M3 17 4 7l5 4 3-7 3 7 5-4 1 10H3Z"/><path d="M3 21h18"/>',
+ up:'<path d="M12 19V6M5.5 12.5 12 6l6.5 6.5"/>',
+ fire:'<path d="M12 22c4 0 7-2.7 7-6.5 0-3-2-5-3.5-7C14 6.5 13.5 4.5 14 2c-3 1.5-5 4-5.5 6.5C8.2 10 8 11 7 12c-.8-.8-1.2-1.8-1-3-1.7 1.5-3 3.6-3 6C3 19.3 8 22 12 22Z"/>',
+ heart:'<path d="M12 21S4 14.5 4 8.8C4 5.6 6.4 4 8.5 4c1.8 0 3 .9 3.5 2 .5-1.1 1.7-2 3.5-2C17.6 4 20 5.6 20 8.8 20 14.5 12 21 12 21Z"/>',
+ gem:'<path d="M7 3h10l4 6-9 12L3 9l4-6Z"/><path d="M3 9h18M9.5 9 12 21 14.5 9M7 3l2.5 6M17 3l-2.5 6"/>',
+ bolt:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/>',
+ scale:'<path d="M12 3v18M4 7h16M6 7l-3 6c0 1.7 1.3 3 3 3s3-1.3 3-3L6 7ZM18 7l-3 6c0 1.7 1.3 3 3 3s3-1.3 3-3l-3-6ZM8 21h8"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+ bot:'<rect x="5" y="8" width="14" height="11" rx="2.5"/><circle cx="9.5" cy="13" r="1.2"/><circle cx="14.5" cy="13" r="1.2"/><path d="M12 8V4M9 16.5h6"/>',
+ chat:'<path d="M21 11.5c0 4.1-4 7.5-9 7.5-1.2 0-2.4-.2-3.4-.6L3 20l1.8-3.6C3.7 15 3 13.3 3 11.5 3 7.4 7 4 12 4s9 3.4 9 7.5Z"/>',
+ mic:'<rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5M8.5 21.5h7"/>',
+ arena:'<path d="M4 21V10l8-6 8 6v11"/><path d="M4 21h16M9 21v-6h6v6"/>',
+ candle:'<path d="M10 9h4v12h-4V9Z"/><path d="M12 9V7M12 2c1 1.5 1.5 2.5 0 4-1.5-1.5-1-2.5 0-4Z"/>',
+ sun:'<circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M19.5 4.5l-2 2M6.5 17.5l-2 2"/>',
+ compass:'<circle cx="12" cy="12" r="9.2"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+ web:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18-3-3-3-15 0-18Z"/>',
+ mail:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/>',
+ mailbox:'<path d="M4 11a4 4 0 0 1 8 0v7H4v-7ZM12 7h6a2 2 0 0 1 2 2v9h-8"/><path d="M16 7V4h3"/>',
+ circle:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/>',
+ village:'<path d="M3 21V12l4-3 4 3v9M13 21V8l4-3 4 3v13M3 21h18"/>',
+ echo:'<path d="M12 8a4 4 0 1 0 0 8M12 4a8 8 0 1 0 0 16M12 12h.01"/>',
+ spiral:'<path d="M12 12m-1 0a1 1 0 1 0 2 0 3 3 0 1 0-6 0 5 5 0 1 0 10 0 7 7 0 1 0-14 0 9 9 0 1 0 18 0"/>',
+ flag:'<path d="M5 21V4M5 4h12l-2 4 2 4H5"/>',
+ medal3:'<circle cx="12" cy="14" r="6"/><path d="M9 8.5 6 2h4l2 4 2-4h4l-3 6.5"/>',
+ medal2:'<circle cx="12" cy="14" r="6"/><path d="M9 8.5 6 2h4l2 4 2-4h4l-3 6.5"/><path d="M10 14l1.5 1.5L15 12"/>',
+ medal1:'<circle cx="12" cy="14" r="6"/><path d="M9 8.5 6 2h4l2 4 2-4h4l-3 6.5"/><path d="M12 11v6M9.5 13 12 11l2.5 2"/>',
+ moon:'<path d="M20 13.5A8.5 8.5 0 0 1 10.5 4a8.5 8.5 0 1 0 9.5 9.5Z"/>',
+ trophy:'<path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/>',
+ mirror:'<ellipse cx="12" cy="9" rx="6" ry="7"/><path d="M12 16v5M8 21h8M9.5 6.5c-1 1-1.5 2-1.5 3.5"/>',
+ id:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.5-1.5 1.6-2.3 3-2.3s2.5.8 3 2.3M15 9.5h4M15 13h4"/>',
+ tagic:'<path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.4"/>',
+ palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2-1-2 .5-3 2-3h2A3.5 3.5 0 0 0 21 12c0-5-4-9-9-9Z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/>',
+ hands:'<path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v8c0 3.5-2.5 6-6 6s-6-2.5-6-6v-3a1.5 1.5 0 0 1 3 0"/>',
+};
+function aIc(name,color,sz){
+  return `<svg viewBox="0 0 24 24" width="${sz||22}" height="${sz||22}" style="stroke:${color};fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round">${AICON[name]||AICON.star}</svg>`;
+}
+
 /* ============ ACHIEVEMENTS — 51 missions, tiered for habit loops ============ */
 const ACH=[
  // onboarding (instant wins — dopamine on day one)
- {id:"first_post",n:"First Page",d:"Publish your first post",icon:"✒",tier:1,stat:"posts",goal:1},
- {id:"first_vote",n:"First Judgement",d:"Cast your first vote",icon:"▲",tier:1,stat:"votes",goal:1},
- {id:"first_comment",n:"First Words",d:"Leave your first reply",icon:"💬",tier:1,stat:"comments",goal:1},
- {id:"first_follow",n:"First Bond",d:"Follow someone",icon:"🤝",tier:1,stat:"following",goal:1},
- {id:"pfp_set",n:"Face Reveal",d:"Set a profile picture",icon:"🪞",tier:1,stat:"pfp",goal:1},
- {id:"bio_set",n:"Identity",d:"Write a custom bio",icon:"📝",tier:1,stat:"bio",goal:1},
- {id:"tag_3",n:"Curious Mind",d:"Add 3 interest tags",icon:"🏷",tier:1,stat:"tags",goal:3},
- {id:"theme_swap",n:"Shapeshifter",d:"Try a different theme",icon:"🎨",tier:1,stat:"themes",goal:2},
+ {id:"first_post",n:"First Page",d:"Publish your first post",icon:"pen",tier:1,stat:"posts",goal:1},
+ {id:"first_vote",n:"First Judgement",d:"Cast your first vote",icon:"up",tier:1,stat:"votes",goal:1},
+ {id:"first_comment",n:"First Words",d:"Leave your first reply",icon:"chat",tier:1,stat:"comments",goal:1},
+ {id:"first_follow",n:"First Bond",d:"Follow someone",icon:"hands",tier:1,stat:"following",goal:1},
+ {id:"pfp_set",n:"Face Reveal",d:"Set a profile picture",icon:"mirror",tier:1,stat:"pfp",goal:1},
+ {id:"bio_set",n:"Identity",d:"Write a custom bio",icon:"id",tier:1,stat:"bio",goal:1},
+ {id:"tag_3",n:"Curious Mind",d:"Add 3 interest tags",icon:"tagic",tier:1,stat:"tags",goal:3},
+ {id:"theme_swap",n:"Shapeshifter",d:"Try a different theme",icon:"palette",tier:1,stat:"themes",goal:2},
  // posting ladder (variable goals — the grind loop)
- {id:"posts_5",n:"Scribe",d:"5 posts",icon:"📜",tier:1,stat:"posts",goal:5},
- {id:"posts_10",n:"Chronicler",d:"10 posts",icon:"📖",tier:2,stat:"posts",goal:10},
- {id:"posts_25",n:"Storyteller",d:"25 posts",icon:"🖋",tier:2,stat:"posts",goal:25},
- {id:"posts_50",n:"Lorekeeper",d:"50 posts",icon:"🗝",tier:3,stat:"posts",goal:50},
- {id:"posts_100",n:"Centurion",d:"100 posts",icon:"💯",tier:3,stat:"posts",goal:100},
- {id:"posts_250",n:"Archivist",d:"250 posts",icon:"🏛",tier:4,stat:"posts",goal:250},
- {id:"posts_500",n:"Living Legend",d:"500 posts",icon:"🌟",tier:5,stat:"posts",goal:500},
+ {id:"posts_5",n:"Scribe",d:"5 posts",icon:"doc",tier:1,stat:"posts",goal:5},
+ {id:"posts_10",n:"Chronicler",d:"10 posts",icon:"docs",tier:2,stat:"posts",goal:10},
+ {id:"posts_25",n:"Storyteller",d:"25 posts",icon:"pen",tier:2,stat:"posts",goal:25},
+ {id:"posts_50",n:"Lorekeeper",d:"50 posts",icon:"key",tier:3,stat:"posts",goal:50},
+ {id:"posts_100",n:"Centurion",d:"100 posts",icon:"hundred",tier:3,stat:"posts",goal:100},
+ {id:"posts_250",n:"Archivist",d:"250 posts",icon:"pillar",tier:4,stat:"posts",goal:250},
+ {id:"posts_500",n:"Living Legend",d:"500 posts",icon:"star",tier:5,stat:"posts",goal:500},
  // followers ladder (social proof loop)
- {id:"fol_10",n:"Noticed",d:"10 followers",icon:"👁",tier:2,stat:"followers",goal:10},
- {id:"fol_50",n:"Rising Voice",d:"50 followers",icon:"📣",tier:3,stat:"followers",goal:50},
- {id:"fol_100",n:"Crowd Puller",d:"100 followers",icon:"🧲",tier:3,stat:"followers",goal:100},
- {id:"fol_300",n:"Influence",d:"300 followers",icon:"🌊",tier:4,stat:"followers",goal:300},
- {id:"fol_1000",n:"Icon",d:"1,000 followers",icon:"👑",tier:5,stat:"followers",goal:1000},
+ {id:"fol_10",n:"Noticed",d:"10 followers",icon:"eye",tier:2,stat:"followers",goal:10},
+ {id:"fol_50",n:"Rising Voice",d:"50 followers",icon:"horn",tier:3,stat:"followers",goal:50},
+ {id:"fol_100",n:"Crowd Puller",d:"100 followers",icon:"magnet",tier:3,stat:"followers",goal:100},
+ {id:"fol_300",n:"Influence",d:"300 followers",icon:"wave",tier:4,stat:"followers",goal:300},
+ {id:"fol_1000",n:"Icon",d:"1,000 followers",icon:"crown",tier:5,stat:"followers",goal:1000},
  // upvote ladder (validation loop)
- {id:"up_10",n:"Agreeable",d:"10 upvotes received",icon:"⬆",tier:1,stat:"upsReceived",goal:10},
- {id:"up_50",n:"Crowd Favorite",d:"50 upvotes received",icon:"🔥",tier:2,stat:"upsReceived",goal:50},
- {id:"up_100",n:"Beloved",d:"100 upvotes received",icon:"❤",tier:3,stat:"upsReceived",goal:100},
- {id:"up_500",n:"Adored",d:"500 upvotes received",icon:"💎",tier:4,stat:"upsReceived",goal:500},
- {id:"up_1000",n:"Worshipped",d:"1,000 upvotes received",icon:"⚡",tier:5,stat:"upsReceived",goal:1000},
+ {id:"up_10",n:"Agreeable",d:"10 upvotes received",icon:"up",tier:1,stat:"upsReceived",goal:10},
+ {id:"up_50",n:"Crowd Favorite",d:"50 upvotes received",icon:"fire",tier:2,stat:"upsReceived",goal:50},
+ {id:"up_100",n:"Beloved",d:"100 upvotes received",icon:"heart",tier:3,stat:"upsReceived",goal:100},
+ {id:"up_500",n:"Adored",d:"500 upvotes received",icon:"gem",tier:4,stat:"upsReceived",goal:500},
+ {id:"up_1000",n:"Worshipped",d:"1,000 upvotes received",icon:"bolt",tier:5,stat:"upsReceived",goal:1000},
  // engagement given (reciprocity loop)
- {id:"votes_25",n:"Critic",d:"Cast 25 votes",icon:"⚖",tier:1,stat:"votes",goal:25},
- {id:"votes_100",n:"Taste Maker",d:"Cast 100 votes",icon:"🎯",tier:2,stat:"votes",goal:100},
- {id:"votes_500",n:"The Algorithm",d:"Cast 500 votes",icon:"🤖",tier:4,stat:"votes",goal:500},
- {id:"cmt_10",n:"Conversationalist",d:"10 replies written",icon:"🗨",tier:1,stat:"comments",goal:10},
- {id:"cmt_50",n:"Debate Club",d:"50 replies written",icon:"🎤",tier:2,stat:"comments",goal:50},
- {id:"cmt_200",n:"Town Square",d:"200 replies written",icon:"🏟",tier:4,stat:"comments",goal:200},
+ {id:"votes_25",n:"Critic",d:"Cast 25 votes",icon:"scale",tier:1,stat:"votes",goal:25},
+ {id:"votes_100",n:"Taste Maker",d:"Cast 100 votes",icon:"target",tier:2,stat:"votes",goal:100},
+ {id:"votes_500",n:"The Algorithm",d:"Cast 500 votes",icon:"bot",tier:4,stat:"votes",goal:500},
+ {id:"cmt_10",n:"Conversationalist",d:"10 replies written",icon:"chat",tier:1,stat:"comments",goal:10},
+ {id:"cmt_50",n:"Debate Club",d:"50 replies written",icon:"mic",tier:2,stat:"comments",goal:50},
+ {id:"cmt_200",n:"Town Square",d:"200 replies written",icon:"arena",tier:4,stat:"comments",goal:200},
  // streaks (the retention engine)
- {id:"streak_3",n:"Warming Up",d:"3-day post streak",icon:"🕯",tier:1,stat:"streak",goal:3},
- {id:"streak_7",n:"Bronze Flame",d:"7-day streak",icon:"🔥",tier:2,stat:"streak",goal:7},
- {id:"streak_30",n:"Silver Flame",d:"30-day streak",icon:"🔥",tier:3,stat:"streak",goal:30},
- {id:"streak_90",n:"Gold Flame",d:"90-day streak",icon:"🔥",tier:4,stat:"streak",goal:90},
- {id:"streak_365",n:"Eternal Flame",d:"365-day streak",icon:"☀",tier:5,stat:"streak",goal:365},
+ {id:"streak_3",n:"Warming Up",d:"3-day post streak",icon:"candle",tier:1,stat:"streak",goal:3},
+ {id:"streak_7",n:"Bronze Flame",d:"7-day streak",icon:"fire",tier:2,stat:"streak",goal:7},
+ {id:"streak_30",n:"Silver Flame",d:"30-day streak",icon:"fire",tier:3,stat:"streak",goal:30},
+ {id:"streak_90",n:"Gold Flame",d:"90-day streak",icon:"fire",tier:4,stat:"streak",goal:90},
+ {id:"streak_365",n:"Eternal Flame",d:"365-day streak",icon:"sun",tier:5,stat:"streak",goal:365},
  // social/discovery
- {id:"following_10",n:"Explorer",d:"Follow 10 people",icon:"🧭",tier:1,stat:"following",goal:10},
- {id:"following_50",n:"Networker",d:"Follow 50 people",icon:"🕸",tier:2,stat:"following",goal:50},
- {id:"dm_1",n:"Slide In",d:"Send your first DM",icon:"✉",tier:1,stat:"dms",goal:1},
- {id:"dm_100",n:"Pen Pal",d:"100 DMs sent",icon:"📮",tier:3,stat:"dms",goal:100},
- {id:"group_1",n:"Circle Maker",d:"Create a group chat",icon:"⭕",tier:2,stat:"groups",goal:1},
- {id:"comm_3",n:"Joiner",d:"Join 3 communities",icon:"🏘",tier:1,stat:"communities",goal:3},
+ {id:"following_10",n:"Explorer",d:"Follow 10 people",icon:"compass",tier:1,stat:"following",goal:10},
+ {id:"following_50",n:"Networker",d:"Follow 50 people",icon:"web",tier:2,stat:"following",goal:50},
+ {id:"dm_1",n:"Slide In",d:"Send your first DM",icon:"mail",tier:1,stat:"dms",goal:1},
+ {id:"dm_100",n:"Pen Pal",d:"100 DMs sent",icon:"mailbox",tier:3,stat:"dms",goal:100},
+ {id:"group_1",n:"Circle Maker",d:"Create a group chat",icon:"circle",tier:2,stat:"groups",goal:1},
+ {id:"comm_3",n:"Joiner",d:"Join 3 communities",icon:"village",tier:1,stat:"communities",goal:3},
  // quality (status loop)
- {id:"echo_1",n:"Echo",d:"A post hits 10 shares",icon:"〰",tier:3,stat:"echoes",goal:1},
- {id:"reso_1",n:"Resonance",d:"A post hits 100 shares",icon:"🌀",tier:5,stat:"resonance",goal:1},
- {id:"pioneer_1",n:"Pioneer",d:"First reply on a post that blows up",icon:"🚩",tier:3,stat:"pioneer",goal:1},
- {id:"seal_1",n:"Chosen One",d:"Receive the ANDROBEET Seal",icon:"⭐",tier:5,stat:"seal",goal:1},
- {id:"rank_top10",n:"Contender",d:"Reach top 10 in any topic",icon:"🥉",tier:3,stat:"bestRank10",goal:1},
- {id:"rank_top3",n:"Podium",d:"Reach top 3 in any topic",icon:"🥈",tier:4,stat:"bestRank3",goal:1},
- {id:"rank_1",n:"Apex",d:"Rank #1 in any topic",icon:"🥇",tier:5,stat:"bestRank1",goal:1},
+ {id:"echo_1",n:"Echo",d:"A post hits 10 shares",icon:"echo",tier:3,stat:"echoes",goal:1},
+ {id:"reso_1",n:"Resonance",d:"A post hits 100 shares",icon:"spiral",tier:5,stat:"resonance",goal:1},
+ {id:"pioneer_1",n:"Pioneer",d:"First reply on a post that blows up",icon:"flag",tier:3,stat:"pioneer",goal:1},
+ {id:"seal_1",n:"Chosen One",d:"Receive the ANDROBEET Seal",icon:"star",tier:5,stat:"seal",goal:1},
+ {id:"rank_top10",n:"Contender",d:"Reach top 10 in any topic",icon:"medal3",tier:3,stat:"bestRank10",goal:1},
+ {id:"rank_top3",n:"Podium",d:"Reach top 3 in any topic",icon:"medal2",tier:4,stat:"bestRank3",goal:1},
+ {id:"rank_1",n:"Apex",d:"Rank #1 in any topic",icon:"medal1",tier:5,stat:"bestRank1",goal:1},
  // night-owl flavor (identity loop)
- {id:"night_post",n:"3AM Thoughts",d:"Post between 2–5 AM",icon:"🌙",tier:2,stat:"nightPosts",goal:1},
- {id:"early_100",n:"Founding Page",d:"Among the first 100 users",icon:"🏆",tier:4,stat:"early",goal:1}
+ {id:"night_post",n:"3AM Thoughts",d:"Post between 2–5 AM",icon:"moon",tier:2,stat:"nightPosts",goal:1},
+ {id:"early_100",n:"Founding Page",d:"Among the first 100 users",icon:"trophy",tier:4,stat:"early",goal:1}
 ];
 const TIERCOL={1:"#8d9aa8",2:"#34d399",3:"#4da6ff",4:"#b27aff",5:"#eab308"};
 const TIERNAME={1:"Common",2:"Uncommon",3:"Rare",4:"Epic",5:"Legendary"};
@@ -511,7 +562,7 @@ function checkAch(){
   const st=myStats();S.claimed=S.claimed||[];
   const ready=ACH.filter(a=>!S.claimed.includes(a.id)&&(st[a.stat]||0)>=a.goal);
   if(ready.length&&!S.achToastAt||Date.now()-(S.achToastAt||0)>5000){
-    if(ready.length){toast("🏆 Achievement ready to claim: "+ready[0].n);S.achToastAt=Date.now();save();}
+    if(ready.length){toast("Achievement ready to claim: "+ready[0].n);S.achToastAt=Date.now();save();}
   }
   return ready;
 }
@@ -581,8 +632,16 @@ function allPosts(){
     if(v==="up")up.push(S.me);if(v==="down")down.push(S.me);
     return{...p,up,down,comments:[...p.comments,...ex],shares:p.shares+((!LIVE&&S.shares[p.id])||0)};
   });
-  // my brand-new posts (posted since last feed refresh) shown instantly
-  const fresh=LIVE?S.myPosts.filter(p=>p.ts>LASTFEED&&!SEED.posts.some(x=>x.author===p.author&&Math.abs(x.ts-p.ts)<60000)).map(p=>({...p})):[];
+  // my pending posts: keep showing them until the server feed CONTAINS them
+  // (GitHub raw caching can lag minutes — never drop a post early!)
+  let fresh=[];
+  if(LIVE){
+    fresh=S.myPosts.filter(p=>p.serverId?!SEED.posts.some(x=>x.id===p.serverId):!SEED.posts.some(x=>x.author===p.author&&Math.abs(x.ts-p.ts)<90000)).map(p=>({...p}));
+    // prune confirmed ones from local storage (keeps it clean)
+    const before=S.myPosts.length;
+    S.myPosts=S.myPosts.filter(p=>fresh.some(f=>f.id===p.id)||p.private);
+    if(S.myPosts.length!==before)save();
+  }
   return[...fresh,...mine,...seeded].sort((a,b)=>b.ts-a.ts);
 }
 function getUser(u){
@@ -748,16 +807,21 @@ function postCard(p,full){
       <button class="pact ${my==="down"?"dn":""}" onclick="event.stopPropagation();vote('${p.id}','down')">${ic("down")} ${p.down.length}</button>
       <button class="pact" onclick="event.stopPropagation();nav('#/post/${p.id}')">${ic("cmt")} ${p.comments.length}</button>
       <button class="pact" onclick="event.stopPropagation();sharePost('${p.id}')">${ic("share")} ${p.shares}</button>
-      ${p.private?'<span class="badge mut">🔒 PRIVATE</span>':""}
+      ${p.private?'<span class="badge mut">PRIVATE</span>':""}
       <span class="score">${score>=0?"+":""}${score}</span>
       <span class="menuwrap"><button class="pact" style="padding:7px 11px" onclick="event.stopPropagation();toggleMenu('${p.id}')">⋯</button>
         <span id="menu_${p.id}" style="display:none" class="menu">
           ${p.author===S.me?`
-            <button onclick="event.stopPropagation();togglePrivacy('${p.id}',${!p.private})">${p.private?"🌍 Make public":"🔒 Make private"}</button>
-            <button onclick="event.stopPropagation();delPost('${p.id}')" style="color:#f87171">🗑 Delete post</button>`:`
-            <button onclick="event.stopPropagation();openReport('post','${p.id}')">🚩 Report post</button>
-            <button onclick="event.stopPropagation();openReport('user','${esc(p.author)}')">🚩 Report @${esc(p.author)}</button>`}
+            <button onclick="event.stopPropagation();togglePrivacy('${p.id}',${!p.private})">${p.private?"Make public":"Make private"}</button>
+            <button onclick="event.stopPropagation();delPost('${p.id}')" style="color:#f87171">Delete post</button>`:`
+            <button onclick="event.stopPropagation();openReport('post','${p.id}')">Report post</button>
+            <button onclick="event.stopPropagation();openReport('user','${esc(p.author)}')">Report @${esc(p.author)}</button>
+            <button onclick="event.stopPropagation();blockToggle('${esc(p.author)}')" style="color:#f87171">Block @${esc(p.author)}</button>`}
+          ${S.me===CONFIG.ADMIN?`
+            <button onclick="event.stopPropagation();copyId('${p.id}')" style="color:var(--gold)">ADMIN · Copy post ID</button>
+            <button onclick="event.stopPropagation();delPost('${p.id}')" style="color:var(--gold)">ADMIN · Delete post</button>`:""}
         </span></span>
+      ${S.me===CONFIG.ADMIN?`<span class="muted" style="font-size:10px;margin-left:6px;cursor:pointer" onclick="event.stopPropagation();copyId('${p.id}')" title="copy id">${p.id}</span>`:""}
     </div>
   </article>`;
 }
@@ -766,6 +830,10 @@ function toggleMenu(id){
   const m=$("#menu_"+id);if(m)m.style.display=m.style.display==="none"?"block":"none";
 }
 document.addEventListener("click",e=>{if(!e.target.closest(".menuwrap"))document.querySelectorAll(".menu").forEach(m=>m.style.display="none");});
+function copyId(id){
+  if(navigator.clipboard)navigator.clipboard.writeText(id).then(()=>toast("ID copied: "+id));
+  else prompt("Post ID:",id);
+}
 async function delPost(id){
   if(!confirm("Delete this post forever?"))return;
   S.myPosts=S.myPosts.filter(p=>p.id!==id);
@@ -781,7 +849,7 @@ async function togglePrivacy(id,priv){
 }
 function openReport(kind,target){
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
-    <div class="modal"><h2>🚩 Report ${kind==="user"?"@"+esc(target):"post"}</h2>
+    <div class="modal"><h2>Report ${kind==="user"?"@"+esc(target):"post"}</h2>
       <div class="field"><label>REASON</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap" id="rep_btns">
           ${["Spam","Nudity","Hate speech","Ban evasion","Harassment","Other"].map((r,i)=>`<button class="tab ${i===0?"on":""}" onclick="document.querySelectorAll('#rep_btns .tab').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${r}</button>`).join("")}
@@ -822,7 +890,7 @@ function sharePost(id){
 routes.explore=()=>{
   head("Explore","the latest Lore");
   const tab=sessionStorage.getItem("exptab")||"Hot";
-  let posts=allPosts().filter(p=>!p.private||p.author===S.me);
+  let posts=allPosts().filter(p=>(!p.private||p.author===S.me)&&!(S.blocked||[]).includes(p.author));
   // suggestions: users I don't follow yet (by activity), topics I haven't tagged
   const sugUsers=[...new Set(posts.map(p=>p.author))].filter(u=>u!==S.me&&!S.follows.includes(u)).slice(0,3);
   const sugTopics=SEED.tags.filter(t=>!S.profile.tags.includes(t)&&posts.some(p=>p.topic===t)).slice(0,4);
@@ -987,7 +1055,11 @@ function profilePage(uname){
   }).join("");
   const showIds=(isMe?S.showcase:u.showcase)||[];
   const showHTML=showIds.map(id=>{const a=ACH.find(x=>x.id===id);if(!a)return"";
-    return`<span class="showbadge" style="border-color:${TIERCOL[a.tier]}66;color:${TIERCOL[a.tier]};background:${TIERCOL[a.tier]}14">${a.icon} ${a.n}</span>`;}).join("");
+    return`<span class="showbadge" style="border-color:${TIERCOL[a.tier]}66;color:${TIERCOL[a.tier]};background:${TIERCOL[a.tier]}14">${aIc(a.icon,TIERCOL[a.tier],13)} ${a.n}</span>`;}).join("");
+  // privacy: private profiles hide content from non-mutuals (they see only counts)
+  const isPrivate=!!u.privateProfile;
+  const allowed=isMe||!isPrivate||(u.following||[]).includes(S.me);
+  const iBlocked=(S.blocked||[]).includes(uname);
   const followers=(u.followers||[]).length+((!isMe&&S.follows.includes(uname))?1:0);
   const iF=S.follows.includes(uname);
   const mutual=!isMe&&iF&&(u.following||[]).includes(S.me);
@@ -1016,22 +1088,50 @@ function profilePage(uname){
         ${isMe?`<span class="chip" onclick="nav('#/settings')">${ic("plus",12)} add</span>`:""}
       </div>
       <div class="pstats">
-        <div class="pstat"><b>${followers}</b><span>FOLLOWERS</span></div>
-        <div class="pstat"><b>${(isMe?S.follows:u.following||[]).length}</b><span>FOLLOWING</span></div>
+        <div class="pstat" style="cursor:${allowed?"pointer":"default"}" ${allowed?`onclick="openUserList('${esc(uname)}','followers')"`:""}><b>${followers}</b><span>FOLLOWERS</span></div>
+        <div class="pstat" style="cursor:${allowed?"pointer":"default"}" ${allowed?`onclick="openUserList('${esc(uname)}','following')"`:""}><b>${(isMe?S.follows:u.following||[]).length}</b><span>FOLLOWING</span></div>
         <div class="pstat"><b>${posts.length}</b><span>POSTS</span></div>
         <div class="pstat"><b>${u.echoes||0}</b><span>ECHOES</span></div>
         <div class="pstat"><b>${u.pioneer||0}</b><span>PIONEER</span></div>
       </div>
       ${ranks?`<div class="muted" style="margin:10px 0 6px">TOPIC RANKS</div><div style="display:flex;gap:8px;flex-wrap:wrap">${ranks}</div>`:""}
       <div style="display:flex;gap:10px;margin-top:20px">
-        ${isMe?`<button class="btn" onclick="nav('#/settings')">Edit profile</button><button class="btn ghost" onclick="nav('#/achievements')">🏆 Achievements</button>`
+        ${isMe?`<button class="btn" onclick="nav('#/settings')">Edit profile</button><button class="btn ghost" onclick="nav('#/achievements')">Achievements</button>`
         :`<button class="btn ${iF?"ghost":""}" onclick="toggleFollow('${esc(uname)}')">${iF?"Following ✓":"Follow"}</button>
-          <button class="btn ghost" onclick="openThread('${esc(uname)}')">${ic("msg",16)} Message</button>`}
+          <button class="btn ghost" onclick="openThread('${esc(uname)}')">${ic("msg",16)} Message</button>
+          <span class="menuwrap"><button class="btn ghost" onclick="event.stopPropagation();toggleMenu('prof')">⋯</button>
+            <span id="menu_prof" style="display:none" class="menu">
+              <button onclick="event.stopPropagation();blockToggle('${esc(uname)}')" style="color:#f87171">${iBlocked?"Unblock":"Block"} @${esc(uname)}</button>
+              <button onclick="event.stopPropagation();openReport('user','${esc(uname)}')">Report @${esc(uname)}</button>
+            </span></span>`}
       </div>
       <div class="muted" style="margin-top:15px">Joined ${esc(u.joined||"recently")}</div>
     </div>
   </div>
-  ${posts.map(p=>postCard(p)).join("")||`<div class="empty">${ic("doc")}${isMe?"Your Lore is unwritten.<br><span class='link' onclick='openCompose()'>Write your first post →</span>":"No posts yet."}</div>`}`;
+  ${allowed?(posts.map(p=>postCard(p)).join("")||`<div class="empty">${ic("doc")}${isMe?"Your Lore is unwritten.<br><span class='link' onclick='openCompose()'>Write your first post →</span>":"No posts yet."}</div>`)
+    :`<div class="empty">${ic("shield")}<b>This profile is private.</b><br>@${esc(uname)} shares posts only with people they follow back.</div>`}`;
+}
+function openUserList(uname,kind){
+  const u=getUser(uname);if(!u)return;
+  const list=uname===S.me&&kind==="following"?S.follows:(u[kind]||[]);
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h2>${kind==="followers"?"Followers":"Following"} · @${esc(uname)} <span class="muted" style="font-weight:400">(${list.length})</span></h2>
+      <div style="max-height:55vh;overflow-y:auto">
+      ${list.length?list.map(n=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--border);cursor:pointer" onclick="closeModal();nav('#/u/${esc(n)}')">
+        ${avatarHTML(n,38)}<b>@${esc(n)}</b>
+        ${n!==S.me?`<button class="btn ghost sm" style="margin-left:auto" onclick="event.stopPropagation();toggleFollow('${esc(n)}')">${S.follows.includes(n)?"Following ✓":"Follow"}</button>`:""}
+      </div>`).join(""):`<div class="muted" style="padding:20px;text-align:center">Nobody yet.</div>`}
+      </div></div></div>`;
+  if(LIVE)ensureUsers(list,()=>openUserList(uname,kind));
+}
+async function blockToggle(uname){
+  S.blocked=S.blocked||[];
+  const was=S.blocked.includes(uname);
+  if(!was&&!confirm("Block @"+uname+"? They can't message or follow you, and you won't see their posts."))return;
+  S.blocked=was?S.blocked.filter(b=>b!==uname):[...S.blocked,uname];
+  S.follows=S.follows.filter(f=>f!==uname);
+  save();render();toast(was?"Unblocked @"+uname:"Blocked @"+uname);
+  if(LIVE)api("/block",{target:uname});
 }
 function toggleFollow(u){
   if(requireLogin())return;
@@ -1158,7 +1258,7 @@ routes.dms=async()=>{
     <div class="card" style="padding:14px;display:flex;gap:10px;flex-wrap:wrap">
       <input id="dm_new" placeholder="Start a chat: type a @username…" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')openThread(this.value)">
       <button class="btn sm" onclick="openThread($('#dm_new').value)">Chat</button>
-      <button class="btn ghost sm" onclick="openGroupCreate()">👥 New group</button>
+      <button class="btn ghost sm" onclick="openGroupCreate()">New group</button>
     </div>
     <div id="dm_list"><div class="muted" style="padding:16px">Loading your inbox…</div></div>`;
   const d=await api("/dm-inbox",{});
@@ -1179,7 +1279,7 @@ routes.dms=async()=>{
 };
 function openGroupCreate(){
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
-    <div class="modal"><h2>👥 New group chat</h2>
+    <div class="modal"><h2>New group chat</h2>
       <div class="field"><label>GROUP NAME</label><input id="g_name" placeholder="the-inner-circle"></div>
       <div class="field"><label>MEMBERS (USERNAMES, COMMA-SEPARATED)</label><input id="g_members" placeholder="alice, bob, charlie"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
@@ -1338,6 +1438,14 @@ routes.settings=()=>{
     </div>
     <button class="btn" onclick="saveProfile()">Save profile</button>
   </div>
+  <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Privacy</h2>
+    <div style="display:flex;align-items:center;gap:12px">
+      <input type="checkbox" id="f_privprof" style="width:auto" ${S.profile.privateProfile?"checked":""} onchange="togglePrivateProfile(this.checked)">
+      <label for="f_privprof" style="font-size:14px;color:var(--text2);cursor:pointer"><b>Private profile</b> — only people you follow back can see your posts and message you. Everyone else sees just your counts.</label>
+    </div>
+    ${(S.blocked||[]).length?`<div class="hr"></div><div class="muted" style="margin-bottom:8px">BLOCKED USERS</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${S.blocked.map(b=>`<span class="chip" onclick="blockToggle('${esc(b)}')">@${esc(b)} ✕</span>`).join("")}</div>`:""}
+  </div>
   <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Account</h2>
     ${S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn danger sm" style="margin-top:10px" onclick="if(confirm('Log out of @${esc(S.me)}?'))logout()">${ic("logout",15)} Log out</button>`
       :`<p class="muted">You're browsing as a guest. Join to post, vote and build your Lore.</p><button class="btn sm" style="margin-top:10px" onclick="openAuth()">Log in / Create account</button>`}
@@ -1378,6 +1486,11 @@ function pickPfp(input){
   input.value="";
 }
 
+function togglePrivateProfile(v){
+  S.profile.privateProfile=v;save();
+  toast(v?"Profile is now private":"Profile is public");
+  if(LIVE&&S.token)api("/update-profile",{bio:S.profile.bio,pfp:S.profile.pfp,voice:S.profile.voice,tags:S.profile.tags,theme:S.theme,banner:S.profile.banner||"",socials:S.profile.socials||{},showcase:S.showcase||[],claimed:S.claimed||[],privateProfile:v});
+}
 function setTheme(t){S.theme=t;bump("themes");save();document.body.dataset.theme=t;
   document.querySelector('meta[name="theme-color"]').content=getComputedStyle(document.body).getPropertyValue("--bg2").trim()||"#13040a";render();}
 function toggleTag(t){const i=S.profile.tags.indexOf(t);if(i>=0)S.profile.tags.splice(i,1);else S.profile.tags.push(t);save();render();}
@@ -1412,11 +1525,27 @@ routes.admin=()=>{
         ${avatarHTML(u,32)}<b style="cursor:pointer" onclick="nav('#/u/${u}')">@${u}</b>
         ${SEED.users[u].seal?`<span class="badge seal">${ic("seal")}</span>`:""}
         <span class="muted" style="margin-left:auto">joined ${SEED.users[u].joined}</span></div>`).join("")}</div>
+    <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Lookup by ID</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="ad_lookup" placeholder="post id (p_…) or username" style="flex:1;min-width:150px">
+      <button class="btn sm" onclick="adminLookup()">Open</button>
+      <button class="btn ghost sm" onclick="adminGitHub()">View on GitHub</button></div>
+      <p class="muted" style="margin-top:10px">As admin you see every post's ID under its card (click to copy). Post IDs map to <b>posts/&lt;id&gt;.json</b>, comment IDs (cid) live inside the post file — report strings like <b>p_123:c456</b> mean comment c456 on post p_123.</p></div>
     <div class="card"><h2 style="font-size:15px;margin-bottom:11px">Activity log</h2>
       <p class="muted">Live mode: every signup, login, post, vote and admin action lands in <b>admin/logs/&lt;date&gt;.json</b> in lore-data — open it on GitHub anytime. Failed logins flagged.</p></div>
     <div class="card"><h2 style="font-size:15px;margin-bottom:11px">Reports queue</h2>
       <p class="muted">User reports land in <b>data/admin/reports.json</b>. Review → delete the post file or shadowban.</p></div>`;
 };
+function adminLookup(){
+  const v=$("#ad_lookup").value.trim();
+  if(!v)return toast("Enter an ID or username");
+  nav(v.startsWith("p_")||v.startsWith("my_")?"#/post/"+v.split(":")[0]:"#/u/"+v.toLowerCase().replace("@",""));
+}
+function adminGitHub(){
+  const v=$("#ad_lookup").value.trim();
+  const repo=CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","");
+  const path=v.startsWith("p_")?"posts/"+v.split(":")[0]+".json":v?"users/"+v.toLowerCase().replace("@","")+".json":"";
+  window.open("https://github.com/"+repo+(path?"/blob/main/"+path:""),"_blank");
+}
 async function adminAct(kind){
   const val=(kind==="seal"?$("#ad_seal"):$("#ad_ban")).value.trim().toLowerCase();
   if(!val){toast("Enter a username first");return;}
@@ -1437,13 +1566,13 @@ routes.achievements=()=>{
   const claimedCount=rows.filter(r=>r.claimed).length;
   $("#content").innerHTML=`
     <div class="card" style="display:flex;align-items:center;gap:16px">
-      <div class="medal" style="background:${TIERCOL[5]}22;color:${TIERCOL[5]};font-size:22px">🏆</div>
+      <div class="medal" style="background:${TIERCOL[5]}22">${aIc("trophy",TIERCOL[5],24)}</div>
       <div><b>${claimedCount} / ${ACH.length} unlocked</b>
         <div class="bar" style="width:220px"><i style="width:${(claimedCount/ACH.length)*100}%"></i></div></div>
       <span class="muted" style="margin-left:auto">showcase ${S.showcase.length}/3 on profile</span>
     </div>
     ${rows.map(a=>`<div class="ach ${(!a.done&&!a.claimed)?"locked":""}">
-      <div class="medal" style="background:${TIERCOL[a.tier]}22;color:${TIERCOL[a.tier]};font-size:21px">${a.icon}</div>
+      <div class="medal" style="background:${TIERCOL[a.tier]}22">${aIc(a.icon,TIERCOL[a.tier],22)}</div>
       <div style="min-width:0;flex:1">
         <b>${a.n}</b> <span class="showbadge" style="border-color:${TIERCOL[a.tier]}44;color:${TIERCOL[a.tier]};margin-left:6px">${TIERNAME[a.tier]}</span>
         <div class="muted" style="margin-top:3px">${a.d}</div>
@@ -1452,7 +1581,7 @@ routes.achievements=()=>{
       </div>
       ${a.ready?`<button class="btn sm" onclick="claimAch('${a.id}')">Claim</button>`
         :a.claimed?(S.showcase.includes(a.id)
-          ?`<button class="btn ghost sm" onclick="unshowcase('${a.id}')">★ Showcased</button>`
+          ?`<button class="btn ghost sm" onclick="unshowcase('${a.id}')">Showcased ✓</button>`
           :`<button class="btn ghost sm" onclick="showcase('${a.id}')">Showcase</button>`)
         :`<span class="muted">🔒</span>`}
     </div>`).join("")}`;
@@ -1460,7 +1589,7 @@ routes.achievements=()=>{
 function claimAch(id){
   S.claimed=S.claimed||[];if(!S.claimed.includes(id))S.claimed.push(id);
   const a=ACH.find(x=>x.id===id);save();render();
-  toast("🏆 Unlocked: "+a.n+" ("+TIERNAME[a.tier]+")");
+  toast("Unlocked: "+a.n+" ("+TIERNAME[a.tier]+")");
   syncShowcase();
 }
 function showcase(id){
@@ -1479,16 +1608,16 @@ function openCompose(topic,type){
     <div class="modal">
       <h2>${ic("plus",18)} Add to the Lore</h2>
       <div class="tabs">
-        ${[["text","✏ Text"],["image","🖼 Image"],["video","🎬 Video"]].map(([t,l])=>`<button class="tab ${t===type?"on":""}" onclick="openCompose('${topic||""}','${t}')">${l}</button>`).join("")}
+        ${[["text","Text"],["image","Image"],["video","Video"],["audio","Audio"]].map(([t,l])=>`<button class="tab ${t===type?"on":""}" onclick="openCompose('${topic||""}','${t}')">${l}</button>`).join("")}
       </div>
       <div class="field"><textarea id="c_text" rows="5" placeholder="${type==="text"?"What's on your mind, @"+esc(S.me)+"?  —  **bold**, *italic*, \`code\`, > quote, #hashtags, @mentions":"Write a caption…"}"></textarea>
       <div class="muted" style="margin-top:5px">Supports **bold** *italic* \`code\` &gt; quote · #hashtags link to topics · media links auto-embed</div></div>
-      ${type!=="text"?`<div class="field"><label>${type==="image"?"IMAGE LINKS (1 PER LINE — IMGUR/CATBOX)":"VIDEO LINKS (1 PER LINE — MP4/CATBOX/YOUTUBE)"}</label>
+      ${type!=="text"?`<div class="field"><label>${type==="image"?"IMAGE LINKS (1 PER LINE — IMGUR/CATBOX)":type==="video"?"VIDEO LINKS (1 PER LINE — MP4/CATBOX/YOUTUBE)":"AUDIO LINKS (1 PER LINE — MP3/OGG/CATBOX)"}</label>
         <textarea id="c_media" rows="2" placeholder="https://…&#10;https://… (multiple allowed)"></textarea></div>`:""}
       <div class="field"><label>TOPIC (REQUIRED)</label>
         <select id="c_topic">${SEED.tags.map(t=>`<option ${t===topic?"selected":""}>${esc(t)}</option>`).join("")}</select></div>
       <div class="field" style="display:flex;align-items:center;gap:10px">
-        <input type="checkbox" id="c_priv" style="width:auto"><label for="c_priv" style="margin:0;font-size:13px;color:var(--text2)">🔒 Private — only I can see this post (toggle anytime)</label>
+        <input type="checkbox" id="c_priv" style="width:auto"><label for="c_priv" style="margin:0;font-size:13px;color:var(--text2)">Private — only I can see this post (toggle anytime)</label>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button class="btn ghost" onclick="closeModal()">Cancel</button>
@@ -1512,7 +1641,10 @@ function submitPost(){
   save();closeModal();
   sessionStorage.setItem("exptab","New");nav("#/explore");render();
   toast(priv?"Posted privately — only you can see it":"Posted — it's part of the Lore now");
-  if(LIVE)api("/post",{text:p.text,topic:p.topic,img:"",private:priv});
+  if(LIVE)api("/post",{text:p.text,topic:p.topic,img:"",private:priv}).then(d=>{
+    if(d&&d.id){const mp=S.myPosts.find(x=>x.id===p.id);if(mp){mp.serverId=d.id;save();}}
+    else if(d&&d.error){toast("⚠ Post failed to save: "+d.error);}
+  });
 }
 
 /* ============ LIVE DATA LOADER ============ */
@@ -1540,10 +1672,10 @@ async function ensureUsers(names,cb){
 async function loadLive(){
   if(!LIVE)return;
   try{
-    const raw=RAWBASE();
+    const raw=RAWBASE(),bust="?t="+Math.floor(Date.now()/15000); // dodge GitHub's CDN cache
     const[f,u,t]=await Promise.all([
-      fetch(raw+"/config/feed.json").then(r=>r.json()).catch(()=>null),
-      fetch(raw+"/config/userindex.json").then(r=>r.json()).catch(()=>null),
+      fetch(raw+"/config/feed.json"+bust,{cache:"no-store"}).then(r=>r.json()).catch(()=>null),
+      fetch(raw+"/config/userindex.json"+bust,{cache:"no-store"}).then(r=>r.json()).catch(()=>null),
       fetch(raw+"/config/tags.json").then(r=>r.json()).catch(()=>null)
     ]);
     if(Array.isArray(t)&&t.length)SEED.tags=t;
