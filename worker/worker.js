@@ -111,23 +111,36 @@ async function signup(body, env) {
   if (username.length < 3) throw new Error("username must be 3+ characters (a-z, 0-9, _)");
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("valid email required");
   if (password.length < 8) throw new Error("password must be 8+ characters");
-  const reserved = ["admin", "lore", "system", "mod", "root", "support"];
+  const reserved = ["admin", "lore", "system", "mod", "root", "support", "moderator", "official"];
   if (reserved.includes(username)) throw new Error("username reserved");
 
-  // already taken?
-  const existing = await ghGetJSON(env, env.DATA_REPO, `users/${username}.json`);
-  if (existing.json) throw new Error("username already taken");
+  // THE ADMIN LOCK: the admin username can ONLY be registered with the
+  // secret ADMIN_CLAIM key (set in Cloudflare). Nobody else can take it.
+  const isAdmin = username === (env.ADMIN_USER || "androbeet");
+  if (isAdmin && (body.adminKey || "") !== env.ADMIN_CLAIM) {
+    throw new Error("this username is reserved");
+  }
+
+  // already taken? (the auth file is the real account record)
+  const existingAuth = await ghGetJSON(env, env.DATA_REPO, `auth/${username}.json`);
+  if (existingAuth.json) throw new Error("username already taken");
+  const existingProfile = await ghGetJSON(env, env.DATA_REPO, `users/${username}.json`);
+  if (existingProfile.json && !isAdmin) throw new Error("username already taken");
 
   const salt = crypto.randomUUID();
-  const profile = {
-    bio: "New to LORE. Writing my first pages.",
-    pfp: "", voice: "", tags: [], followers: [], following: [],
-    joined: new Date().toISOString().slice(0, 10),
-    streak: { count: 0, tier: "—" }, seal: false,
-    echoes: 0, resonance: 0, pioneer: 0, ranks: {}, theme: "maroon",
-    banned: false, shadowbanned: false,
-  };
-  await ghPutJSON(env, env.DATA_REPO, `users/${username}.json`, profile, null, `signup ${username}`);
+  if (existingProfile.json && isAdmin) {
+    // admin claiming the pre-seeded profile: keep it (Seal, admin flag), just attach credentials
+  } else {
+    const profile = {
+      bio: "New to LORE. Writing my first pages.",
+      pfp: "", voice: "", tags: [], followers: [], following: [],
+      joined: new Date().toISOString().slice(0, 10),
+      streak: { count: 0, tier: "—" }, seal: false,
+      echoes: 0, resonance: 0, pioneer: 0, ranks: {}, theme: "maroon",
+      banned: false, shadowbanned: false,
+    };
+    await ghPutJSON(env, env.DATA_REPO, `users/${username}.json`, profile, null, `signup ${username}`);
+  }
   // credentials live in a separate file (never sent to the frontend)
   await ghPutJSON(env, env.DATA_REPO, `auth/${username}.json`,
     { email, salt, hash: await hashPassword(password, salt), created: new Date().toISOString() },
