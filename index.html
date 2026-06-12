@@ -296,6 +296,24 @@ svg.donut .seg:hover{stroke-width:33}
 .thsw{height:58px;border-radius:11px;margin-bottom:11px;position:relative;overflow:hidden;border:1px solid rgba(128,128,128,.25)}
 .thname{font-size:13.5px;font-weight:700}
 .thpsy{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5}
+/* v3 additions */
+.btn.danger{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff}
+.ptext code{background:var(--bg2);padding:1px 6px;border-radius:6px;font-size:13px}
+.ptext a{color:var(--accent);text-decoration:underline;word-break:break-all}
+.ptext pre{background:var(--bg2);padding:10px 14px;border-radius:10px;overflow-x:auto;font-size:13px;margin:8px 0}
+.cmt-children{margin-left:16px;padding-left:14px;border-left:2px solid var(--border)}
+.menuwrap{position:relative}
+.menu{position:absolute;right:0;top:38px;background:var(--bg2);border:1px solid var(--border2);border-radius:13px;box-shadow:var(--shadow);z-index:90;min-width:178px;overflow:hidden}
+.menu button{display:flex;gap:9px;align-items:center;width:100%;padding:11px 15px;font-size:13px;color:var(--text2);text-align:left}
+.menu button:hover{background:var(--soft);color:var(--text)}
+.ach{display:flex;gap:14px;align-items:center;padding:15px 16px;border:1px solid var(--border);border-radius:15px;background:var(--card);margin-bottom:10px}
+.ach.locked{opacity:.55}
+.medal{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bar{height:6px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.slink{width:36px;height:36px;border-radius:11px;border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;color:var(--text2);font-size:11px;font-weight:800;letter-spacing:.5px;transition:all .14s}
+.slink:hover{border-color:var(--accent);color:var(--accent)}
+.showbadge{display:inline-flex;gap:6px;align-items:center;padding:5px 13px;border-radius:999px;font-size:11px;font-weight:800;border:1px solid;letter-spacing:.4px}
 </style>
 </head>
 <body data-theme="maroon">
@@ -303,6 +321,7 @@ svg.donut .seg:hover{stroke-width:33}
 <header id="mtop">
   <div class="logo" onclick="nav('#/explore')">L<b>O</b>RE</div>
   <div class="acts">
+    <button class="iconbtn" onclick="nav('#/dms')" aria-label="Messages"><svg class="ic" viewBox="0 0 24 24"><path d="M21 11.5c0 4.1-4 7.5-9 7.5-1.2 0-2.4-.2-3.4-.6L3 20l1.8-3.6C3.7 15 3 13.3 3 11.5 3 7.4 7 4 12 4s9 3.4 9 7.5Z"/></svg></button>
     <button class="iconbtn" onclick="nav('#/search')" aria-label="Search"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></button>
     <button class="iconbtn" onclick="nav('#/settings')" aria-label="Settings"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg></button>
   </div>
@@ -402,6 +421,129 @@ notifications:[
  {type:"rank_change",topic:"Philosophy",oldRank:2,newRank:1,ts:Date.now()-93600000,read:true}
 ]};
 
+/* ============ ACHIEVEMENTS — 51 missions, tiered for habit loops ============ */
+const ACH=[
+ // onboarding (instant wins — dopamine on day one)
+ {id:"first_post",n:"First Page",d:"Publish your first post",icon:"✒",tier:1,stat:"posts",goal:1},
+ {id:"first_vote",n:"First Judgement",d:"Cast your first vote",icon:"▲",tier:1,stat:"votes",goal:1},
+ {id:"first_comment",n:"First Words",d:"Leave your first reply",icon:"💬",tier:1,stat:"comments",goal:1},
+ {id:"first_follow",n:"First Bond",d:"Follow someone",icon:"🤝",tier:1,stat:"following",goal:1},
+ {id:"pfp_set",n:"Face Reveal",d:"Set a profile picture",icon:"🪞",tier:1,stat:"pfp",goal:1},
+ {id:"bio_set",n:"Identity",d:"Write a custom bio",icon:"📝",tier:1,stat:"bio",goal:1},
+ {id:"tag_3",n:"Curious Mind",d:"Add 3 interest tags",icon:"🏷",tier:1,stat:"tags",goal:3},
+ {id:"theme_swap",n:"Shapeshifter",d:"Try a different theme",icon:"🎨",tier:1,stat:"themes",goal:2},
+ // posting ladder (variable goals — the grind loop)
+ {id:"posts_5",n:"Scribe",d:"5 posts",icon:"📜",tier:1,stat:"posts",goal:5},
+ {id:"posts_10",n:"Chronicler",d:"10 posts",icon:"📖",tier:2,stat:"posts",goal:10},
+ {id:"posts_25",n:"Storyteller",d:"25 posts",icon:"🖋",tier:2,stat:"posts",goal:25},
+ {id:"posts_50",n:"Lorekeeper",d:"50 posts",icon:"🗝",tier:3,stat:"posts",goal:50},
+ {id:"posts_100",n:"Centurion",d:"100 posts",icon:"💯",tier:3,stat:"posts",goal:100},
+ {id:"posts_250",n:"Archivist",d:"250 posts",icon:"🏛",tier:4,stat:"posts",goal:250},
+ {id:"posts_500",n:"Living Legend",d:"500 posts",icon:"🌟",tier:5,stat:"posts",goal:500},
+ // followers ladder (social proof loop)
+ {id:"fol_10",n:"Noticed",d:"10 followers",icon:"👁",tier:2,stat:"followers",goal:10},
+ {id:"fol_50",n:"Rising Voice",d:"50 followers",icon:"📣",tier:3,stat:"followers",goal:50},
+ {id:"fol_100",n:"Crowd Puller",d:"100 followers",icon:"🧲",tier:3,stat:"followers",goal:100},
+ {id:"fol_300",n:"Influence",d:"300 followers",icon:"🌊",tier:4,stat:"followers",goal:300},
+ {id:"fol_1000",n:"Icon",d:"1,000 followers",icon:"👑",tier:5,stat:"followers",goal:1000},
+ // upvote ladder (validation loop)
+ {id:"up_10",n:"Agreeable",d:"10 upvotes received",icon:"⬆",tier:1,stat:"upsReceived",goal:10},
+ {id:"up_50",n:"Crowd Favorite",d:"50 upvotes received",icon:"🔥",tier:2,stat:"upsReceived",goal:50},
+ {id:"up_100",n:"Beloved",d:"100 upvotes received",icon:"❤",tier:3,stat:"upsReceived",goal:100},
+ {id:"up_500",n:"Adored",d:"500 upvotes received",icon:"💎",tier:4,stat:"upsReceived",goal:500},
+ {id:"up_1000",n:"Worshipped",d:"1,000 upvotes received",icon:"⚡",tier:5,stat:"upsReceived",goal:1000},
+ // engagement given (reciprocity loop)
+ {id:"votes_25",n:"Critic",d:"Cast 25 votes",icon:"⚖",tier:1,stat:"votes",goal:25},
+ {id:"votes_100",n:"Taste Maker",d:"Cast 100 votes",icon:"🎯",tier:2,stat:"votes",goal:100},
+ {id:"votes_500",n:"The Algorithm",d:"Cast 500 votes",icon:"🤖",tier:4,stat:"votes",goal:500},
+ {id:"cmt_10",n:"Conversationalist",d:"10 replies written",icon:"🗨",tier:1,stat:"comments",goal:10},
+ {id:"cmt_50",n:"Debate Club",d:"50 replies written",icon:"🎤",tier:2,stat:"comments",goal:50},
+ {id:"cmt_200",n:"Town Square",d:"200 replies written",icon:"🏟",tier:4,stat:"comments",goal:200},
+ // streaks (the retention engine)
+ {id:"streak_3",n:"Warming Up",d:"3-day post streak",icon:"🕯",tier:1,stat:"streak",goal:3},
+ {id:"streak_7",n:"Bronze Flame",d:"7-day streak",icon:"🔥",tier:2,stat:"streak",goal:7},
+ {id:"streak_30",n:"Silver Flame",d:"30-day streak",icon:"🔥",tier:3,stat:"streak",goal:30},
+ {id:"streak_90",n:"Gold Flame",d:"90-day streak",icon:"🔥",tier:4,stat:"streak",goal:90},
+ {id:"streak_365",n:"Eternal Flame",d:"365-day streak",icon:"☀",tier:5,stat:"streak",goal:365},
+ // social/discovery
+ {id:"following_10",n:"Explorer",d:"Follow 10 people",icon:"🧭",tier:1,stat:"following",goal:10},
+ {id:"following_50",n:"Networker",d:"Follow 50 people",icon:"🕸",tier:2,stat:"following",goal:50},
+ {id:"dm_1",n:"Slide In",d:"Send your first DM",icon:"✉",tier:1,stat:"dms",goal:1},
+ {id:"dm_100",n:"Pen Pal",d:"100 DMs sent",icon:"📮",tier:3,stat:"dms",goal:100},
+ {id:"group_1",n:"Circle Maker",d:"Create a group chat",icon:"⭕",tier:2,stat:"groups",goal:1},
+ {id:"comm_3",n:"Joiner",d:"Join 3 communities",icon:"🏘",tier:1,stat:"communities",goal:3},
+ // quality (status loop)
+ {id:"echo_1",n:"Echo",d:"A post hits 10 shares",icon:"〰",tier:3,stat:"echoes",goal:1},
+ {id:"reso_1",n:"Resonance",d:"A post hits 100 shares",icon:"🌀",tier:5,stat:"resonance",goal:1},
+ {id:"pioneer_1",n:"Pioneer",d:"First reply on a post that blows up",icon:"🚩",tier:3,stat:"pioneer",goal:1},
+ {id:"seal_1",n:"Chosen One",d:"Receive the ANDROBEET Seal",icon:"⭐",tier:5,stat:"seal",goal:1},
+ {id:"rank_top10",n:"Contender",d:"Reach top 10 in any topic",icon:"🥉",tier:3,stat:"bestRank10",goal:1},
+ {id:"rank_top3",n:"Podium",d:"Reach top 3 in any topic",icon:"🥈",tier:4,stat:"bestRank3",goal:1},
+ {id:"rank_1",n:"Apex",d:"Rank #1 in any topic",icon:"🥇",tier:5,stat:"bestRank1",goal:1},
+ // night-owl flavor (identity loop)
+ {id:"night_post",n:"3AM Thoughts",d:"Post between 2–5 AM",icon:"🌙",tier:2,stat:"nightPosts",goal:1},
+ {id:"early_100",n:"Founding Page",d:"Among the first 100 users",icon:"🏆",tier:4,stat:"early",goal:1}
+];
+const TIERCOL={1:"#8d9aa8",2:"#34d399",3:"#4da6ff",4:"#b27aff",5:"#eab308"};
+const TIERNAME={1:"Common",2:"Uncommon",3:"Rare",4:"Epic",5:"Legendary"};
+
+function myStats(){
+  const u=SEED.users[S.me]||{};
+  const posts=(S.counters?.posts||0)+(LIVE?0:S.myPosts.length);
+  const upsReceived=allPosts().filter(p=>p.author===S.me).reduce((a,p)=>a+p.up.length,0);
+  const ranks=Object.values(u.ranks||{});
+  return{
+    posts:Math.max(posts,allPosts().filter(p=>p.author===S.me).length),
+    votes:S.counters?.votes||0, comments:S.counters?.comments||0,
+    following:S.follows.length, followers:(u.followers||[]).length,
+    upsReceived, streak:u.streak?.count||0,
+    dms:S.counters?.dms||0, groups:S.counters?.groups||0,
+    communities:S.joined.length, echoes:u.echoes||0, resonance:u.resonance||0,
+    pioneer:u.pioneer||0, seal:u.seal?1:0,
+    pfp:S.profile.pfp?1:0, bio:S.profile.bio&&S.profile.bio!=="New to LORE. Writing my first pages."?1:0,
+    tags:S.profile.tags.length, themes:S.counters?.themes||1,
+    nightPosts:S.counters?.nightPosts||0, early:(LIVEUSERS||[]).length<=100&&S.token?1:0,
+    bestRank10:ranks.some(r=>r<=10)?1:0, bestRank3:ranks.some(r=>r<=3)?1:0, bestRank1:ranks.some(r=>r===1)?1:0
+  };
+}
+function bump(k,n){S.counters=S.counters||{};S.counters[k]=(S.counters[k]||0)+(n||1);save();checkAch();}
+function checkAch(){
+  const st=myStats();S.claimed=S.claimed||[];
+  const ready=ACH.filter(a=>!S.claimed.includes(a.id)&&(st[a.stat]||0)>=a.goal);
+  if(ready.length&&!S.achToastAt||Date.now()-(S.achToastAt||0)>5000){
+    if(ready.length){toast("🏆 Achievement ready to claim: "+ready[0].n);S.achToastAt=Date.now();save();}
+  }
+  return ready;
+}
+
+/* ============ MARKDOWN-LITE + MEDIA EMBEDS ============ */
+function md(raw){
+  let h=esc(raw);
+  // media links on their own line → embeds
+  h=h.replace(/(^|\n)(https?:\/\/\S+\.(?:png|jpe?g|gif|webp)(?:\?\S*)?)(?=\n|$)/gi,
+    (m,p,url)=>p+`<img class="pimg" src="${url}" loading="lazy" onerror="this.style.display='none'">`);
+  h=h.replace(/(^|\n)(https?:\/\/\S+\.(?:mp4|webm)(?:\?\S*)?)(?=\n|$)/gi,
+    (m,p,url)=>p+`<video class="pimg" src="${url}" controls preload="metadata"></video>`);
+  h=h.replace(/(^|\n)(https?:\/\/\S+\.(?:mp3|ogg|wav|m4a)(?:\?\S*)?)(?=\n|$)/gi,
+    (m,p,url)=>p+`<audio src="${url}" controls style="width:100%;margin-top:8px"></audio>`);
+  h=h.replace(/(^|\n)(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,15})\S*)(?=\n|$)/gi,
+    (m,p,url,id)=>p+`<div style="position:relative;padding-top:56%;border-radius:14px;overflow:hidden;margin-top:8px;border:1px solid var(--border)"><iframe src="https://www.youtube-nocookie.com/embed/${id}" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe></div>`);
+  // formatting
+  h=h.replace(/```([\s\S]*?)```/g,"<pre>$1</pre>");
+  h=h.replace(/`([^`\n]+)`/g,"<code>$1</code>");
+  h=h.replace(/\*\*([^*\n]+)\*\*/g,"<b>$1</b>");
+  h=h.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,"$1<i>$2</i>");
+  h=h.replace(/~~([^~\n]+)~~/g,"<s>$1</s>");
+  h=h.replace(/(^|\n)### (.+)/g,"$1<b style='font-size:16px'>$2</b>");
+  h=h.replace(/(^|\n)&gt; (.+)/g,"$1<span style='display:block;border-left:3px solid var(--accent);padding-left:11px;color:var(--text2)'>$2</span>");
+  // remaining bare links
+  h=h.replace(/(^|[\s>])(https?:\/\/[^\s<]+)/g,(m,p,url)=>/<\/(img|video|audio|iframe)/.test(m)?m:p+`<a href="${url}" target="_blank" rel="noopener nofollow">${url.length>48?url.slice(0,48)+"…":url}</a>`);
+  // #hashtags and @mentions
+  h=h.replace(/(^|[\s>])#([A-Za-z][\w]{1,29})/g,(m,p,t)=>p+`<a onclick="event.stopPropagation();nav('#/topic/${t}')" style="cursor:pointer">#${t}</a>`);
+  h=h.replace(/(^|[\s>])@([a-z0-9_]{3,20})/g,(m,p,u)=>p+`<a onclick="event.stopPropagation();nav('#/u/${u}')" style="cursor:pointer">@${u}</a>`);
+  return h;
+}
+
 /* ============ STATE ============ */
 const LS="lore_state_v2";
 let S=loadState();
@@ -409,8 +551,8 @@ function loadState(){
   try{const s=JSON.parse(localStorage.getItem(LS));if(s&&s.me)return s;}catch(e){}
   try{const o=JSON.parse(localStorage.getItem("lore_state_v1"));if(o&&o.me)return {...o,token:o.token||""};}catch(e){}
   return {me:"you",theme:"maroon",token:"",
-    profile:{bio:"New to LORE. Writing my first pages.",pfp:"",tags:["Tech"],voice:"",joined:new Date().toISOString().slice(0,10)},
-    myPosts:[],votes:{},follows:["androbeet"],comments:{},joined:[],readNotifs:false,shares:{}};
+    profile:{bio:"New to LORE. Writing my first pages.",pfp:"",tags:[],voice:"",joined:new Date().toISOString().slice(0,10)},
+    myPosts:[],votes:{},follows:[],comments:{},joined:[],readNotifs:false,shares:{},voteTimes:{}};
 }
 function save(){localStorage.setItem(LS,JSON.stringify(S));}
 
@@ -428,20 +570,29 @@ function avatarHTML(u,s){
 }
 function toast(m){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
 function allPosts(){
-  const mine=S.myPosts.map(p=>({...p}));
+  const mine=LIVE?[]:S.myPosts.map(p=>({...p}));
   const seeded=SEED.posts.map(p=>{
-    const v=S.votes[p.id],ex=S.comments[p.id]||[];
+    // live posts after a feed refresh already include my vote server-side —
+    // only overlay local votes cast SINCE the last refresh
+    const vt=S.voteTimes&&S.voteTimes[p.id];
+    const v=(vt&&vt>LASTFEED)?S.votes[p.id]:(LIVE?null:S.votes[p.id]);
+    const ex=LIVE?[]:(S.comments[p.id]||[]);
     const up=[...p.up],down=[...p.down];
     if(v==="up")up.push(S.me);if(v==="down")down.push(S.me);
-    return{...p,up,down,comments:[...p.comments,...ex],shares:p.shares+(S.shares[p.id]||0)};
+    return{...p,up,down,comments:[...p.comments,...ex],shares:p.shares+((!LIVE&&S.shares[p.id])||0)};
   });
-  return[...mine,...seeded].sort((a,b)=>b.ts-a.ts);
+  // my brand-new posts (posted since last feed refresh) shown instantly
+  const fresh=LIVE?S.myPosts.filter(p=>p.ts>LASTFEED&&!SEED.posts.some(x=>x.author===p.author&&Math.abs(x.ts-p.ts)<60000)).map(p=>({...p})):[];
+  return[...fresh,...mine,...seeded].sort((a,b)=>b.ts-a.ts);
 }
 function getUser(u){
   if(u===S.me&&!SEED.users[u])return{bio:S.profile.bio,pfp:S.profile.pfp,tags:S.profile.tags,voice:S.profile.voice,followers:[],following:S.follows,joined:S.profile.joined,streak:{count:S.myPosts.length,tier:S.myPosts.length>=30?"Silver":S.myPosts.length>=7?"Bronze":"—"},seal:false,echoes:0,resonance:0,pioneer:0,ranks:{},color:userColor(u)};
   return SEED.users[u];
 }
-function unread(){return S.readNotifs?0:SEED.notifications.filter(n=>!n.read).length;}
+function unread(){
+  if(LIVE)return LIVENOTIFS?LIVENOTIFS.filter(n=>!n.read&&(!S.readNotifsAt||n.ts>S.readNotifsAt)).length:0;
+  return S.readNotifs?0:SEED.notifications.filter(n=>!n.read).length;
+}
 
 /* ============ ROUTER (bulletproof: works even if hash unchanged) ============ */
 const routes={};
@@ -464,7 +615,8 @@ function head(t,s){$("#ptitle").textContent=t;$("#psub").textContent=s||"";}
 
 /* ============ CHROME: left rail, right rail, tabbar ============ */
 const NAVS=[["explore","Explore","explore"],["topics","Topics","topics"],["communities","Communities","comm"],
-["search","Search","search"],["notifications","Activity","alerts"],["dms","Messages","msg"],["me","Profile","user"],["settings","Settings","gear"]];
+["search","Search","search"],["notifications","Activity","alerts"],["dms","Messages","msg"],["achievements","Achievements","trophy"],["me","Profile","user"],["settings","Settings","gear"]];
+I.trophy='<svg class="ic" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/></svg>';
 function drawChrome(){
   const n=unread();
   $("#leftrail").innerHTML=`
@@ -562,8 +714,13 @@ async function submitAuth(mode){
   const body={username:$("#a_user").value.trim(),password:$("#a_pass").value};
   if(mode==="signup"){body.email=$("#a_email").value.trim();const k=$("#a_key");if(k&&k.value)body.adminKey=k.value;}
   const d=await api("/"+mode,body);
-  if(d&&d.token){S.token=d.token;S.me=d.username;save();closeModal();
-    toast(mode==="signup"?"Welcome to the Lore, @"+d.username:"Logged in as @"+d.username);render();}
+  if(d&&d.token){
+    // fresh identity: wipe any local demo leftovers (votes/follows/posts)
+    S.token=d.token;S.me=d.username;
+    S.follows=[];S.votes={};S.voteTimes={};S.comments={};S.shares={};S.myPosts=[];S.joined=[];
+    save();closeModal();
+    toast(mode==="signup"?"Welcome to the Lore, @"+d.username:"Logged in as @"+d.username);
+    loadLive();render();}
 }
 function logout(){S.token="";save();toast("Logged out");render();if(LIVE)openAuth();}
 function requireLogin(){if(LIVE&&!S.token){openAuth();return true;}return false;}
@@ -584,16 +741,62 @@ function postCard(p,full){
         ${eb}<span class="chip" onclick="event.stopPropagation();nav('#/topic/${esc(p.topic)}')">#${esc(p.topic)}</span>
       </div>
     </div>
-    <div class="ptext">${esc(p.text)}</div>
+    <div class="ptext">${md(p.text)}</div>
     ${p.img?`<img class="pimg" src="${esc(p.img)}" alt="" loading="lazy" onerror="this.style.display='none'">`:""}
     <div class="pacts">
       <button class="pact ${my==="up"?"up":""}" onclick="event.stopPropagation();vote('${p.id}','up')">${ic("up")} ${p.up.length}</button>
       <button class="pact ${my==="down"?"dn":""}" onclick="event.stopPropagation();vote('${p.id}','down')">${ic("down")} ${p.down.length}</button>
       <button class="pact" onclick="event.stopPropagation();nav('#/post/${p.id}')">${ic("cmt")} ${p.comments.length}</button>
       <button class="pact" onclick="event.stopPropagation();sharePost('${p.id}')">${ic("share")} ${p.shares}</button>
+      ${p.private?'<span class="badge mut">🔒 PRIVATE</span>':""}
       <span class="score">${score>=0?"+":""}${score}</span>
+      <span class="menuwrap"><button class="pact" style="padding:7px 11px" onclick="event.stopPropagation();toggleMenu('${p.id}')">⋯</button>
+        <span id="menu_${p.id}" style="display:none" class="menu">
+          ${p.author===S.me?`
+            <button onclick="event.stopPropagation();togglePrivacy('${p.id}',${!p.private})">${p.private?"🌍 Make public":"🔒 Make private"}</button>
+            <button onclick="event.stopPropagation();delPost('${p.id}')" style="color:#f87171">🗑 Delete post</button>`:`
+            <button onclick="event.stopPropagation();openReport('post','${p.id}')">🚩 Report post</button>
+            <button onclick="event.stopPropagation();openReport('user','${esc(p.author)}')">🚩 Report @${esc(p.author)}</button>`}
+        </span></span>
     </div>
   </article>`;
+}
+function toggleMenu(id){
+  document.querySelectorAll(".menu").forEach(m=>{if(m.id!=="menu_"+id)m.style.display="none";});
+  const m=$("#menu_"+id);if(m)m.style.display=m.style.display==="none"?"block":"none";
+}
+document.addEventListener("click",e=>{if(!e.target.closest(".menuwrap"))document.querySelectorAll(".menu").forEach(m=>m.style.display="none");});
+async function delPost(id){
+  if(!confirm("Delete this post forever?"))return;
+  S.myPosts=S.myPosts.filter(p=>p.id!==id);
+  SEED.posts=SEED.posts.filter(p=>p.id!==id);
+  save();render();toast("Post deleted");
+  if(LIVE)api("/delete-post",{post:id});
+}
+async function togglePrivacy(id,priv){
+  const p=S.myPosts.find(x=>x.id===id)||SEED.posts.find(x=>x.id===id);
+  if(p)p.private=priv;
+  save();render();toast(priv?"Post is now private — only you see it":"Post is public again");
+  if(LIVE)api("/set-privacy",{post:id,private:priv});
+}
+function openReport(kind,target){
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h2>🚩 Report ${kind==="user"?"@"+esc(target):"post"}</h2>
+      <div class="field"><label>REASON</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="rep_btns">
+          ${["Spam","Nudity","Hate speech","Ban evasion","Harassment","Other"].map((r,i)=>`<button class="tab ${i===0?"on":""}" onclick="document.querySelectorAll('#rep_btns .tab').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${r}</button>`).join("")}
+        </div></div>
+      <div class="field"><label>TELL US MORE (OPTIONAL)</label><textarea id="rep_note" rows="3" placeholder="Why are you reporting this?"></textarea></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn danger" onclick="submitReport('${kind}','${esc(target)}')">Submit report</button>
+      </div></div></div>`;
+}
+async function submitReport(kind,target){
+  const reason=document.querySelector("#rep_btns .tab.on")?.textContent||"Other";
+  const note=$("#rep_note").value.trim();
+  closeModal();toast("Report sent to ANDROBEET. Thank you.");
+  if(LIVE)api("/report",{kind,target,reason,note});
 }
 function vote(id,dir){
   if(requireLogin())return;
@@ -602,7 +805,8 @@ function vote(id,dir){
     const arr=dir==="up"?mine.up:mine.down,other=dir==="up"?mine.down:mine.up;
     const i=arr.indexOf(S.me);
     if(i>=0)arr.splice(i,1);else{arr.push(S.me);const j=other.indexOf(S.me);if(j>=0)other.splice(j,1);}
-  }else S.votes[id]=S.votes[id]===dir?"":dir;
+  }else{S.votes[id]=S.votes[id]===dir?"":dir;S.voteTimes=S.voteTimes||{};S.voteTimes[id]=Date.now();}
+  bump("votes");
   save();render();
   if(LIVE)api("/vote",{post:id,dir});
 }
@@ -618,12 +822,26 @@ function sharePost(id){
 routes.explore=()=>{
   head("Explore","the latest Lore");
   const tab=sessionStorage.getItem("exptab")||"Hot";
-  let posts=allPosts();
+  let posts=allPosts().filter(p=>!p.private||p.author===S.me);
+  // suggestions: users I don't follow yet (by activity), topics I haven't tagged
+  const sugUsers=[...new Set(posts.map(p=>p.author))].filter(u=>u!==S.me&&!S.follows.includes(u)).slice(0,3);
+  const sugTopics=SEED.tags.filter(t=>!S.profile.tags.includes(t)&&posts.some(p=>p.topic===t)).slice(0,4);
+  const sugHTML=(sugUsers.length||sugTopics.length)?`
+    <div class="card" style="padding:15px 18px">
+      <h3 style="font-size:11px;letter-spacing:1.5px;color:var(--muted);font-weight:800;margin-bottom:11px">SUGGESTED FOR YOU</h3>
+      ${sugUsers.length?`<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:${sugTopics.length?"11px":"0"}">${sugUsers.map(u=>`
+        <div style="display:flex;align-items:center;gap:9px;background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:5px 6px 5px 6px">
+          <span style="cursor:pointer;display:flex;align-items:center;gap:8px" onclick="nav('#/u/${esc(u)}')">${avatarHTML(u,28)}<b style="font-size:13px">@${esc(u)}</b></span>
+          <button class="btn sm" style="padding:5px 13px;border-radius:999px" onclick="toggleFollow('${esc(u)}')">Follow</button>
+        </div>`).join("")}</div>`:""}
+      ${sugTopics.length?`<div style="display:flex;gap:7px;flex-wrap:wrap">${sugTopics.map(t=>`<span class="chip" onclick="nav('#/topic/${esc(t)}')">#${esc(t)}</span>`).join("")}</div>`:""}
+    </div>`:"";
   if(tab==="Hot")posts.sort((a,b)=>(b.up.length-b.down.length)-(a.up.length-a.down.length));
   if(tab==="Rising")posts.sort((a,b)=>((b.up.length+b.comments.length)/Math.max(1,(Date.now()-b.ts)/36e5))-((a.up.length+a.comments.length)/Math.max(1,(Date.now()-a.ts)/36e5)));
   if(tab==="Random")posts.sort(()=>Math.random()-0.5);
   $("#content").innerHTML=`
     <div class="tabs">${["Hot","Rising","New","Random"].map(t=>`<button class="tab ${t===tab?"on":""}" onclick="sessionStorage.setItem('exptab','${t}');render()">${t}</button>`).join("")}</div>
+    ${sugHTML}
     ${posts.map(p=>postCard(p)).join("")||`<div class="empty">${ic("explore")}No posts yet. Be the first page of the Lore.</div>`}`;
 };
 
@@ -645,25 +863,48 @@ routes.post=(id)=>{
         <input id="cbox" placeholder="Add to the thread…" onkeydown="if(event.key==='Enter')addComment('${p.id}')">
         <button class="btn sm" onclick="addComment('${p.id}')">Reply</button>
       </div>
-      <div style="margin-top:16px">
-        ${p.comments.map((c,i)=>`<div class="cmt">
-          ${avatarHTML(c.a,32)}
-          <div><span class="who" onclick="nav('#/u/${esc(c.a)}')">@${esc(c.a)}</span>
-          ${p.pioneer===c.a&&i===0?'<span class="badge pio">PIONEER</span>':""}
-          <span class="muted" style="margin-left:6px">${timeAgo(c.ts)}</span>
-          <div style="margin-top:4px;color:var(--text2)">${esc(c.t)}</div></div>
-        </div>`).join("")||`<div class="muted" style="padding:12px 0">No replies yet. Claim the PIONEER badge.</div>`}
-      </div>
+      <div style="margin-top:16px">${renderComments(p)||`<div class="muted" style="padding:12px 0">No replies yet. Claim the PIONEER badge.</div>`}</div>
     </div>`;
 };
-function addComment(id){
+function renderComments(p){
+  const cs=p.comments.filter(c=>c.a);
+  cs.forEach((c,i)=>{if(!c.cid)c.cid="i"+i;});
+  const tree=cs.filter(c=>!c.parent);
+  const kids=cid=>cs.filter(c=>c.parent===cid);
+  const one=(c,depth)=>`<div class="cmt" id="cmt_${c.cid}">
+      ${avatarHTML(c.a,30)}
+      <div style="min-width:0;flex:1"><span class="who" onclick="nav('#/u/${esc(c.a)}')">@${esc(c.a)}</span>
+      ${p.pioneer===c.a&&!c.parent?'<span class="badge pio">PIONEER</span>':""}
+      <span class="muted" style="margin-left:6px">${timeAgo(c.ts)}</span>
+      <div style="margin-top:4px;color:var(--text2)">${md(c.t)}</div>
+      <div style="margin-top:6px"><span class="link" style="font-size:12px" onclick="replyBox('${p.id}','${c.cid}','${esc(c.a)}')">Reply</span>
+      <span class="link" style="font-size:12px;color:var(--muted);margin-left:12px" onclick="openReport('comment','${p.id}:${c.cid}')">Report</span></div>
+      <div id="rb_${c.cid}"></div>
+      ${kids(c.cid).length?`<div class="cmt-children">${kids(c.cid).map(k=>one(k,depth+1)).join("")}</div>`:""}
+      </div></div>`;
+  return tree.map(c=>one(c,0)).join("");
+}
+function replyBox(pid,cid,who){
+  document.querySelectorAll("[id^=rb_]").forEach(e=>e.innerHTML="");
+  const box=$("#rb_"+cid);if(!box)return;
+  box.innerHTML=`<div style="display:flex;gap:8px;margin-top:8px">
+    <input id="rin_${cid}" placeholder="Reply to @${who}…" onkeydown="if(event.key==='Enter')addComment('${pid}','${cid}')">
+    <button class="btn sm" onclick="addComment('${pid}','${cid}')">Reply</button></div>`;
+  $("#rin_"+cid).focus();
+}
+function addComment(id,parent){
   if(requireLogin())return;
-  const v=$("#cbox").value.trim();if(!v)return;
+  const inp=parent?$("#rin_"+parent):$("#cbox");
+  const v=inp?inp.value.trim():"";if(!v)return;
   const mine=S.myPosts.find(p=>p.id===id);
-  const c={a:S.me,t:v,ts:Date.now()};
-  if(mine)mine.comments.push(c);else(S.comments[id]=S.comments[id]||[]).push(c);
+  const c={a:S.me,t:v,ts:Date.now(),parent:parent||null,cid:"c"+Date.now()};
+  if(mine)mine.comments.push(c);else{
+    const sp=SEED.posts.find(p=>p.id===id);
+    if(sp&&!sp.live)sp.comments.push(c);else(S.comments[id]=S.comments[id]||[]).push(c);
+  }
+  bump("comments");
   save();render();toast("Reply added");
-  if(LIVE)api("/comment",{post:id,text:v});
+  if(LIVE)api("/comment",{post:id,text:v,parent:parent||null});
 }
 
 routes.topics=()=>{
@@ -734,7 +975,19 @@ function profilePage(uname){
   if(!u){head("Profile");$("#content").innerHTML=`<div class="empty">${ic("user")}@${esc(uname)} isn't part of the Lore.</div>`;return;}
   const isMe=uname===S.me;
   head(isMe?"Profile":"@"+uname,"");
-  const posts=allPosts().filter(p=>p.author===uname);
+  const posts=allPosts().filter(p=>p.author===uname&&(isMe||!p.private));
+  const banner=(isMe?S.profile.banner:u.banner)||"";
+  const socials=(isMe?S.profile.socials:u.socials)||{};
+  const SOC={instagram:["IG","https://instagram.com/"],x:["𝕏","https://x.com/"],youtube:["YT","https://youtube.com/@"],snapchat:["SC","https://snapchat.com/add/"],facebook:["FB","https://facebook.com/"],tiktok:["TT","https://tiktok.com/@"],discord:["DC",""],website:["🔗",""]};
+  const socHTML=Object.entries(socials).filter(([k,v])=>v).map(([k,v])=>{
+    const[label,base]=SOC[k]||["🔗",""];
+    const url=/^https?:/.test(v)?v:base?base+v.replace("@",""):v;
+    return base||/^https?:/.test(v)?`<a class="slink" href="${esc(url)}" target="_blank" rel="noopener" title="${k}">${label}</a>`
+      :`<span class="slink" title="${k}: ${esc(v)}" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(v)}').then(()=>toast('${k} copied'))">${label}</span>`;
+  }).join("");
+  const showIds=(isMe?S.showcase:u.showcase)||[];
+  const showHTML=showIds.map(id=>{const a=ACH.find(x=>x.id===id);if(!a)return"";
+    return`<span class="showbadge" style="border-color:${TIERCOL[a.tier]}66;color:${TIERCOL[a.tier]};background:${TIERCOL[a.tier]}14">${a.icon} ${a.n}</span>`;}).join("");
   const followers=(u.followers||[]).length+((!isMe&&S.follows.includes(uname))?1:0);
   const iF=S.follows.includes(uname);
   const mutual=!isMe&&iF&&(u.following||[]).includes(S.me);
@@ -743,7 +996,7 @@ function profilePage(uname){
   const wave=Array.from({length:36},(_,i)=>`<i style="height:${5+Math.abs(Math.sin(i*1.7))*19}px"></i>`).join("");
   $("#content").innerHTML=`
   <div class="pcard">
-    <div class="pbanner" style="background:linear-gradient(120deg,${userColor(uname)},var(--accent2) 60%,#000a)"></div>
+    <div class="pbanner" style="background:${banner?`url('${esc(banner)}') center/cover no-repeat`:`linear-gradient(120deg,${userColor(uname)},var(--accent2) 60%,#000a)`}"></div>
     <div class="pbody">
       <span class="ring">${(isMe?S.profile.pfp:u.pfp)?`<img class="av" src="${esc(isMe?S.profile.pfp:u.pfp)}" width="90" height="90" style="border:3px solid var(--card)" onerror="this.outerHTML=genAv('${esc(uname)}',90)">`:genAv(uname,90)}</span>
       <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">
@@ -754,6 +1007,8 @@ function profilePage(uname){
         ${online?'<span style="color:var(--green);font-size:12px;font-weight:700">● online</span>':'<span class="muted">○ offline</span>'}
       </div>
       ${u.streak&&u.streak.count>0?`<div style="margin-top:9px"><span class="badge strk">${ic("flame")} ${u.streak.count}-day streak${u.streak.tier!=="—"?" · "+u.streak.tier:""}</span></div>`:""}
+      ${showHTML?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">${showHTML}</div>`:""}
+      ${socHTML?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">${socHTML}</div>`:""}
       <p style="margin-top:13px;color:var(--text2);line-height:1.7;max-width:560px">${esc(u.bio)}</p>
       ${u.voice?`<div class="voice"><button class="playb" onclick="playVoice()">${ic("play",17)}</button><div class="wave">${wave}</div><span class="muted">voice card · 0:06</span></div>`:""}
       <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:14px">
@@ -769,7 +1024,7 @@ function profilePage(uname){
       </div>
       ${ranks?`<div class="muted" style="margin:10px 0 6px">TOPIC RANKS</div><div style="display:flex;gap:8px;flex-wrap:wrap">${ranks}</div>`:""}
       <div style="display:flex;gap:10px;margin-top:20px">
-        ${isMe?`<button class="btn" onclick="nav('#/settings')">Edit profile</button>${LIVE&&S.token?`<button class="btn ghost" onclick="logout()">${ic("logout",16)} Log out</button>`:""}`
+        ${isMe?`<button class="btn" onclick="nav('#/settings')">Edit profile</button><button class="btn ghost" onclick="nav('#/achievements')">🏆 Achievements</button>`
         :`<button class="btn ${iF?"ghost":""}" onclick="toggleFollow('${esc(uname)}')">${iF?"Following ✓":"Follow"}</button>
           <button class="btn ghost" onclick="openThread('${esc(uname)}')">${ic("msg",16)} Message</button>`}
       </div>
@@ -854,6 +1109,25 @@ function doSearch(){
 
 routes.notifications=()=>{
   head("Activity","what's happening around you");
+  if(LIVE){
+    const items=LIVENOTIFS||[];
+    const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg"};
+    const msg=n=>{
+      if(n.type==="follow")return`<b>@${esc(n.from)}</b> started following you`;
+      if(n.type==="upvote")return`<b>@${esc(n.from)}</b> upvoted your post`;
+      if(n.type==="comment")return`<b>@${esc(n.from)}</b> replied: “${esc(n.snippet||"")}”`;
+      if(n.type==="seal")return`<b>${CONFIG.ADMIN_DISPLAY}</b> awarded you the <b>Seal</b>`;
+      if(n.type==="rank_change")return`You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${esc(n.topic)}`;
+      return"activity";};
+    $("#content").innerHTML=items.length?`
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn ghost sm" onclick="S.readNotifsAt=Date.now();save();render()">Mark all read</button></div>
+      ${items.map(n=>`<div class="nrow ${(!n.read&&(!S.readNotifsAt||n.ts>S.readNotifsAt))?"unread":""}" ${n.post?`style="cursor:pointer" onclick="nav('#/post/${esc(n.post)}')"`:n.from?`style="cursor:pointer" onclick="nav('#/u/${esc(n.from)}')"`:""}>
+        <span class="ni">${ic(icon[n.type]||"doc",17)}</span>
+        <div>${msg(n)}<div class="tm">${n.ts?timeAgo(n.ts)+" ago":""}</div></div>
+      </div>`).join("")}`
+      :`<div class="empty">${ic("alerts")}Nothing yet. When people follow you, upvote or reply, it shows up here.</div>`;
+    return;
+  }
   const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg"};
   const msg=n=>{
     if(n.type==="follow")return`<b>@${n.from}</b> started following you`;
@@ -881,25 +1155,86 @@ routes.dms=async()=>{
     return;
   }
   $("#content").innerHTML=`
-    <div class="card" style="padding:14px;display:flex;gap:10px">
-      <input id="dm_new" placeholder="Start a chat: type a @username…" onkeydown="if(event.key==='Enter')openThread(this.value)">
+    <div class="card" style="padding:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <input id="dm_new" placeholder="Start a chat: type a @username…" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')openThread(this.value)">
       <button class="btn sm" onclick="openThread($('#dm_new').value)">Chat</button>
+      <button class="btn ghost sm" onclick="openGroupCreate()">👥 New group</button>
     </div>
     <div id="dm_list"><div class="muted" style="padding:16px">Loading your inbox…</div></div>`;
   const d=await api("/dm-inbox",{});
   if(!d||!d.ok){$("#dm_list").innerHTML=`<div class="muted" style="padding:16px">Couldn't load inbox.</div>`;return;}
-  $("#dm_list").innerHTML=d.threads.length?d.threads.map(t=>`
-    <div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer" onclick="openThread('${esc(t.with)}')">
-      ${avatarHTML(t.with,44)}
-      <div style="min-width:0"><b>@${esc(t.with)}</b>
+  $("#dm_list").innerHTML=d.threads.length?d.threads.map(t=>{
+    const isGroup=String(t.with).startsWith("👥 ");
+    const id=isGroup?"g_"+t.with.slice(3):t.with;
+    return`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer" onclick="${isGroup?`nav('#/group/${esc(id)}')`:`openThread('${esc(t.with)}')`}">
+      ${isGroup?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:avatarHTML(t.with,44)}
+      <div style="min-width:0"><b>${isGroup?esc(t.with.slice(3)):"@"+esc(t.with)}</b>${isGroup?' <span class="muted">· group</span>':""}
         <div class="muted" style="margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.last||"")}</div></div>
       <div style="margin-left:auto;text-align:right;flex-shrink:0">
         <div class="muted">${t.ts?timeAgo(t.ts):""}</div>
         ${t.unread?`<span class="nbadge" style="margin-top:4px">${t.unread}</span>`:""}
       </div>
-    </div>`).join("")
+    </div>`;}).join("")
     :`<div class="empty">${ic("msg")}No conversations yet.<br>Type a @username above to start one.</div>`;
 };
+function openGroupCreate(){
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h2>👥 New group chat</h2>
+      <div class="field"><label>GROUP NAME</label><input id="g_name" placeholder="the-inner-circle"></div>
+      <div class="field"><label>MEMBERS (USERNAMES, COMMA-SEPARATED)</label><input id="g_members" placeholder="alice, bob, charlie"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="createGroup()">Create</button></div>
+    </div></div>`;
+}
+async function createGroup(){
+  const name=$("#g_name").value.trim(),members=$("#g_members").value.split(",").map(m=>m.trim().toLowerCase().replace("@","")).filter(Boolean);
+  if(!name){toast("Name your group");return;}
+  const d=await api("/group-create",{name,members});
+  if(d&&d.ok){closeModal();bump("groups");toast("Group created");nav("#/group/"+d.id);}
+}
+routes.group=async(id)=>{
+  stopDmPoll();
+  head("Group","loading…");
+  if(!LIVE||!S.token){$("#content").innerHTML=`<div class="empty">Log in first.</div>`;return;}
+  const draw=async()=>{
+    const d=await api("/group-thread",{group:id});
+    if(!d||!d.ok)return;
+    head(d.name,d.members.length+" members");
+    const box=$("#g_msgs");
+    if(box){
+      const stick=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+      box.innerHTML=d.messages.length?d.messages.map(m=>{
+        const mine=m.from===S.me;
+        return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
+          ${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(m.from)}</div>`:""}
+          <div style="background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
+        </div>`;}).join(""):`<div class="muted" style="margin:auto;text-align:center">No messages yet.</div>`;
+      if(stick)box.scrollTop=box.scrollHeight;
+    }
+  };
+  $("#content").innerHTML=`
+    <div class="card" style="padding:0;display:flex;flex-direction:column;height:64vh">
+      <div style="display:flex;align-items:center;gap:11px;padding:13px 17px;border-bottom:1px solid var(--border)">
+        <button class="iconbtn" onclick="nav('#/dms')" style="margin-left:-8px"><svg class="ic" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></button>
+        <div class="avg" style="width:34px;height:34px;font-size:15px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>
+        <b id="g_title">${esc(id.replace(/^g_/,""))}</b>
+      </div>
+      <div id="g_msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px"><div class="muted">Loading…</div></div>
+      <div style="display:flex;gap:9px;padding:12px;border-top:1px solid var(--border)">
+        <input id="g_text" placeholder="Message the group… (media links embed)" onkeydown="if(event.key==='Enter')sendGroup('${esc(id)}')">
+        <button class="btn sm" onclick="sendGroup('${esc(id)}')">Send</button>
+      </div>
+    </div>`;
+  await draw();
+  DM_POLL=setInterval(()=>{if(CUR==="group")draw();else stopDmPoll();},5000);
+};
+async function sendGroup(id){
+  const inp=$("#g_text"),text=inp.value.trim();if(!text)return;
+  inp.value="";
+  const d=await api("/group-message",{group:id,text});
+  if(d&&d.ok){bump("dms");routes.group&&(await api("/group-thread",{group:id}));}
+}
 function openThread(name){
   name=String(name||"").trim().toLowerCase().replace("@","").replace(/[^a-z0-9_]/g,"");
   if(!name){toast("Type a username");return;}
@@ -937,7 +1272,7 @@ async function refreshThread(other){
   box.innerHTML=d.messages.length?d.messages.map(m=>{
     const mine=m.from===S.me;
     return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
-      <div style="background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${esc(m.text)}</div>
+      <div style="background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
       <div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">${timeAgo(m.ts)}</div>
     </div>`;}).join("")
     :`<div class="muted" style="text-align:center;margin:auto">No messages yet. Say something — it's private.</div>`;
@@ -951,7 +1286,7 @@ async function sendDm(other){
   if(box)box.insertAdjacentHTML("beforeend",`<div style="align-self:flex-end;max-width:78%"><div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);padding:9px 14px;border-radius:16px 16px 4px 16px;font-size:14px;opacity:.7">${esc(text)}</div></div>`);
   if(box)box.scrollTop=box.scrollHeight;
   const d=await api("/message",{to:other,text});
-  if(d&&d.ok)refreshThread(other);
+  if(d&&d.ok){bump("dms");refreshThread(other);}
 }
 
 routes.settings=()=>{
@@ -991,6 +1326,12 @@ routes.settings=()=>{
     </div>
     <div class="field"><label>PFP URL (OPTIONAL — IMGUR / CATBOX / ANY IMAGE LINK)</label><input id="f_pfp" value="${esc(S.profile.pfp)}" placeholder="https://i.imgur.com/…"></div>
     <div class="field"><label>VOICE CARD URL (MP3/OGG — CATBOX.MOE IS FREE & PERMANENT)</label><input id="f_voice" value="${esc(S.profile.voice)}" placeholder="https://files.catbox.moe/….mp3"></div>
+    <div class="field"><label>PROFILE BANNER URL (WIDE IMAGE BEHIND YOUR PFP)</label><input id="f_banner" value="${esc(S.profile.banner||"")}" placeholder="https://i.imgur.com/…  (leave empty for gradient)"></div>
+    <div class="field"><label>SOCIAL LINKS (USERNAME OR FULL URL)</label>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px">
+        ${[["instagram","Instagram"],["x","X / Twitter"],["youtube","YouTube"],["snapchat","Snapchat"],["facebook","Facebook"],["tiktok","TikTok"],["discord","Discord"],["website","Website"]].map(([k,l])=>
+          `<input id="soc_${k}" value="${esc((S.profile.socials||{})[k]||"")}" placeholder="${l}">`).join("")}
+      </div></div>
     <div class="field"><label>INTEREST TAGS</label>
       <div style="display:flex;gap:7px;flex-wrap:wrap">${SEED.tags.map(t=>`<span class="chip" style="${S.profile.tags.includes(t)?"background:var(--accent);color:var(--acc-ink)":""}" onclick="toggleTag('${esc(t)}')">#${esc(t)}</span>`).join("")}
       <span class="chip" onclick="requestTag()">${ic("plus",12)} request new</span></div>
@@ -998,7 +1339,7 @@ routes.settings=()=>{
     <button class="btn" onclick="saveProfile()">Save profile</button>
   </div>
   <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Account</h2>
-    ${S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn ghost sm" style="margin-top:10px" onclick="logout()">${ic("logout",15)} Log out</button>`
+    ${S.token?`<p class="muted">Logged in as <b>@${esc(S.me)}</b></p><button class="btn danger sm" style="margin-top:10px" onclick="if(confirm('Log out of @${esc(S.me)}?'))logout()">${ic("logout",15)} Log out</button>`
       :`<p class="muted">You're browsing as a guest. Join to post, vote and build your Lore.</p><button class="btn sm" style="margin-top:10px" onclick="openAuth()">Log in / Create account</button>`}
   </div>
   ${S.me===CONFIG.ADMIN?`<div class="card"><h2 style="font-size:16px;margin-bottom:12px">Admin</h2>
@@ -1037,7 +1378,7 @@ function pickPfp(input){
   input.value="";
 }
 
-function setTheme(t){S.theme=t;save();document.body.dataset.theme=t;
+function setTheme(t){S.theme=t;bump("themes");save();document.body.dataset.theme=t;
   document.querySelector('meta[name="theme-color"]').content=getComputedStyle(document.body).getPropertyValue("--bg2").trim()||"#13040a";render();}
 function toggleTag(t){const i=S.profile.tags.indexOf(t);if(i>=0)S.profile.tags.splice(i,1);else S.profile.tags.push(t);save();render();}
 function saveProfile(){
@@ -1045,8 +1386,12 @@ function saveProfile(){
   S.profile.bio=$("#f_bio").value.trim();
   S.profile.pfp=$("#f_pfp").value.trim();
   S.profile.voice=$("#f_voice").value.trim();
+  S.profile.banner=$("#f_banner").value.trim();
+  S.profile.socials={};
+  ["instagram","x","youtube","snapchat","facebook","tiktok","discord","website"].forEach(k=>{
+    const v=$("#soc_"+k);if(v&&v.value.trim())S.profile.socials[k]=v.value.trim();});
   save();toast("Profile saved");render();
-  if(LIVE&&S.token)api("/update-profile",{bio:S.profile.bio,pfp:S.profile.pfp,voice:S.profile.voice,tags:S.profile.tags,theme:S.theme});
+  if(LIVE&&S.token)api("/update-profile",{bio:S.profile.bio,pfp:S.profile.pfp,voice:S.profile.voice,tags:S.profile.tags,theme:S.theme,banner:S.profile.banner,socials:S.profile.socials,showcase:S.showcase||[],claimed:S.claimed||[]});
 }
 
 /* ============ ADMIN ============ */
@@ -1081,16 +1426,70 @@ async function adminAct(kind){
   if(d&&d.ok)toast("Done: "+kind+" → "+val);
 }
 
+/* ============ ACHIEVEMENTS PAGE ============ */
+routes.achievements=()=>{
+  head("Achievements","missions to flex");
+  const st=myStats();S.claimed=S.claimed||[];S.showcase=S.showcase||[];
+  const rows=ACH.map(a=>{
+    const cur=st[a.stat]||0,done=cur>=a.goal,claimed=S.claimed.includes(a.id);
+    return{...a,cur,done,claimed,ready:done&&!claimed};
+  }).sort((x,y)=>(y.ready-x.ready)||(y.claimed-x.claimed)||(x.tier-y.tier));
+  const claimedCount=rows.filter(r=>r.claimed).length;
+  $("#content").innerHTML=`
+    <div class="card" style="display:flex;align-items:center;gap:16px">
+      <div class="medal" style="background:${TIERCOL[5]}22;color:${TIERCOL[5]};font-size:22px">🏆</div>
+      <div><b>${claimedCount} / ${ACH.length} unlocked</b>
+        <div class="bar" style="width:220px"><i style="width:${(claimedCount/ACH.length)*100}%"></i></div></div>
+      <span class="muted" style="margin-left:auto">showcase ${S.showcase.length}/3 on profile</span>
+    </div>
+    ${rows.map(a=>`<div class="ach ${(!a.done&&!a.claimed)?"locked":""}">
+      <div class="medal" style="background:${TIERCOL[a.tier]}22;color:${TIERCOL[a.tier]};font-size:21px">${a.icon}</div>
+      <div style="min-width:0;flex:1">
+        <b>${a.n}</b> <span class="showbadge" style="border-color:${TIERCOL[a.tier]}44;color:${TIERCOL[a.tier]};margin-left:6px">${TIERNAME[a.tier]}</span>
+        <div class="muted" style="margin-top:3px">${a.d}</div>
+        ${!a.claimed?`<div class="bar" style="max-width:240px"><i style="width:${Math.min(100,(a.cur/a.goal)*100)}%"></i></div>
+        <div class="muted" style="margin-top:4px;font-size:11px">${Math.min(a.cur,a.goal)} / ${a.goal}</div>`:""}
+      </div>
+      ${a.ready?`<button class="btn sm" onclick="claimAch('${a.id}')">Claim</button>`
+        :a.claimed?(S.showcase.includes(a.id)
+          ?`<button class="btn ghost sm" onclick="unshowcase('${a.id}')">★ Showcased</button>`
+          :`<button class="btn ghost sm" onclick="showcase('${a.id}')">Showcase</button>`)
+        :`<span class="muted">🔒</span>`}
+    </div>`).join("")}`;
+};
+function claimAch(id){
+  S.claimed=S.claimed||[];if(!S.claimed.includes(id))S.claimed.push(id);
+  const a=ACH.find(x=>x.id===id);save();render();
+  toast("🏆 Unlocked: "+a.n+" ("+TIERNAME[a.tier]+")");
+  syncShowcase();
+}
+function showcase(id){
+  S.showcase=S.showcase||[];
+  if(S.showcase.length>=3){toast("Max 3 — remove one first");return;}
+  S.showcase.push(id);save();render();syncShowcase();
+}
+function unshowcase(id){S.showcase=S.showcase.filter(x=>x!==id);save();render();syncShowcase();}
+function syncShowcase(){if(LIVE&&S.token)api("/update-profile",{bio:S.profile.bio,pfp:S.profile.pfp,voice:S.profile.voice,tags:S.profile.tags,theme:S.theme,banner:S.profile.banner||"",socials:S.profile.socials||{},showcase:S.showcase||[],claimed:S.claimed||[]});}
+
 /* ============ COMPOSE ============ */
-function openCompose(topic){
+function openCompose(topic,type){
   if(requireLogin())return;
+  type=type||"text";
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
       <h2>${ic("plus",18)} Add to the Lore</h2>
-      <div class="field"><textarea id="c_text" rows="5" placeholder="What's on your mind, @${esc(S.me)}?"></textarea></div>
+      <div class="tabs">
+        ${[["text","✏ Text"],["image","🖼 Image"],["video","🎬 Video"]].map(([t,l])=>`<button class="tab ${t===type?"on":""}" onclick="openCompose('${topic||""}','${t}')">${l}</button>`).join("")}
+      </div>
+      <div class="field"><textarea id="c_text" rows="5" placeholder="${type==="text"?"What's on your mind, @"+esc(S.me)+"?  —  **bold**, *italic*, \`code\`, > quote, #hashtags, @mentions":"Write a caption…"}"></textarea>
+      <div class="muted" style="margin-top:5px">Supports **bold** *italic* \`code\` &gt; quote · #hashtags link to topics · media links auto-embed</div></div>
+      ${type!=="text"?`<div class="field"><label>${type==="image"?"IMAGE LINKS (1 PER LINE — IMGUR/CATBOX)":"VIDEO LINKS (1 PER LINE — MP4/CATBOX/YOUTUBE)"}</label>
+        <textarea id="c_media" rows="2" placeholder="https://…&#10;https://… (multiple allowed)"></textarea></div>`:""}
       <div class="field"><label>TOPIC (REQUIRED)</label>
         <select id="c_topic">${SEED.tags.map(t=>`<option ${t===topic?"selected":""}>${esc(t)}</option>`).join("")}</select></div>
-      <div class="field"><label>IMAGE LINK (OPTIONAL — IMGUR/CATBOX URL)</label><input id="c_img" placeholder="https://…"></div>
+      <div class="field" style="display:flex;align-items:center;gap:10px">
+        <input type="checkbox" id="c_priv" style="width:auto"><label for="c_priv" style="margin:0;font-size:13px;color:var(--text2)">🔒 Private — only I can see this post (toggle anytime)</label>
+      </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button class="btn ghost" onclick="closeModal()">Cancel</button>
         <button class="btn" onclick="submitPost()">Post</button>
@@ -1100,18 +1499,24 @@ function openCompose(topic){
 }
 function closeModal(){$("#modalroot").innerHTML="";}
 function submitPost(){
-  const text=$("#c_text").value.trim();
+  let text=$("#c_text").value.trim();
+  const media=$("#c_media")?$("#c_media").value.trim():"";
+  if(media)text+=(text?"\n":"")+media.split("\n").map(l=>l.trim()).filter(Boolean).join("\n");
   if(!text){toast("Write something first");return;}
+  const priv=$("#c_priv").checked;
   const p={id:"my_"+Date.now(),author:S.me,topic:$("#c_topic").value,ts:Date.now(),
-    text,img:$("#c_img").value.trim(),up:[],down:[],shares:0,echo:"",pioneer:"",comments:[]};
-  S.myPosts.unshift(p);save();closeModal();
+    text,img:"",up:[],down:[],shares:0,echo:"",pioneer:"",comments:[],private:priv};
+  S.myPosts.unshift(p);
+  bump("posts");
+  const hr=new Date().getHours();if(hr>=2&&hr<5)bump("nightPosts");
+  save();closeModal();
   sessionStorage.setItem("exptab","New");nav("#/explore");render();
-  toast("Posted — it's part of the Lore now");
-  if(LIVE)api("/post",{text:p.text,topic:p.topic,img:p.img});
+  toast(priv?"Posted privately — only you can see it":"Posted — it's part of the Lore now");
+  if(LIVE)api("/post",{text:p.text,topic:p.topic,img:"",private:priv});
 }
 
 /* ============ LIVE DATA LOADER ============ */
-let LIVEFEED=null, LIVEUSERS=null;
+let LIVEFEED=null, LIVEUSERS=null, LIVENOTIFS=null, LASTFEED=0;
 function RAWBASE(){return "https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";}
 
 /* lazy user-profile loader: fetches users/<name>.json for any unknown
@@ -1144,14 +1549,14 @@ async function loadLive(){
     if(Array.isArray(t)&&t.length)SEED.tags=t;
     if(Array.isArray(u))LIVEUSERS=u;
     if(Array.isArray(f)){
-      LIVEFEED=f;
+      LIVEFEED=f;LASTFEED=Date.now();
       SEED.posts=f.map(e=>({id:e.id,author:e.author,topic:e.topic,ts:e.ts,text:e.snippet,img:e.img||"",
         up:Array(e.up||0).fill("·"),down:Array(e.down||0).fill("·"),shares:e.shares||0,
         echo:e.echo||"",pioneer:"",comments:Array(e.comments||0).fill({a:"",t:"",ts:0}),live:true}));
       render();
       ensureUsers(f.map(e=>e.author)); // load authors' pfps/bios
     }
-    // sync my own profile from the server (pfp set on another device, etc.)
+    // sync my own profile + notifications from the server
     if(S.token&&S.me){
       try{
         const me=await fetch(raw+"/users/"+S.me+".json").then(r=>r.ok?r.json():null);
@@ -1159,6 +1564,13 @@ async function loadLive(){
           SEED.users[S.me]={...me,color:userColor(S.me)};
           if(me.pfp&&me.pfp!==S.profile.pfp){S.profile.pfp=me.pfp;save();render();}
           if(me.bio&&S.profile.bio==="New to LORE. Writing my first pages."){S.profile.bio=me.bio;save();}
+          if(Array.isArray(me.following)){S.follows=me.following;save();}
+          if(Array.isArray(me.tags)&&me.tags.length){S.profile.tags=me.tags;save();}
+        }
+        const nf=await fetch(raw+"/users/"+S.me+"/notifications.json").then(r=>r.ok?r.json():null);
+        if(nf&&Array.isArray(nf.items)){
+          LIVENOTIFS=nf.items.map(n=>({...n,ts:typeof n.ts==="string"?Date.parse(n.ts):n.ts}));
+          drawChrome();
         }
       }catch(e){}
     }
