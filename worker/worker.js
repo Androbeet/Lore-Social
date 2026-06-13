@@ -41,6 +41,8 @@ export default {
     const route = url.pathname;
 
     try {
+      // email verification landing (GET link from inbox)
+      if (request.method === "GET" && route === "/verify") return await verifyEmail(url, env);
       if (request.method !== "POST") return reply({ ok: true, service: "LORE API" });
 
       const body = await request.json();
@@ -93,7 +95,16 @@ async function sha256hex(str) {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 async function hashPassword(password, salt) {
-  // 10k iterations of salted SHA-256 (simple, dependency-free, fine at this scale)
+  // PBKDF2-SHA256, 100k iterations (Web Crypto, native in Workers).
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(password), { name: "PBKDF2" }, false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt: new TextEncoder().encode(salt), iterations: 100000, hash: "SHA-256" },
+    key, 256);
+  return "pbkdf2$" + [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function legacyHash(password, salt) {
+  // old scheme (SHA-256 ×10k) — kept ONLY to verify pre-upgrade accounts
   let h = salt + ":" + password;
   for (let i = 0; i < 10000; i++) h = await sha256hex(h);
   return h;
@@ -152,9 +163,16 @@ async function signup(body, env) {
     await ghPutJSON(env, env.DATA_REPO, `users/${username}.json`, profile, null, `signup ${username}`);
   }
   // credentials live in a separate file (never sent to the frontend)
+  const emailOn = !!(env.BREVO_KEY && env.BREVO_SENDER);
+  const vtoken = crypto.randomUUID().replace(/-/g, "");
   await ghPutJSON(env, env.DATA_REPO, `auth/${username}.json`,
-    { email, salt, hash: await hashPassword(password, salt), created: new Date().toISOString() },
+    { email, salt, hash: await hashPassword(password, salt), created: new Date().toISOString(),
+      verified: !emailOn, ...(emailOn ? { vtoken } : {}) },
     null, `auth ${username}`);
+  if (emailOn) {
+    const origin = env.WORKER_ORIGIN || "";
+    await sendVerifyEmail(env, email, username, vtoken, origin).catch(() => {});
+  }
 
   // add to search index
   const idx = await ghGetJSON(env, env.DATA_REPO, "config/userindex.json");
@@ -164,15 +182,29 @@ async function signup(body, env) {
     await ghPutJSON(env, env.DATA_REPO, "config/userindex.json", list, idx.sha, `index ${username}`);
   }
   await log(env, username, "signup", { email });
-  return reply({ ok: true, token: await makeToken(username, env), username });
+  return reply({ ok: true, token: await makeToken(username, env), username,
+    needsVerify: emailOn });
 }
 
 async function login(body, env) {
   const username = (body.username || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
-  const { json: creds } = await ghGetJSON(env, env.DATA_REPO, `auth/${username}.json`);
+  const { json: creds, sha: csha } = await ghGetJSON(env, env.DATA_REPO, `auth/${username}.json`);
   if (!creds) throw new Error("no such account");
-  const hash = await hashPassword(String(body.password || ""), creds.salt);
-  if (hash !== creds.hash) {
+  const supplied = String(body.password || "");
+  let valid = false;
+  if (String(creds.hash).startsWith("pbkdf2$")) {
+    valid = (await hashPassword(supplied, creds.salt)) === creds.hash;
+  } else {
+    // legacy account: verify with old scheme, then silently upgrade to PBKDF2
+    valid = (await legacyHash(supplied, creds.salt)) === creds.hash;
+    if (valid) {
+      try {
+        creds.hash = await hashPassword(supplied, creds.salt);
+        await ghPutJSON(env, env.DATA_REPO, `auth/${username}.json`, creds, csha, `rehash ${username}`);
+      } catch (e) {}
+    }
+  }
+  if (!valid) {
     await log(env, username, "login_failed", {});
     throw new Error("wrong password");
   }
@@ -255,14 +287,100 @@ async function ghPutJSON(env, repo, path, json, sha, message) {
   if (!res.ok) throw new Error(`write failed ${res.status}`);
 }
 
-/* ---------- rate limiting (simple, per-user, repo-backed) ---------- */
+/* ---------- rate limiting ----------
+   PREMIUM: Upstash Redis (atomic, ~5ms, can't be raced by fast bots).
+   Activates when UPSTASH_URL + UPSTASH_TOKEN secrets exist.
+   FALLBACK: repo-backed (slower, fine for low traffic). */
 async function checkRate(env, user, action, minSeconds) {
+  if (env.UPSTASH_URL && env.UPSTASH_TOKEN) {
+    try {
+      const key = encodeURIComponent(`rate:${user}:${action}`);
+      const r = await fetch(`${env.UPSTASH_URL}/set/${key}/1?NX=true&EX=${minSeconds}`, {
+        headers: { Authorization: "Bearer " + env.UPSTASH_TOKEN },
+      });
+      const d = await r.json();
+      if (d.result === null) throw new Error("slow down");
+      return; // atomic SET NX EX: one command, race-proof
+    } catch (e) {
+      if (String(e.message).includes("slow down")) throw e;
+      // Upstash hiccup → fall through to repo fallback
+    }
+  }
   const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `ratelimits/${user}.json`);
   const now = Date.now();
   const r = json || {};
   if (r[action] && now - r[action] < minSeconds * 1000) throw new Error("slow down");
   r[action] = now;
   await ghPutJSON(env, env.DATA_REPO, `ratelimits/${user}.json`, r, sha, `rate ${user}`);
+}
+
+/* ---------- Firebase Realtime DB (real-time DM layer) ----------
+   Activates when FIREBASE_URL + FIREBASE_SECRET secrets exist.
+   Old GitHub DM threads auto-migrate on first touch — ZERO data loss. */
+function fbOn(env) { return !!(env.FIREBASE_URL && env.FIREBASE_SECRET); }
+async function fb(env, path, method = "GET", body, query = "") {
+  const url = env.FIREBASE_URL.replace(/\/+$/, "") + "/" + path + ".json?auth=" + env.FIREBASE_SECRET + (query ? "&" + query : "");
+  const res = await fetch(url, { method, body: body !== undefined ? JSON.stringify(body) : undefined });
+  if (!res.ok) throw new Error("firebase " + res.status);
+  return res.json();
+}
+async function migrateThread(env, pair) {
+  try {
+    if (await fb(env, `threads/${pair}/migrated`)) return;
+    const { json } = await ghGetJSON(env, env.DMS_REPO, `threads/${pair}.json`).catch(() => ({ json: null }));
+    const seed = {};
+    if (json && json.messages) json.messages.forEach((m, i) => { seed["m" + String(i).padStart(6, "0")] = m; });
+    await fb(env, `threads/${pair}`, "PATCH", { migrated: true, ...(Object.keys(seed).length ? { messages: seed } : {}) });
+  } catch (e) {}
+}
+async function migrateGroup(env, id) {
+  try {
+    if (await fb(env, `groups/${id}/migrated`)) return;
+    const { json } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`).catch(() => ({ json: null }));
+    if (!json) { await fb(env, `groups/${id}/migrated`, "PUT", true); return; }
+    const msgs = {}; (json.messages || []).forEach((m, i) => { msgs["m" + String(i).padStart(6, "0")] = m; });
+    const members = {}; (json.members || []).forEach((m) => { members[m] = true; });
+    await fb(env, `groups/${id}`, "PATCH", { migrated: true, name: json.name, owner: json.owner, members, ...(Object.keys(msgs).length ? { messages: msgs } : {}) });
+  } catch (e) {}
+}
+
+/* ---------- email verification (Brevo, 300 free emails/day) ----------
+   Activates when BREVO_KEY + BREVO_SENDER + SITE_URL secrets exist. */
+async function sendVerifyEmail(env, email, username, token, workerOrigin) {
+  if (!env.BREVO_KEY || !env.BREVO_SENDER) return false;
+  const link = `${workerOrigin}/verify?u=${encodeURIComponent(username)}&k=${encodeURIComponent(token)}`;
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": env.BREVO_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sender: { name: "LORE", email: env.BREVO_SENDER },
+      to: [{ email }],
+      subject: "Verify your LORE account",
+      htmlContent: `<div style="font-family:Georgia,serif;background:#13040a;color:#fff;padding:32px;border-radius:14px">
+        <h1 style="letter-spacing:6px">L<span style="color:#e63956">O</span>RE</h1>
+        <p>Welcome to the Lore, <b>@${username}</b>.</p>
+        <p>Click below to verify your account and unlock posting:</p>
+        <p><a href="${link}" style="background:#e63956;color:#fff;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:bold">Verify my account</a></p>
+        <p style="color:#9c8a90;font-size:12px">If you didn't sign up, ignore this email.<br>— ANDROBEET, admin of LORE</p></div>`,
+    }),
+  });
+  return res.ok;
+}
+async function verifyEmail(url, env) {
+  const username = (url.searchParams.get("u") || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const token = url.searchParams.get("k") || "";
+  const page = (msg, ok) => new Response(
+    `<!DOCTYPE html><html><body style="font-family:Georgia,serif;background:#13040a;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">
+     <div style="text-align:center"><h1 style="letter-spacing:8px">L<span style="color:#e63956">O</span>RE</h1>
+     <p style="font-size:18px">${msg}</p>${ok && env.SITE_URL ? `<a href="${env.SITE_URL}" style="color:#e63956">→ Open LORE and log in</a>` : ""}</div></body></html>`,
+    { headers: { "Content-Type": "text/html" } });
+  if (!username || !token) return page("Invalid verification link.", false);
+  const { json: creds, sha } = await ghGetJSON(env, env.DATA_REPO, `auth/${username}.json`);
+  if (!creds || creds.vtoken !== token) return page("Invalid or expired verification link.", false);
+  creds.verified = true; delete creds.vtoken;
+  await ghPutJSON(env, env.DATA_REPO, `auth/${username}.json`, creds, sha, `verified ${username}`);
+  await log(env, username, "email_verified", {});
+  return page(`@${username} verified. Welcome to the Lore.`, true);
 }
 
 /* ---------- activity log (admin-only viewing) ---------- */
@@ -302,6 +420,11 @@ async function updateFeed(env, mutate) {
 
 /* ---------- endpoints ---------- */
 async function createPost(user, body, env) {
+  // email verification gate (only when email system is on)
+  if (env.BREVO_KEY) {
+    const a = await ghGetJSON(env, env.DATA_REPO, `auth/${user}.json`).catch(() => ({ json: null }));
+    if (a.json && a.json.verified === false) throw new Error("verify your email first — check your inbox");
+  }
   await checkRate(env, user, "post", 60); // max 1 post/min
   const id = "p_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
   const post = {
@@ -314,7 +437,12 @@ async function createPost(user, body, env) {
   if (!post.text) throw new Error("empty post");
   await ghPutJSON(env, env.DATA_REPO, `posts/${id}.json`, post, null, `post by ${user}`);
 
-  if (!post.private) {
+  // shadowbanned users: post saves (they see it on their profile)
+  // but it NEVER enters the public feed — true shadowban
+  const prof = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`).catch(() => null);
+  const shadow = prof && prof.json && prof.json.shadowbanned;
+
+  if (!post.private && !shadow) {
     await updateFeed(env, (feed) => {
       feed.unshift({ id, author: user, topic: post.topic, snippet: post.text.slice(0, 280), img: post.img, ts: post.ts, up: 0, down: 0, comments: 0, echo: "" });
       return feed.slice(0, 500);
@@ -331,6 +459,12 @@ async function vote(user, body, env) {
   if (body.dir === "up") post.up.push(user);
   if (body.dir === "down") post.down.push(user);
   await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, sha, `vote ${user}`);
+  // keep explore-page counts in sync with reality
+  await updateFeed(env, (feed) => {
+    const e = feed.find((x) => x.id === body.post);
+    if (e) { e.up = post.up.length; e.down = post.down.length; }
+    return feed;
+  }).catch(() => {});
   if (body.dir === "up" && post.author !== user)
     await notify(env, post.author, { type: "upvote", from: user, post: post.id });
   await log(env, user, "vote", { post: body.post, dir: body.dir });
@@ -346,6 +480,11 @@ async function comment(user, body, env) {
     parent: body.parent != null ? String(body.parent).slice(0, 30) : null,
     cid: "c" + Date.now() + Math.random().toString(36).slice(2, 6) });
   await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, sha, `comment ${user}`);
+  await updateFeed(env, (feed) => {
+    const e = feed.find((x) => x.id === body.post);
+    if (e) e.comments = post.comments.length;
+    return feed;
+  }).catch(() => {});
   if (post.author !== user)
     await notify(env, post.author, { type: "comment", from: user, post: post.id, snippet: String(body.text).slice(0, 60) });
   await log(env, user, "comment", { post: body.post });
@@ -461,15 +600,25 @@ async function dm(user, body, env) {
   if (!text) throw new Error("empty message");
 
   const pair = [user, other].sort().join("_");
+
+  if (fbOn(env)) {
+    // PREMIUM PATH: Firebase — instant write, unlimited history, no commits
+    await migrateThread(env, pair);
+    await fb(env, `threads/${pair}/messages`, "POST", { from: user, text, ts: Date.now() });
+    await fb(env, `inbox/${user}/${other}`, "PATCH", { last: text.slice(0, 80), ts: Date.now(), unread: 0 });
+    const prev = (await fb(env, `inbox/${other}/${user}/unread`).catch(() => 0)) || 0;
+    await fb(env, `inbox/${other}/${user}`, "PATCH", { last: text.slice(0, 80), ts: Date.now(), unread: prev + 1 });
+    return reply({ ok: true });
+  }
+
+  // fallback: GitHub repo threads
   const path = `threads/${pair}.json`;
   const { json, sha } = await ghGetJSON(env, env.DMS_REPO, path);
   const thread = json || { participants: [user, other].sort(), messages: [] };
   if (!thread.participants.includes(user)) throw new Error("not your thread");
   thread.messages.push({ from: user, text, ts: Date.now() });
-  thread.messages = thread.messages.slice(-500); // keep threads lean
+  thread.messages = thread.messages.slice(-500);
   await ghPutJSON(env, env.DMS_REPO, path, thread, sha, `dm ${pair}`);
-
-  // update both inboxes (thread list + unread count)
   await updateInbox(env, user, other, text, false);
   await updateInbox(env, other, user, text, true);
   return reply({ ok: true });
@@ -495,16 +644,35 @@ async function dmThread(user, body, env) {
   const other = String(body.with || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
   if (!other) throw new Error("missing user");
   const pair = [user, other].sort().join("_");
+
+  if (fbOn(env)) {
+    await migrateThread(env, pair);
+    const data = (await fb(env, `threads/${pair}/messages`).catch(() => null)) || {};
+    const messages = Object.keys(data).sort().map((k) => data[k]);
+    await fb(env, `inbox/${user}/${other}/unread`, "PUT", 0).catch(() => {});
+    return reply({ ok: true, messages, live: true });
+  }
+
   const { json } = await ghGetJSON(env, env.DMS_REPO, `threads/${pair}.json`);
   if (!json) return reply({ ok: true, messages: [] });
   if (!json.participants.includes(user)) throw new Error("not your thread");
-  // mark read in inbox
   await updateInbox(env, user, other, (json.messages.slice(-1)[0] || { text: "" }).text || "", false);
   return reply({ ok: true, messages: json.messages });
 }
 
 /* list my threads */
 async function dmInbox(user, body, env) {
+  if (fbOn(env)) {
+    const data = (await fb(env, `inbox/${user}`).catch(() => null)) || {};
+    const threads = Object.entries(data).map(([w, t]) => ({ with: w, ...t }))
+      .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    try {
+      const { json } = await ghGetJSON(env, env.DMS_REPO, `inbox/${user}.json`);
+      if (json && json.threads) for (const t of json.threads)
+        if (!threads.some((x) => x.with === t.with)) threads.push(t);
+    } catch (e) {}
+    return reply({ ok: true, threads });
+  }
   const { json } = await ghGetJSON(env, env.DMS_REPO, `inbox/${user}.json`);
   return reply({ ok: true, threads: (json && json.threads) || [] });
 }
@@ -565,22 +733,40 @@ async function groupCreate(user, body, env) {
   const name = String(body.name || "").toLowerCase().replace(/[^a-z0-9-_]/g, "").slice(0, 30);
   if (name.length < 3) throw new Error("group name 3+ chars");
   const id = "g_" + name;
+  if (fbOn(env)) {
+    if (await fb(env, `groups/${id}/id`).catch(() => null)) throw new Error("group name taken");
+  }
   const exists = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
   if (exists.json) throw new Error("group name taken");
   const members = [...new Set([user, ...(body.members || []).map((m) => String(m).toLowerCase()).slice(0, 20)])];
+  if (fbOn(env)) {
+    const mem = {}; members.forEach((m) => { mem[m] = true; });
+    await fb(env, `groups/${id}`, "PUT", { id, name, owner: user, members: mem, migrated: true });
+    for (const m of members)
+      await fb(env, `inbox/${m}/${encodeURIComponent("👥 " + name)}`, "PATCH",
+        { last: "Group created by @" + user, ts: Date.now(), unread: m !== user ? 1 : 0, group: id }).catch(() => {});
+    return reply({ ok: true, id });
+  }
   await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`,
     { id, name, owner: user, members, messages: [] }, null, `group ${id}`);
   for (const m of members) await updateInbox(env, m, "👥 " + name, "Group created by @" + user, m !== user);
   return reply({ ok: true, id });
 }
 async function groupMessage(user, body, env) {
-  await checkRate(env, user, "dm", 3);
+  await checkRate(env, user, "group", 3); // separate bucket from DMs
   const id = String(body.group || "");
+  const text = String(body.text || "").slice(0, 2000).trim();
+  if (!text) throw new Error("empty message");
+  if (fbOn(env)) {
+    await migrateGroup(env, id);
+    const isMember = await fb(env, `groups/${id}/members/${user}`).catch(() => null);
+    if (!isMember) throw new Error("not a member");
+    await fb(env, `groups/${id}/messages`, "POST", { from: user, text, ts: Date.now() });
+    return reply({ ok: true });
+  }
   const { json: g, sha } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
   if (!g) throw new Error("group not found");
   if (!g.members.includes(user)) throw new Error("not a member");
-  const text = String(body.text || "").slice(0, 2000).trim();
-  if (!text) throw new Error("empty message");
   g.messages.push({ from: user, text, ts: Date.now() });
   g.messages = g.messages.slice(-500);
   await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`, g, sha, `gmsg ${id}`);
@@ -588,6 +774,15 @@ async function groupMessage(user, body, env) {
 }
 async function groupThread(user, body, env) {
   const id = String(body.group || "");
+  if (fbOn(env)) {
+    await migrateGroup(env, id);
+    const g = await fb(env, `groups/${id}`).catch(() => null);
+    if (!g || !g.id) throw new Error("group not found");
+    if (!(g.members || {})[user]) throw new Error("not a member");
+    const msgs = g.messages || {};
+    return reply({ ok: true, name: g.name, members: Object.keys(g.members || {}),
+      messages: Object.keys(msgs).sort().map((k) => msgs[k]), live: true });
+  }
   const { json: g } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
   if (!g) throw new Error("group not found");
   if (!g.members.includes(user)) throw new Error("not a member");
