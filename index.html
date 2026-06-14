@@ -625,13 +625,26 @@ function toast(m){document.querySelectorAll(".toast").forEach(t=>t.remove());con
 function allPosts(){
   const mine=LIVE?[]:S.myPosts.map(p=>({...p}));
   const seeded=SEED.posts.map(p=>{
-    // live posts after a feed refresh already include my vote server-side —
-    // only overlay local votes cast SINCE the last refresh
+    // keep local votes/comments visible while GitHub raw/CDN catches up
     const vt=S.voteTimes&&S.voteTimes[p.id];
-    const v=(vt&&vt>LASTFEED)?S.votes[p.id]:(LIVE?null:S.votes[p.id]);
-    const ex=LIVE?[]:(S.comments[p.id]||[]);
+    const v=(vt&&(!LIVE||Date.now()-vt<300000))?S.votes[p.id]:(LIVE?null:S.votes[p.id]);
+    const ex=S.comments[p.id]||[];
+    const ack=S.voteAcks&&S.voteAcks[p.id];
     const up=[...p.up],down=[...p.down];
-    if(v==="up")up.push(S.me);if(v==="down")down.push(S.me);
+    if(v==="up"){
+      for(let i=down.length-1;i>=0;i--)if(down[i]===S.me)down.splice(i,1);
+      if(!up.includes(S.me)){
+        if(LIVE&&ack&&ack.dir==="up"&&up.length>=ack.up&&up.length)up[0]=S.me;
+        else up.push(S.me);
+      }
+    }
+    if(v==="down"){
+      for(let i=up.length-1;i>=0;i--)if(up[i]===S.me)up.splice(i,1);
+      if(!down.includes(S.me)){
+        if(LIVE&&ack&&ack.dir==="down"&&down.length>=ack.down&&down.length)down[0]=S.me;
+        else down.push(S.me);
+      }
+    }
     return{...p,up,down,comments:[...p.comments,...ex],shares:p.shares+((!LIVE&&S.shares[p.id])||0)};
   });
   // my pending posts: keep showing them until the server feed CONTAINS them
@@ -871,14 +884,28 @@ async function submitReport(kind,target){
 function vote(id,dir){
   if(requireLogin())return;
   const mine=S.myPosts.find(p=>p.id===id);
+  let next=dir;
   if(mine){
     const arr=dir==="up"?mine.up:mine.down,other=dir==="up"?mine.down:mine.up;
     const i=arr.indexOf(S.me);
-    if(i>=0)arr.splice(i,1);else{arr.push(S.me);const j=other.indexOf(S.me);if(j>=0)other.splice(j,1);}
-  }else{S.votes[id]=S.votes[id]===dir?"":dir;S.voteTimes=S.voteTimes||{};S.voteTimes[id]=Date.now();}
+    if(i>=0){arr.splice(i,1);next="";}else{arr.push(S.me);const j=other.indexOf(S.me);if(j>=0)other.splice(j,1);}
+  }else{
+    next=S.votes[id]===dir?"":dir;
+    S.votes[id]=next;S.voteTimes=S.voteTimes||{};S.voteTimes[id]=Date.now();
+  }
   bump("votes");
   save();render();
-  if(LIVE)api("/vote",{post:id,dir});
+  if(LIVE)api("/vote",{post:id,dir:next}).then(d=>{
+    if(d&&d.ok){
+      S.voteAcks=S.voteAcks||{};S.voteAcks[id]={dir:next,up:d.up,down:d.down,ts:Date.now()};save();
+      const sp=SEED.posts.find(p=>p.id===id);
+      if(sp){
+        sp.up=Array(Math.max(0,d.up-(next==="up"?1:0))).fill("·");
+        sp.down=Array(Math.max(0,d.down-(next==="down"?1:0))).fill("·");
+        render();
+      }
+    }
+  });
 }
 function sharePost(id){
   S.shares[id]=(S.shares[id]||0)+1;save();
@@ -1137,8 +1164,17 @@ async function blockToggle(uname){
 }
 function toggleFollow(u){
   if(requireLogin())return;
+  S.followPending=S.followPending||{};
   const i=S.follows.indexOf(u);
-  if(i>=0){S.follows.splice(i,1);toast("Unfollowed @"+u);}else{S.follows.push(u);toast("Following @"+u);}
+  if(i>=0){
+    S.follows.splice(i,1);
+    S.followPending[u]={action:"unfollow",ts:Date.now()};
+    toast("Unfollowed @"+u);
+  }else{
+    S.follows.push(u);
+    S.followPending[u]={action:"follow",ts:Date.now()};
+    toast("Following @"+u);
+  }
   save();render();
   if(LIVE)api("/follow",{target:u});
 }
@@ -1222,7 +1258,7 @@ routes.notifications=()=>{
       if(n.type==="rank_change")return`You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${esc(n.topic)}`;
       return"activity";};
     $("#content").innerHTML=items.length?`
-      <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn ghost sm" onclick="S.readNotifsAt=Date.now();save();render()">Mark all read</button></div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn ghost sm" onclick="markAllRead()">Mark all read</button></div>
       ${items.map(n=>`<div class="nrow ${(!n.read&&(!S.readNotifsAt||n.ts>S.readNotifsAt))?"unread":""}" ${n.post?`style="cursor:pointer" onclick="nav('#/post/${esc(n.post)}')"`:n.from?`style="cursor:pointer" onclick="nav('#/u/${esc(n.from)}')"`:""}>
         <span class="ni">${ic(icon[n.type]||"doc",17)}</span>
         <div>${msg(n)}<div class="tm">${n.ts?timeAgo(n.ts)+" ago":""}</div></div>
@@ -1246,6 +1282,13 @@ routes.notifications=()=>{
     </div>`).join("")}`;
 };
 
+async function markAllRead(){
+  S.readNotifsAt=Date.now();
+  if(LIVENOTIFS)LIVENOTIFS=LIVENOTIFS.map(n=>({...n,read:true}));
+  save();render();
+  if(LIVE&&S.token)api("/mark-notifs-read",{});
+}
+
 /* ============ DIRECT MESSAGES ============ */
 let DM_POLL=null;
 function stopDmPoll(){if(DM_POLL){clearInterval(DM_POLL);DM_POLL=null;}}
@@ -1263,9 +1306,19 @@ routes.dms=async()=>{
       <button class="btn ghost sm" onclick="openGroupCreate()">New group</button>
     </div>
     <div id="dm_list"><div class="muted" style="padding:16px">Loading your inbox…</div></div>`;
-  const d=await api("/dm-inbox",{});
-  if(!d||!d.ok){$("#dm_list").innerHTML=`<div class="muted" style="padding:16px">Couldn't load inbox.</div>`;return;}
-  $("#dm_list").innerHTML=d.threads.length?d.threads.map(t=>{
+  // Show cached inbox instantly, then refresh in background
+  if(LIVEINBOX)renderInbox(LIVEINBOX);
+  api("/dm-inbox",{}).then(d=>{
+    if(d&&d.ok){
+      LIVEINBOX=d.threads;
+      renderInbox(d.threads);
+    }
+  });
+};
+function renderInbox(threads){
+  const el=$("#dm_list");
+  if(!el)return;
+  el.innerHTML=threads.length?threads.map(t=>{
     const isGroup=String(t.with).startsWith("👥 ");
     const id=isGroup?"g_"+t.with.slice(3):t.with;
     return`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer" onclick="${isGroup?`nav('#/group/${esc(id)}')`:`openThread('${esc(t.with)}')`}">
@@ -1278,7 +1331,7 @@ routes.dms=async()=>{
       </div>
     </div>`;}).join("")
     :`<div class="empty">${ic("msg")}No conversations yet.<br>Type a @username above to start one.</div>`;
-};
+}
 function openGroupCreate(){
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal"><h2>New group chat</h2>
@@ -1400,10 +1453,28 @@ async function sendDm(other){
   if(!text)return;
   inp.value="";
   const box=$("#dm_msgs");
-  if(box)box.insertAdjacentHTML("beforeend",`<div style="align-self:flex-end;max-width:78%"><div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);padding:9px 14px;border-radius:16px 16px 4px 16px;font-size:14px;opacity:.7">${esc(text)}</div></div>`);
-  if(box)box.scrollTop=box.scrollHeight;
+  if(box){
+    const div=document.createElement("div");
+    div.style.cssText="align-self:flex-end;max-width:78%";
+    div.setAttribute("data-pending","1");
+    div.innerHTML=`<div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);border:1px solid transparent;padding:9px 14px;border-radius:16px 16px 4px 16px;font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${esc(text)}</div> <div class="muted" style="margin-top:3px;text-align:right;font-size:10.5px">just now</div>`;
+    box.appendChild(div);
+    box.scrollTop=box.scrollHeight;
+  }
   const d=await api("/message",{to:other,text});
-  if(d&&d.ok){bump("dms");refreshThread(other);}
+  if(d&&d.ok){
+    bump("dms");
+    if(LIVEINBOX){
+      const t=LIVEINBOX.find(x=>x.with===other);
+      if(t){t.last=text.slice(0,80);t.ts=Date.now();}
+      else LIVEINBOX.unshift({with:other,last:text.slice(0,80),ts:Date.now(),unread:0});
+    }
+    // Firebase commits in ~50ms — wait briefly then confirm with real data
+    setTimeout(()=>{ if(CUR==="dm")refreshThread(other); }, 900);
+  } else if(d&&d.error){
+    if(box){const p=box.querySelector("[data-pending]");if(p)p.remove();}
+    if(inp)inp.value=text;
+  }
 }
 
 routes.settings=()=>{
@@ -1753,6 +1824,7 @@ function submitPost(){
 
 /* ============ LIVE DATA LOADER ============ */
 let LIVEFEED=null, LIVEUSERS=null, LIVENOTIFS=null, LASTFEED=0;
+let LIVEINBOX=null;
 function RAWBASE(){return "https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";}
 
 /* lazy user-profile loader: fetches users/<name>.json for any unknown
@@ -1795,22 +1867,48 @@ async function loadLive(){
     // sync my own profile + notifications from the server
     if(S.token&&S.me){
       try{
-        const me=await fetch(raw+"/users/"+S.me+".json").then(r=>r.ok?r.json():null);
+        const meBust="?t="+Math.floor(Date.now()/15000);
+        const me=await fetch(raw+"/users/"+S.me+".json"+meBust,{cache:"no-store"}).then(r=>r.ok?r.json():null);
         if(me){
           SEED.users[S.me]={...me,color:userColor(S.me)};
           if(me.pfp&&me.pfp!==S.profile.pfp){S.profile.pfp=me.pfp;save();render();}
           if(me.bio&&S.profile.bio==="New to LORE. Writing my first pages."){S.profile.bio=me.bio;save();}
-          if(Array.isArray(me.following)){S.follows=me.following;save();}
+          if(Array.isArray(me.following)){
+            const now=Date.now();
+            S.followPending=S.followPending||{};
+            for(const u in S.followPending){
+              if(now-S.followPending[u].ts>300000)delete S.followPending[u];
+            }
+            const merged=new Set(me.following);
+            for(const [u,{action}] of Object.entries(S.followPending)){
+              if(action==="follow")merged.add(u); else merged.delete(u);
+            }
+            S.follows=[...merged];
+            save();
+          }
           if(Array.isArray(me.tags)&&me.tags.length){S.profile.tags=me.tags;save();}
         }
-        const nf=await fetch(raw+"/users/"+S.me+"/notifications.json").then(r=>r.ok?r.json():null);
+        const nf=await fetch(raw+"/users/"+S.me+"/notifications.json"+meBust,{cache:"no-store"}).then(r=>r.ok?r.json():null);
         if(nf&&Array.isArray(nf.items)){
-          LIVENOTIFS=nf.items.map(n=>({...n,ts:typeof n.ts==="string"?Date.parse(n.ts):n.ts}));
+          const incoming=nf.items.map(n=>({...n,ts:typeof n.ts==="string"?Date.parse(n.ts):n.ts}));
+          if(!LIVENOTIFS){
+            LIVENOTIFS=incoming;
+          }else{
+            const localReadIds=new Set(LIVENOTIFS.filter(n=>n.read).map(n=>n.ts+"|"+n.type+"|"+(n.from||"")));
+            LIVENOTIFS=incoming.map(n=>{
+              const key=n.ts+"|"+n.type+"|"+(n.from||"");
+              return localReadIds.has(key)?{...n,read:true}:n;
+            });
+          }
           drawChrome();
         }
       }catch(e){}
     }
   }catch(e){}
+  if(!window._upReset||Date.now()-window._upReset>300000){
+    window._upReset=Date.now();
+    Object.keys(UPENDING).forEach(k=>delete UPENDING[k]);
+  }
 }
 async function loadLivePost(id){
   if(!LIVE)return null;
@@ -1843,5 +1941,5 @@ render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0b795907b10594b',t:'MTc4MTQyMTc0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
