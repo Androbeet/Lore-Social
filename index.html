@@ -537,6 +537,63 @@ const ACH=[
  {id:"night_post",n:"3AM Thoughts",d:"Post between 2–5 AM",icon:"moon",tier:2,stat:"nightPosts",goal:1},
  {id:"early_100",n:"Founding Page",d:"Among the first 100 users",icon:"trophy",tier:4,stat:"early",goal:1}
 ];
+
+const ACH_EXTRA=[
+ {id:"posts_2",n:"Second Page",d:"Publish 2 posts",icon:"doc",tier:1,stat:"posts",goal:2,coins:10},
+ {id:"posts_3",n:"Ink Warmed",d:"Publish 3 posts",icon:"pen",tier:1,stat:"posts",goal:3,coins:10},
+ {id:"posts_15",n:"Thread Builder",d:"Publish 15 posts",icon:"docs",tier:2,stat:"posts",goal:15,coins:20},
+ {id:"posts_75",n:"Chapter Maker",d:"Publish 75 posts",icon:"book",tier:3,stat:"posts",goal:75,coins:40},
+ {id:"posts_150",n:"Archive Flame",d:"Publish 150 posts",icon:"flame",tier:3,stat:"posts",goal:150,coins:60},
+ {id:"posts_300",n:"Deep Archive",d:"Publish 300 posts",icon:"pillar",tier:4,stat:"posts",goal:300,coins:100},
+ {id:"posts_750",n:"Myth Engine",d:"Publish 750 posts",icon:"bolt",tier:5,stat:"posts",goal:750,coins:180},
+ {id:"posts_1000",n:"Thousand Pages",d:"Publish 1,000 posts",icon:"star",tier:5,stat:"posts",goal:1000,coins:240},
+ {id:"votes_5",n:"First Taste",d:"Cast 5 votes",icon:"up",tier:1,stat:"votes",goal:5,coins:10},
+ {id:"votes_10",n:"Sharp Eye",d:"Cast 10 votes",icon:"eye",tier:1,stat:"votes",goal:10,coins:10},
+ {id:"votes_50",n:"Signal Reader",d:"Cast 50 votes",icon:"scale",tier:2,stat:"votes",goal:50,coins:20},
+ {id:"votes_250",n:"Pulse Keeper",d:"Cast 250 votes",icon:"trend",tier:3,stat:"votes",goal:250,coins:50},
+ {id:"votes_750",n:"Verdict Storm",d:"Cast 750 votes",icon:"bolt",tier:4,stat:"votes",goal:750,coins:100},
+ {id:"votes_1000",n:"Vote Monarch",d:"Cast 1,000 votes",icon:"crown",tier:5,stat:"votes",goal:1000,coins:180},
+ {id:"votes_2000",n:"Consensus Machine",d:"Cast 2,000 votes",icon:"bot",tier:5,stat:"votes",goal:2000,coins:260},
+ {id:"cmt_3",n:"Soft Reply",d:"Write 3 replies",icon:"chat",tier:1,stat:"comments",goal:3,coins:10},
+ {id:"cmt_5",n:"Thread Spark",d:"Write 5 replies",icon:"cmt",tier:1,stat:"comments",goal:5,coins:10},
+ {id:"cmt_25",n:"Room Voice",d:"Write 25 replies",icon:"msg",tier:2,stat:"comments",goal:25,coins:25},
+ {id:"cmt_75",n:"Talk of the Hall",d:"Write 75 replies",icon:"horn",tier:3,stat:"comments",goal:75,coins:45},
+ {id:"cmt_100",n:"Conversation Core",d:"Write 100 replies",icon:"wave",tier:3,stat:"comments",goal:100,coins:65},
+ {id:"cmt_250",n:"Debate Keeper",d:"Write 250 replies",icon:"scale",tier:4,stat:"comments",goal:250,coins:120},
+ {id:"cmt_500",n:"Council Voice",d:"Write 500 replies",icon:"crown",tier:5,stat:"comments",goal:500,coins:220},
+ {id:"following_3",n:"Three Bonds",d:"Follow 3 people",icon:"hands",tier:1,stat:"following",goal:3,coins:10},
+ {id:"following_5",n:"Circle Starter",d:"Follow 5 people",icon:"comm",tier:1,stat:"following",goal:5,coins:10},
+ {id:"following_15",n:"Social Thread",d:"Follow 15 people",icon:"user",tier:2,stat:"following",goal:15,coins:20},
+ {id:"following_25",n:"Networked",d:"Follow 25 people",icon:"magnet",tier:3,stat:"following",goal:25,coins:45},
+ {id:"following_75",n:"Many Roads",d:"Follow 75 people",icon:"wave",tier:3,stat:"following",goal:75,coins:60},
+ {id:"following_100",n:"Hundred Bonds",d:"Follow 100 people",icon:"hundred",tier:4,stat:"following",goal:100,coins:110},
+ {id:"fol_3",n:"First Audience",d:"Reach 3 followers",icon:"eye",tier:1,stat:"followers",goal:3,coins:10},
+ {id:"fol_5",n:"Small Crowd",d:"Reach 5 followers",icon:"horn",tier:1,stat:"followers",goal:5,coins:10},
+ {id:"fol_25",n:"Room Magnet",d:"Reach 25 followers",icon:"magnet",tier:2,stat:"followers",goal:25,coins:30},
+ {id:"fol_75",n:"Name Known",d:"Reach 75 followers",icon:"star",tier:3,stat:"followers",goal:75,coins:55},
+ {id:"fol_150",n:"Voice Carrying",d:"Reach 150 followers",icon:"wave",tier:3,stat:"followers",goal:150,coins:80},
+ {id:"fol_500",n:"Local Legend",d:"Reach 500 followers",icon:"crown",tier:4,stat:"followers",goal:500,coins:140},
+ {id:"fol_2000",n:"Mass Signal",d:"Reach 2,000 followers",icon:"bolt",tier:5,stat:"followers",goal:2000,coins:300},
+ {id:"tags_5",n:"Five Interests",d:"Add 5 interest tags",icon:"tagic",tier:1,stat:"tags",goal:5,coins:10},
+ {id:"tags_8",n:"Wide Mind",d:"Add 8 interest tags",icon:"tagic",tier:2,stat:"tags",goal:8,coins:25},
+ {id:"tags_12",n:"All Corners",d:"Add 12 interest tags",icon:"tagic",tier:3,stat:"tags",goal:12,coins:50},
+ {id:"dm_3",n:"First Whispers",d:"Send 3 DMs",icon:"msg",tier:1,stat:"dms",goal:3,coins:10},
+ {id:"dm_5",n:"Private Thread",d:"Send 5 DMs",icon:"msg",tier:1,stat:"dms",goal:5,coins:10},
+ {id:"dm_25",n:"Backchannel",d:"Send 25 DMs",icon:"mail",tier:2,stat:"dms",goal:25,coins:25},
+ {id:"dm_150",n:"Messenger",d:"Send 150 DMs",icon:"msg",tier:3,stat:"dms",goal:150,coins:60},
+ {id:"dm_500",n:"Whisper Network",d:"Send 500 DMs",icon:"wave",tier:5,stat:"dms",goal:500,coins:200},
+ {id:"groups_1",n:"Circle Made",d:"Create a group",icon:"comm",tier:1,stat:"groups",goal:1,coins:15},
+ {id:"groups_3",n:"Room Founder",d:"Create 3 groups",icon:"comm",tier:2,stat:"groups",goal:3,coins:30},
+ {id:"groups_10",n:"Hall Architect",d:"Create 10 groups",icon:"pillar",tier:4,stat:"groups",goal:10,coins:120},
+ {id:"ups_5",n:"First Sparks",d:"Receive 5 upvotes",icon:"up",tier:1,stat:"upsReceived",goal:5,coins:10},
+ {id:"ups_25",n:"Warm Signal",d:"Receive 25 upvotes",icon:"fire",tier:2,stat:"upsReceived",goal:25,coins:25},
+ {id:"ups_250",n:"Bright Signal",d:"Receive 250 upvotes",icon:"bolt",tier:4,stat:"upsReceived",goal:250,coins:110},
+ {id:"ups_2000",n:"Signal God",d:"Receive 2,000 upvotes",icon:"crown",tier:5,stat:"upsReceived",goal:2000,coins:320},
+ {id:"night_3",n:"Night Pattern",d:"Post at night 3 times",icon:"moon",tier:2,stat:"nightPosts",goal:3,coins:25},
+ {id:"night_10",n:"Sleepless Scribe",d:"Post at night 10 times",icon:"moon",tier:3,stat:"nightPosts",goal:10,coins:60}
+];
+ACH.push(...ACH_EXTRA);
+ACH.forEach(a=>{if(a.coins==null)a.coins=[10,20,40,80,160][Math.max(0,(a.tier||1)-1)]||10;});
 const TIERCOL={1:"#8d9aa8",2:"#34d399",3:"#4da6ff",4:"#b27aff",5:"#eab308"};
 const TIERNAME={1:"Common",2:"Uncommon",3:"Rare",4:"Epic",5:"Legendary"};
 
@@ -616,9 +673,17 @@ function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return"now";if(d<3600)
 function dispName(u){return u===CONFIG.ADMIN?CONFIG.ADMIN_DISPLAY:u;}
 function userColor(u){if(SEED.users[u])return SEED.users[u].color;let h=0;for(const c of u)h=(h*31+c.charCodeAt(0))%360;return`hsl(${h},60%,48%)`;}
 function genAv(u,s){return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008)">${esc((u[0]||"?").toUpperCase())}</div>`;}
+function frameStyle(u){
+  const fr=SEED.users[u]?.avatarFrame||(u===S.me&&LIVEWALLET?.applied?.frame)||"";
+  if(!fr)return"";
+  const n=Number(String(fr).match(/(\d+)/)?.[1]||1),h=(n*37)%360;
+  return `box-shadow:0 0 0 2px hsl(${h},85%,60%),0 0 ${10+(n%8)*2}px hsla(${h},85%,60%,.45)`;
+}
 function avatarHTML(u,s){
   const url=u===S.me?S.profile.pfp:(SEED.users[u]?.pfp||"");
-  if(url)return`<img class="av" src="${esc(url)}" width="${s}" height="${s}" alt="" onerror="this.outerHTML=genAv('${esc(u)}',${s})">`;
+  const fs=frameStyle(u);
+  if(url)return`<img class="av" src="${esc(url)}" width="${s}" height="${s}" alt="" ${fs?`style="${fs}"`:""} onerror="this.outerHTML=genAv('${esc(u)}',${s})">`;
+  if(fs)return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008);${fs}">${esc((u[0]||"?").toUpperCase())}</div>`;
   return genAv(u,s);
 }
 function toast(m){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
@@ -645,7 +710,11 @@ function allPosts(){
         else down.push(S.me);
       }
     }
-    return{...p,up,down,comments:[...p.comments,...ex],shares:p.shares+((!LIVE&&S.shares[p.id])||0)};
+    const comments=[...p.comments];
+    ex.forEach(c=>{
+      if(!comments.some(x=>x.a===c.a&&x.t===c.t&&Math.abs((x.ts||0)-(c.ts||0))<120000))comments.push(c);
+    });
+    return{...p,up,down,comments,shares:p.shares+((!LIVE&&S.shares[p.id])||0)};
   });
   // my pending posts: keep showing them until the server feed CONTAINS them
   // (GitHub raw caching can lag minutes — never drop a post early!)
@@ -689,7 +758,8 @@ function head(t,s){$("#ptitle").textContent=t;$("#psub").textContent=s||"";}
 
 /* ============ CHROME: left rail, right rail, tabbar ============ */
 const NAVS=[["explore","Explore","explore"],["topics","Topics","topics"],["communities","Communities","comm"],
-["search","Search","search"],["notifications","Activity","alerts"],["dms","Messages","msg"],["achievements","Achievements","trophy"],["me","Profile","user"],["settings","Settings","gear"]];
+["search","Search","search"],["notifications","Activity","alerts"],["coins","Lore Coins","coin"],["dms","Messages","msg"],["achievements","Achievements","trophy"],["me","Profile","user"],["settings","Settings","gear"]];
+I.coin='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9 9.2c.7-.8 1.7-1.2 3-1.2 2 0 3.2 1 3.2 2.4 0 1.6-1.4 2.2-3 2.5-1.6.3-3 .7-3 2.2 0 1.2 1.1 2.1 3 2.1 1.4 0 2.5-.4 3.2-1.3"/></svg>';
 I.trophy='<svg class="ic" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/></svg>';
 function drawChrome(){
   const n=unread();
@@ -702,7 +772,7 @@ function drawChrome(){
     <button class="newpost" onclick="openCompose()">${ic("plus",18)} NEW POST</button>
     <div class="mecard" onclick="nav('#/me')">
       ${avatarHTML(S.me,38)}
-      <div><div class="nm">@${esc(S.me)}</div><div class="hd">${S.token?"logged in":"guest"}</div></div>
+      <div><div class="nm">@${esc(S.me)}</div><div class="hd">${S.token?(LIVEWALLET?LIVEWALLET.balance+" coins":"logged in"):"guest"}</div></div>
     </div>`;
   $("#tabbar").innerHTML=[
     ["explore","Home","explore"],["topics","Topics","topics"],["__post","","plus"],
@@ -755,12 +825,15 @@ function drawRight(){
 
 /* ============ LIVE API ============ */
 async function api(path,body){
+  body=body||{};
+  const silent=!!body._silent;
+  if(silent){body={...body};delete body._silent;}
   try{
     const r=await fetch(CONFIG.WORKER_URL+path,{method:"POST",
       headers:{"Content-Type":"application/json",...(S.token?{"Authorization":"Bearer "+S.token}:{})},
       body:JSON.stringify(body)});
-    const d=await r.json();
-    if(d.error){toast("⚠ "+d.error);if(/logged in|session/i.test(d.error))openAuth();}
+    let d;try{d=await r.json();}catch(e){d={error:"bad response"};}
+    if(d.error&&!silent){toast("⚠ "+d.error);if(/logged in|session/i.test(d.error))openAuth();}
     return d;
   }catch(e){return{error:String(e)};}
 }
@@ -829,6 +902,7 @@ function postCard(p,full){
           ${p.author===S.me?`
             <button onclick="event.stopPropagation();togglePrivacy('${p.id}',${!p.private})">${p.private?"Make public":"Make private"}</button>
             <button onclick="event.stopPropagation();delPost('${p.id}')" style="color:#f87171">Delete post</button>`:`
+            <button onclick="event.stopPropagation();openGift('${esc(p.author)}','', '${p.id}')">Send gift</button>
             <button onclick="event.stopPropagation();openReport('post','${p.id}')">Report post</button>
             <button onclick="event.stopPropagation();openReport('user','${esc(p.author)}')">Report @${esc(p.author)}</button>
             <button onclick="event.stopPropagation();blockToggle('${esc(p.author)}')" style="color:#f87171">Block @${esc(p.author)}</button>`}
@@ -908,11 +982,90 @@ function vote(id,dir){
   });
 }
 function sharePost(id){
-  S.shares[id]=(S.shares[id]||0)+1;save();
-  const url=location.origin+location.pathname+"#/post/"+id;
-  if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>toast("Link copied — shared")).catch(()=>toast(url));
-  else toast(url);
-  render();
+  S.shares[id]=(S.shares[id]||0)+1;save();render();
+  openShare("Post",location.origin+location.pathname+"#/post/"+id);
+}
+function storiesHTML(){
+  if(!LIVE||!S.token)return"";
+  const rows=LIVESTORIES||[];
+  return `<div class="card" style="padding:12px;display:flex;gap:13px;overflow-x:auto;align-items:center">
+    <div style="text-align:center;min-width:62px;cursor:pointer" onclick="openCompose('','story')">
+      <div style="width:54px;height:54px;border-radius:50%;padding:2px;background:var(--border2);display:flex;align-items:center;justify-content:center;margin:auto">${avatarHTML(S.me,50)}</div>
+      <div class="muted" style="font-size:11px;margin-top:5px;white-space:nowrap">Your story</div>
+    </div>
+    ${rows.map(r=>`<div style="text-align:center;min-width:62px;cursor:pointer" onclick="openStory('${esc(r.user)}','${esc(r.items[0].id)}')">
+      <div style="width:54px;height:54px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;margin:auto">${avatarHTML(r.user,50)}</div>
+      <div class="muted" style="font-size:11px;margin-top:5px;white-space:nowrap;max-width:70px;overflow:hidden;text-overflow:ellipsis">@${esc(r.user)}</div>
+    </div>`).join("")}
+  </div>`;
+}
+async function loadStories(){
+  if(!LIVE||!S.token)return;
+  const d=await api("/stories",{_silent:true});
+  if(d&&d.ok){LIVESTORIES=d.stories||[];return LIVESTORIES;}
+}
+function storyBody(st){
+  return md([st.media,st.audio,st.text].filter(Boolean).join("\n\n"));
+}
+async function openStory(owner,id){
+  const d=await api("/story-view",{owner,id,_silent:true});
+  if(!d||!d.ok){toast((d&&d.error)||"Story unavailable");return;}
+  const st=d.story;
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        ${avatarHTML(owner,36)}<b>@${esc(owner)}</b><span class="muted">${timeAgo(st.ts)} ago</span>
+        <button class="iconbtn" style="margin-left:auto" onclick="closeModal()">×</button>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg2);padding:12px;min-height:180px">${storyBody(st)||`<div class="muted">Story</div>`}</div>
+      <div style="display:flex;align-items:center;gap:9px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn ghost sm" onclick="likeStory('${esc(owner)}','${esc(id)}')">${st.liked?"Liked":"Like"} · <span id="story_likes">${st.likesCount||0}</span></button>
+        <button class="btn ghost sm" onclick="openShare('Story',location.origin+location.pathname+'#/story/${esc(owner)}/${esc(id)}')">Share</button>
+        ${owner===S.me?`<span class="muted">${st.viewsCount||0} views</span><button class="btn danger sm" onclick="deleteStory('${esc(id)}')">Delete</button>`:""}
+      </div>
+      ${owner===S.me&&st.viewers&&st.viewers.length?`<div class="muted" style="margin-top:8px;font-size:12px">Viewed by ${st.viewers.map(v=>"@"+esc(v)).join(", ")}</div>`:""}
+      <div style="display:flex;gap:8px;margin-top:12px"><input id="story_reply" placeholder="Reply to this story…" onkeydown="if(event.key==='Enter')commentStory('${esc(owner)}','${esc(id)}')"><button class="btn sm" onclick="commentStory('${esc(owner)}','${esc(id)}')">Reply</button></div>
+      <div id="story_comments" style="margin-top:12px">${(st.comments||[]).map(c=>`<div class="cmt">${avatarHTML(c.a,28)}<div><span class="who">@${esc(c.a)}</span><span class="muted" style="margin-left:6px">${timeAgo(c.ts)}</span><div style="color:var(--text2);margin-top:3px">${md(c.t)}</div></div></div>`).join("")}</div>
+    </div></div>`;
+}
+async function likeStory(owner,id){
+  const d=await api("/story-react",{owner,id,action:"like",_silent:true});
+  if(d&&d.ok){const el=$("#story_likes");if(el)el.textContent=d.likesCount;toast(d.liked?"Liked":"Like removed");}
+}
+async function commentStory(owner,id){
+  const inp=$("#story_reply"),text=inp&&inp.value.trim();if(!text)return;
+  inp.value="";
+  const d=await api("/story-react",{owner,id,action:"comment",text,_silent:true});
+  if(d&&d.ok){toast("Reply sent");openStory(owner,id);}else toast("Couldn't send reply");
+}
+async function deleteStory(id){
+  const d=await api("/story-delete",{id});
+  if(d&&d.ok){closeModal();toast("Story deleted");await loadStories();render();}
+}
+function openShare(label,url){
+  const people=[...new Set([...(S.follows||[]),...((LIVEINBOX||[]).filter(t=>!String(t.with).startsWith("👥 ")).map(t=>t.with))])].filter(Boolean).slice(0,40);
+  const groups=(LIVEINBOX||[]).filter(t=>String(t.with).startsWith("👥 ")).slice(0,20);
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h2>Share ${esc(label)}</h2>
+      <div class="field"><textarea id="share_text" rows="2" placeholder="Add a message…"></textarea></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn ghost sm" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(url)}').then(()=>toast('Link copied'))">Copy link</button></div>
+      <div id="share_list" style="max-height:45vh;overflow-y:auto">
+        ${people.map(u=>shareRow(u,false,url)).join("")}${groups.map(g=>shareRow(g.with,true,url)).join("")||(!people.length&&!groups.length?`<div class="muted">No chats yet. Start a DM first.</div>`:"")}
+      </div>
+    </div></div>`;
+  if(!LIVEINBOX&&LIVE&&S.token)api("/dm-inbox",{_silent:true}).then(d=>{if(d&&d.ok){LIVEINBOX=d.threads;openShare(label,url);}});
+}
+function shareRow(w,isGroup,url){
+  return `<div class="card hov" style="display:flex;align-items:center;gap:11px;margin:8px 0;cursor:pointer" onclick="shareTo('${esc(w)}',${isGroup},'${esc(url)}')">
+    ${isGroup?`<div class="avg" style="width:36px;height:36px;font-size:16px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:avatarHTML(w,36)}
+    <b>${isGroup?esc(w.slice(3)):"@"+esc(w)}</b><span class="link" style="margin-left:auto">send</span>
+  </div>`;
+}
+async function shareTo(w,isGroup,url){
+  const note=$("#share_text")?$("#share_text").value.trim():"";
+  const text=(note?note+"\n":"")+url;
+  const d=isGroup?await api("/group-message",{group:"g_"+w.slice(3),text}):await api("/message",{to:w,text});
+  if(d&&d.ok){toast(d.requested?"Sent as request":"Shared");closeModal();}
 }
 
 /* ============ PAGES ============ */
@@ -938,8 +1091,16 @@ routes.explore=()=>{
   if(tab==="Random")posts.sort(()=>Math.random()-0.5);
   $("#content").innerHTML=`
     <div class="tabs">${["Hot","Rising","New","Random"].map(t=>`<button class="tab ${t===tab?"on":""}" onclick="sessionStorage.setItem('exptab','${t}');render()">${t}</button>`).join("")}</div>
+    ${storiesHTML()}
     ${sugHTML}
     ${posts.map(p=>postCard(p)).join("")||`<div class="empty">${ic("explore")}No posts yet. Be the first page of the Lore.</div>`}`;
+};
+
+routes.story=(path)=>{
+  const [u,id]=String(path||"").split("/");
+  head("Story",u?"@"+u:"");
+  $("#content").innerHTML=`<div class="empty">${ic("alerts")}Opening story…</div>`;
+  if(u&&id)setTimeout(()=>openStory(u,id),60);
 };
 
 routes.post=(id)=>{
@@ -957,6 +1118,7 @@ routes.post=(id)=>{
     <div class="card">
       <div style="display:flex;gap:10px;align-items:center">
         ${avatarHTML(S.me,36)}
+        ${commentAttach(p.id,null)}
         <input id="cbox" placeholder="Add to the thread…" onkeydown="if(event.key==='Enter')addComment('${p.id}')">
         <button class="btn sm" onclick="addComment('${p.id}')">Reply</button>
       </div>
@@ -984,24 +1146,42 @@ function renderComments(p){
 function replyBox(pid,cid,who){
   document.querySelectorAll("[id^=rb_]").forEach(e=>e.innerHTML="");
   const box=$("#rb_"+cid);if(!box)return;
-  box.innerHTML=`<div style="display:flex;gap:8px;margin-top:8px">
+  box.innerHTML=`<div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+    ${commentAttach(pid,cid)}
     <input id="rin_${cid}" placeholder="Reply to @${who}…" onkeydown="if(event.key==='Enter')addComment('${pid}','${cid}')">
     <button class="btn sm" onclick="addComment('${pid}','${cid}')">Reply</button></div>`;
   $("#rin_"+cid).focus();
 }
-function addComment(id,parent){
+function commentAttach(pid,parent){
+  const pp=parent?`'${esc(parent)}'`:"null";
+  return `<button class="iconbtn recdot" title="Voice note" onclick="startVoice(u=>sendCommentMedia('${esc(pid)}',${pp},u))">${ic("mic",18)}</button>
+    <button class="iconbtn" title="Image" onclick="pickChatImage(u=>sendCommentMedia('${esc(pid)}',${pp},u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
+    <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800" onclick="openGifPicker(u=>sendCommentMedia('${esc(pid)}',${pp},u))">GIF</button>`;
+}
+function sendCommentMedia(id,parent,url){addComment(id,parent,url);}
+function addComment(id,parent,forcedText){
   if(requireLogin())return;
   const inp=parent?$("#rin_"+parent):$("#cbox");
-  const v=inp?inp.value.trim():"";if(!v)return;
+  const v=String(forcedText!=null?forcedText:(inp?inp.value:"")).trim();if(!v)return;
+  if(inp&&forcedText==null)inp.value="";
   const mine=S.myPosts.find(p=>p.id===id);
-  const c={a:S.me,t:v,ts:Date.now(),parent:parent||null,cid:"c"+Date.now()};
+  const c={a:S.me,t:v,ts:Date.now(),parent:parent||null,cid:"c"+Date.now()+Math.random().toString(36).slice(2,5)};
   if(mine)mine.comments.push(c);else{
     const sp=SEED.posts.find(p=>p.id===id);
     if(sp&&!sp.live)sp.comments.push(c);else(S.comments[id]=S.comments[id]||[]).push(c);
   }
   bump("comments");
-  save();render();toast("Reply added");
-  if(LIVE)api("/comment",{post:id,text:v,parent:parent||null});
+  save();render();toast(forcedText!=null?"Sent":"Reply added");
+  if(LIVE)syncComment({post:id,text:v,parent:parent||null},3);
+}
+function syncComment(payload,tries){
+  api("/comment",{...payload,_silent:true}).then(d=>{
+    if(d&&d.ok)return;
+    if(tries>0){
+      const wait=d&&/slow down/i.test(d.error||"")?12000:3500;
+      setTimeout(()=>syncComment(payload,tries-1),wait);
+    }else toast("⚠ Reply saved here — server is busy");
+  });
 }
 
 routes.topics=()=>{
@@ -1103,6 +1283,7 @@ function profilePage(uname){
       <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">
         <h2 style="font-size:21px">@${esc(uname)}</h2>
         ${u.seal?`<span class="badge seal">${ic("seal")} ${CONFIG.ADMIN_DISPLAY} SEAL</span>`:""}
+        ${(u.customBadges||[]).map(b=>`<span class="badge seal" style="border-color:${esc(b.color||'var(--gold)')};color:${esc(b.color||'var(--gold)')}">${esc(b.name)}</span>`).join("")}
         ${mutual?'<span class="badge mut">MUTUAL</span>':""}
         ${uname===CONFIG.ADMIN?'<span class="badge seal">ADMIN</span>':""}
         ${online?'<span style="color:var(--green);font-size:12px;font-weight:700">● online</span>':'<span class="muted">○ offline</span>'}
@@ -1130,6 +1311,7 @@ function profilePage(uname){
           <button class="btn ghost" onclick="openThread('${esc(uname)}')">${ic("msg",16)} Message</button>
           <span class="menuwrap"><button class="btn ghost" onclick="event.stopPropagation();toggleMenu('prof')">⋯</button>
             <span id="menu_prof" style="display:none" class="menu">
+              <button onclick="event.stopPropagation();openGift('${esc(uname)}')">Send gift</button>
               <button onclick="event.stopPropagation();blockToggle('${esc(uname)}')" style="color:#f87171">${iBlocked?"Unblock":"Block"} @${esc(uname)}</button>
               <button onclick="event.stopPropagation();openReport('user','${esc(uname)}')">Report @${esc(uname)}</button>
             </span></span>`}
@@ -1249,28 +1431,40 @@ routes.notifications=()=>{
   head("Activity","what's happening around you");
   if(LIVE){
     const items=LIVENOTIFS||[];
-    const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg"};
+    const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg",dm_request:"msg",dm_accept:"msg",story_like:"alerts",story_comment:"cmt",gift:"coin",coins:"coin"};
     const msg=n=>{
       if(n.type==="follow")return`<b>@${esc(n.from)}</b> started following you`;
       if(n.type==="upvote")return`<b>@${esc(n.from)}</b> upvoted your post`;
       if(n.type==="comment")return`<b>@${esc(n.from)}</b> replied: “${esc(n.snippet||"")}”`;
+      if(n.type==="dm_request")return`<b>@${esc(n.from)}</b> sent you a message request`;
+      if(n.type==="dm_accept")return`<b>@${esc(n.from)}</b> accepted your message request`;
+      if(n.type==="story_like")return`<b>@${esc(n.from)}</b> liked your story`;
+      if(n.type==="story_comment")return`<b>@${esc(n.from)}</b> replied to your story`;
+      if(n.type==="gift")return`<b>@${esc(n.from)}</b> sent you ${esc(n.gift||"a gift")}`;
+      if(n.type==="coins")return`<b>${CONFIG.ADMIN_DISPLAY}</b> sent you ${n.amount||0} Lore Coins`;
       if(n.type==="seal")return`<b>${CONFIG.ADMIN_DISPLAY}</b> awarded you the <b>Seal</b>`;
       if(n.type==="rank_change")return`You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${esc(n.topic)}`;
       return"activity";};
     $("#content").innerHTML=items.length?`
       <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn ghost sm" onclick="markAllRead()">Mark all read</button></div>
-      ${items.map(n=>`<div class="nrow ${(!n.read&&(!S.readNotifsAt||n.ts>S.readNotifsAt))?"unread":""}" ${n.post?`style="cursor:pointer" onclick="nav('#/post/${esc(n.post)}')"`:n.from?`style="cursor:pointer" onclick="nav('#/u/${esc(n.from)}')"`:""}>
+      ${items.map(n=>`<div class="nrow ${(!n.read&&(!S.readNotifsAt||n.ts>S.readNotifsAt))?"unread":""}" ${n.story?`style="cursor:pointer" onclick="nav('#/story/${esc(n.owner||S.me)}/${esc(n.story)}')"`:n.post?`style="cursor:pointer" onclick="nav('#/post/${esc(n.post)}')"`:n.from?`style="cursor:pointer" onclick="nav('#/u/${esc(n.from)}')"`:""}>
         <span class="ni">${ic(icon[n.type]||"doc",17)}</span>
         <div>${msg(n)}<div class="tm">${n.ts?timeAgo(n.ts)+" ago":""}</div></div>
       </div>`).join("")}`
       :`<div class="empty">${ic("alerts")}Nothing yet. When people follow you, upvote or reply, it shows up here.</div>`;
     return;
   }
-  const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg"};
+  const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg",dm_request:"msg",dm_accept:"msg",story_like:"alerts",story_comment:"cmt",gift:"coin",coins:"coin"};
   const msg=n=>{
     if(n.type==="follow")return`<b>@${n.from}</b> started following you`;
     if(n.type==="upvote")return`<b>@${n.from}</b> upvoted your post`;
     if(n.type==="comment")return`<b>@${n.from}</b> replied: “${esc(n.snippet)}”`;
+    if(n.type==="dm_request")return`<b>@${n.from}</b> sent you a message request`;
+    if(n.type==="dm_accept")return`<b>@${n.from}</b> accepted your message request`;
+    if(n.type==="story_like")return`<b>@${n.from}</b> liked your story`;
+    if(n.type==="story_comment")return`<b>@${n.from}</b> replied to your story`;
+    if(n.type==="gift")return`<b>@${n.from}</b> sent you ${esc(n.gift||"a gift")}`;
+    if(n.type==="coins")return`<b>${CONFIG.ADMIN_DISPLAY}</b> sent you ${n.amount||0} Lore Coins`;
     if(n.type==="seal")return`<b>${CONFIG.ADMIN_DISPLAY}</b> awarded your post the <b>Seal</b>`;
     if(n.type==="rank_change")return`You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${n.topic}`;
     return"activity";};
@@ -1282,11 +1476,91 @@ routes.notifications=()=>{
     </div>`).join("")}`;
 };
 
+let MARKREAD_BUSY=0;
 async function markAllRead(){
+  const hadUnread=(LIVENOTIFS||[]).some(n=>!n.read&&(!S.readNotifsAt||n.ts>S.readNotifsAt));
   S.readNotifsAt=Date.now();
   if(LIVENOTIFS)LIVENOTIFS=LIVENOTIFS.map(n=>({...n,read:true}));
   save();render();
-  if(LIVE&&S.token)api("/mark-notifs-read",{});
+  if(LIVE&&S.token&&hadUnread&&Date.now()-MARKREAD_BUSY>8000){
+    MARKREAD_BUSY=Date.now();
+    api("/mark-notifs-read",{_silent:true});
+  }
+}
+
+/* ============ LORE COINS ============ */
+async function loadWallet(force){
+  if(!LIVE||!S.token)return null;
+  if(LIVEWALLET&&!force)return LIVEWALLET;
+  const d=await api("/wallet",{_silent:true});
+  if(d&&d.ok){LIVEWALLET=d.wallet;COINCAT=d.catalog;drawChrome();}
+  return LIVEWALLET;
+}
+function txRows(tx){
+  return (tx||[]).length?(tx||[]).map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border)">
+    <div style="min-width:0;flex:1"><b>${esc(t.note||t.type)}</b><div class="muted" style="font-size:11px">${t.ts?timeAgo(t.ts)+" ago":""}</div></div>
+    <b style="color:${(t.amount||0)>=0?'var(--green)':'#f87171'}">${(t.amount||0)>=0?"+":""}${t.amount||0}</b>
+  </div>`).join(""):`<div class="muted">No transactions yet.</div>`;
+}
+routes.coins=async()=>{
+  head("Lore Coins","claim, gift, redeem and unlock");
+  if(!LIVE||!S.token){$("#content").innerHTML=`<div class="empty">${ic("coin")}Log in to use Lore Coins.<br><br><button class="btn sm" onclick="openAuth()">Log in / Create account</button></div>`;return;}
+  $("#content").innerHTML=`<div class="empty">${ic("coin")}Loading wallet…</div>`;
+  const w=await loadWallet(true);if(!w)return;
+  const cat=COINCAT||{gifts:[],frames:[],bubbles:[]};
+  $("#content").innerHTML=`
+    <div class="card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div class="medal" style="background:var(--soft)">${ic("coin",24)}</div>
+      <div><div class="muted">BALANCE</div><div style="font-size:28px;font-weight:900">${w.balance||0} Lore Coins</div></div>
+      <button class="btn sm" style="margin-left:auto" onclick="claimCoins()">Claim daily</button>
+      <button class="btn ghost sm" onclick="loadWallet(true).then(()=>render())">Refresh</button>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Voucher</h2>
+        <div style="display:flex;gap:8px"><input id="voucher_code" placeholder="Enter code"><button class="btn sm" onclick="redeemVoucher()">Redeem</button></div></div>
+      <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Daily streak</h2>
+        <p class="muted">Current day: <b>${w.streak?.count||0}</b>. Rewards cycle: 10, 15, 20, 25, 30, 50, 90.</p></div>
+    </div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Gifts</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${cat.gifts.map(g=>`<button class="btn ghost sm" onclick="openGift('', '${esc(g.id)}')">${esc(g.name)} · ${g.price}</button>`).join("")}</div>
+    </div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Avatar Frames</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${cat.frames.slice(0,50).map(i=>storeItem(i,'frame',w)).join("")}</div>
+    </div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Chat Bubbles</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${cat.bubbles.slice(0,50).map(i=>storeItem(i,'bubble',w)).join("")}</div>
+    </div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Received gifts</h2>
+      ${(w.inventory?.gifts||[]).length?(w.inventory.gifts||[]).map(g=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border)"><b>${esc(g.name||g.id)}</b><span class="muted">from @${esc(g.from||"")}</span><span class="muted" style="margin-left:auto">${g.price||0}</span><button class="btn ghost sm" onclick="convertGift('${esc(g.uid||g.id)}')">Convert</button></div>`).join(""):`<div class="muted">No gifts yet.</div>`}
+    </div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Transactions</h2>${txRows(w.tx)}</div>`;
+};
+function storeItem(i,type,w){
+  const key=type==="frame"?"frames":"bubbles",owned=(w.inventory?.[key]||[]).includes(i.id),ap=w.applied?.[type]===i.id;
+  return `<div class="card" style="margin:0;padding:12px"><b>${esc(i.name)}</b><div class="muted" style="margin:4px 0 10px">${i.price} coins</div>
+    ${owned?`<button class="btn ${ap?"":"ghost"} sm" onclick="applyStore('${type}','${esc(i.id)}')">${ap?"Applied":"Apply"}</button>`:`<button class="btn sm" onclick="buyStore('${type}','${esc(i.id)}')">Buy</button>`}</div>`;
+}
+async function claimCoins(){const d=await api("/coins-claim",{});if(d&&d.ok){toast("Claimed "+d.reward+" Lore Coins");await loadWallet(true);render();}}
+async function redeemVoucher(){const code=$("#voucher_code").value.trim();if(!code)return;const d=await api("/voucher-redeem",{code});if(d&&d.ok){toast("Redeemed "+d.coins+" coins");await loadWallet(true);render();}}
+async function buyStore(type,id){const d=await api("/coins-buy",{type,id});if(d&&d.ok){toast("Unlocked");await loadWallet(true);render();}}
+async function applyStore(type,id){const d=await api("/coins-apply",{type,id});if(d&&d.ok){toast("Applied");await loadWallet(true);render();}}
+async function convertGift(uid){const d=await api("/coins-convert",{uid});if(d&&d.ok){toast("Converted for "+d.coins+" coins");await loadWallet(true);render();}}
+async function openGift(target,giftId,ref){
+  if(requireLogin())return;
+  await loadWallet();
+  const gifts=(COINCAT&&COINCAT.gifts)||[];
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Send gift</h2>
+    <div class="field"><label>TO USERNAME</label><input id="gift_to" value="${esc(target||"")}" placeholder="username"></div>
+    <div class="field"><label>GIFT</label><select id="gift_id">${gifts.map(g=>`<option value="${esc(g.id)}" ${g.id===giftId?"selected":""}>${esc(g.name)} · ${g.price}</option>`).join("")}</select></div>
+    <div class="field"><label>MESSAGE</label><textarea id="gift_note" rows="2" placeholder="Optional message…"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="sendGift('${esc(ref||"")}')">Send gift</button></div>
+  </div></div>`;
+}
+async function sendGift(ref){
+  const target=$("#gift_to").value.trim().toLowerCase().replace("@","");
+  const gift=$("#gift_id").value,note=$("#gift_note").value.trim();
+  const d=await api("/coins-gift",{target,gift,note,ref});
+  if(d&&d.ok){closeModal();toast("Gift sent");bump("giftsSent");await loadWallet(true);}
 }
 
 /* ============ DIRECT MESSAGES ============ */
@@ -1305,16 +1579,40 @@ routes.dms=async()=>{
       <button class="btn sm" onclick="openThread($('#dm_new').value)">Chat</button>
       <button class="btn ghost sm" onclick="openGroupCreate()">New group</button>
     </div>
+    <div class="tabs"><button id="dm_primary" class="tab on" onclick="showDmPrimary()">Primary</button><button id="dm_requests" class="tab" onclick="showDmRequests()">Requests</button></div>
     <div id="dm_list"><div class="muted" style="padding:16px">Loading your inbox…</div></div>`;
+  showDmPrimary();
+};
+function dmTab(which){
+  const p=$("#dm_primary"),r=$("#dm_requests");
+  if(p&&r){p.classList.toggle("on",which==="primary");r.classList.toggle("on",which==="requests");}
+}
+function showDmPrimary(){
+  dmTab("primary");
+  const el=$("#dm_list");if(el)el.innerHTML=`<div class="muted" style="padding:16px">Loading your inbox…</div>`;
   // Show cached inbox instantly, then refresh in background
   if(LIVEINBOX)renderInbox(LIVEINBOX);
-  api("/dm-inbox",{}).then(d=>{
-    if(d&&d.ok){
-      LIVEINBOX=d.threads;
-      renderInbox(d.threads);
-    }
+  api("/dm-inbox",{_silent:true}).then(d=>{
+    if(d&&d.ok){LIVEINBOX=d.threads;renderInbox(d.threads);}
   });
-};
+}
+function showDmRequests(){
+  dmTab("requests");
+  const el=$("#dm_list");if(el)el.innerHTML=`<div class="muted" style="padding:16px">Loading requests…</div>`;
+  api("/dm-requests",{_silent:true}).then(d=>renderRequests(d&&d.ok?d.items:[]));
+}
+function renderRequests(items){
+  const el=$("#dm_list");if(!el)return;
+  el.innerHTML=items.length?items.map(t=>`<div class="card hov" style="display:flex;gap:13px;align-items:center">
+    ${avatarHTML(t.from,44)}
+    <div style="min-width:0;flex:1"><b>@${esc(t.from)}</b><div class="muted" style="margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.last||"")}</div></div>
+    <div style="display:flex;gap:7px;flex-shrink:0"><button class="btn sm" onclick="acceptRequest('${esc(t.from)}',true)">Accept</button><button class="btn ghost sm" onclick="acceptRequest('${esc(t.from)}',false)">Delete</button></div>
+  </div>`).join(""):`<div class="empty">${ic("msg")}No message requests.</div>`;
+}
+async function acceptRequest(from,accept){
+  const d=await api("/dm-accept",{from,accept});
+  if(d&&d.ok){toast(accept?"Request accepted":"Request deleted");if(accept)openThread(from);else showDmRequests();}
+}
 function renderInbox(threads){
   const el=$("#dm_list");
   if(!el)return;
@@ -1387,11 +1685,23 @@ routes.group=async(id)=>{
   await draw();
   DM_POLL=setInterval(()=>{if(CUR==="group")draw();else stopDmPoll();},window.FB_LIVE?2500:5000);
 };
+function appendPendingBubble(boxId,text,from){
+  const box=$(boxId);if(!box)return null;
+  if(box.children.length===1&&box.textContent.match(/No messages|Loading/))box.innerHTML="";
+  const mine=!from||from===S.me;
+  const div=document.createElement("div");
+  div.style.cssText=`align-self:${mine?"flex-end":"flex-start"};max-width:78%`;
+  div.setAttribute("data-pending","1");
+  div.innerHTML=`${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(from)}</div>`:""}<div style="background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${md(text)}</div><div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">just now</div>`;
+  box.appendChild(div);box.scrollTop=box.scrollHeight;return div;
+}
 async function sendGroup(id){
   const inp=$("#g_text"),text=inp.value.trim();if(!text)return;
   inp.value="";
+  const pending=appendPendingBubble("#g_msgs",text,S.me);
   const d=await api("/group-message",{group:id,text});
-  if(d&&d.ok){bump("dms");routes.group&&(await api("/group-thread",{group:id}));}
+  if(d&&d.ok){bump("dms");}
+  else if(d&&d.error){if(pending)pending.remove();if(inp)inp.value=text;}
 }
 function openThread(name){
   name=String(name||"").trim().toLowerCase().replace("@","").replace(/[^a-z0-9_]/g,"");
@@ -1430,6 +1740,7 @@ async function refreshThread(other){
   if(d&&d.live)window.FB_LIVE=true;
   const box=$("#dm_msgs");if(!box)return;
   if(!d||!d.ok){box.innerHTML=`<div class="muted">Couldn't load messages.</div>`;return;}
+  const mode=$("#dm_mode");if(mode)mode.textContent=d.requested?(d.incoming?"request pending":"request sent"):"";
   const stick=box.scrollHeight-box.scrollTop-box.clientHeight<80;
   box.innerHTML=d.messages.length?d.messages.map(m=>{
     const mine=m.from===S.me;
@@ -1441,29 +1752,30 @@ async function refreshThread(other){
   if(stick||!d.messages.length)box.scrollTop=box.scrollHeight;
 }
 async function sendDmMedia(other,url){
+  const pending=appendPendingBubble("#dm_msgs",url,S.me);
   const d=await api("/message",{to:other,text:url});
-  if(d&&d.ok){bump("dms");refreshThread(other);toast("Sent");}
+  if(d&&d.ok){
+    bump("dms");toast(d.requested?"Sent as request":"Sent");
+    if(d.requested){const mode=$("#dm_mode");if(mode)mode.textContent="request sent";return;}
+    if(LIVEINBOX){const t=LIVEINBOX.find(x=>x.with===other);if(t){t.last="media";t.ts=Date.now();}else LIVEINBOX.unshift({with:other,last:"media",ts:Date.now(),unread:0});}
+    setTimeout(()=>{ if(CUR==="dm")refreshThread(other); }, 900);
+  } else if(d&&d.error){if(pending)pending.remove();}
 }
 async function sendGroupMedia(id,url){
+  const pending=appendPendingBubble("#g_msgs",url,S.me);
   const d=await api("/group-message",{group:id,text:url});
   if(d&&d.ok){bump("dms");toast("Sent");}
+  else if(d&&d.error){if(pending)pending.remove();}
 }
 async function sendDm(other){
   const inp=$("#dm_text"),text=inp.value.trim();
   if(!text)return;
   inp.value="";
-  const box=$("#dm_msgs");
-  if(box){
-    const div=document.createElement("div");
-    div.style.cssText="align-self:flex-end;max-width:78%";
-    div.setAttribute("data-pending","1");
-    div.innerHTML=`<div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);border:1px solid transparent;padding:9px 14px;border-radius:16px 16px 4px 16px;font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${esc(text)}</div> <div class="muted" style="margin-top:3px;text-align:right;font-size:10.5px">just now</div>`;
-    box.appendChild(div);
-    box.scrollTop=box.scrollHeight;
-  }
+  const pending=appendPendingBubble("#dm_msgs",text,S.me);
   const d=await api("/message",{to:other,text});
   if(d&&d.ok){
     bump("dms");
+    if(d.requested){toast("Sent as request");const mode=$("#dm_mode");if(mode)mode.textContent="request sent";return;}
     if(LIVEINBOX){
       const t=LIVEINBOX.find(x=>x.with===other);
       if(t){t.last=text.slice(0,80);t.ts=Date.now();}
@@ -1472,7 +1784,7 @@ async function sendDm(other){
     // Firebase commits in ~50ms — wait briefly then confirm with real data
     setTimeout(()=>{ if(CUR==="dm")refreshThread(other); }, 900);
   } else if(d&&d.error){
-    if(box){const p=box.querySelector("[data-pending]");if(p)p.remove();}
+    if(pending)pending.remove();
     if(inp)inp.value=text;
   }
 }
@@ -1532,6 +1844,9 @@ routes.settings=()=>{
       <label for="f_privprof" style="font-size:14px;color:var(--text2);cursor:pointer"><b>Private profile</b> — only people you follow back can see your posts and message you. Everyone else sees just your counts.</label>
     </div>
     <div class="hr"></div>
+    <div class="field"><label>CLOSE FRIENDS (USERNAMES, COMMA-SEPARATED)</label><input id="f_close" value="${esc((S.closeFriends||[]).join(', '))}" placeholder="alice, bob, charlie"></div>
+    <button class="btn ghost sm" onclick="saveCloseFriends()">Save close friends</button>
+    <div class="hr"></div>
     <button class="btn ghost sm" onclick="exportMyData()">Download my data (JSON)</button>
     <span class="muted" style="margin-left:10px">Everything LORE knows about you — yours to keep.</span>
     ${(S.blocked||[]).length?`<div class="hr"></div><div class="muted" style="margin-bottom:8px">BLOCKED USERS</div>
@@ -1550,6 +1865,7 @@ routes.settings=()=>{
     <span class="muted" style="display:block;margin-top:10px">Supporters are part of why the Lore stays alive.</span>
   </div>
   <div class="card" style="text-align:center"><span class="muted">LORE · built on GitHub · core free forever · <a class="link" href="mailto:${CONFIG.SUPPORT}">${CONFIG.SUPPORT}</a></span></div>`;
+  loadCloseFriends();
 };
 /* ---- PFP upload: crop square → resize 256px → JPEG ≤110KB → Worker ---- */
 function pickPfp(input){
@@ -1582,6 +1898,17 @@ function pickPfp(input){
   input.value="";
 }
 
+async function loadCloseFriends(){
+  if(!(LIVE&&S.token))return;
+  const d=await api("/close-friends",{_silent:true});
+  if(d&&d.ok){S.closeFriends=d.list||[];save();const el=$("#f_close");if(el)el.value=S.closeFriends.join(", ");}
+}
+async function saveCloseFriends(){
+  const el=$("#f_close");if(!el)return;
+  const list=el.value.split(",").map(x=>x.trim().toLowerCase().replace("@","")).filter(Boolean);
+  S.closeFriends=[...new Set(list)];save();toast("Close friends saved");
+  if(LIVE&&S.token)api("/close-friends",{list:S.closeFriends});
+}
 async function exportMyData(){
   if(!LIVE||!S.token){toast("Log in first");return;}
   toast("Preparing your export…");
@@ -1627,6 +1954,15 @@ routes.admin=()=>{
       <button class="btn sm" onclick="adminAct('ban')">Toggle ban</button>
       <button class="btn ghost sm" onclick="adminAct('shadowban')">Toggle shadowban</button></div>
       <p class="muted" style="margin-top:10px">Ban = all actions rejected. Shadowban = their posts visible only to themselves.</p></div>
+    <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("coin",16)} Lore Coins Admin</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
+        <input id="ad_coin_user" placeholder="username"><input id="ad_coin_amt" placeholder="amount (+/-)"><input id="ad_coin_note" placeholder="note"><button class="btn sm" onclick="adminCoins()">Apply</button>
+      </div><div class="hr"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">
+        <input id="ad_v_code" placeholder="voucher code optional"><input id="ad_v_amt" placeholder="coins"><input id="ad_v_uses" placeholder="uses"><input id="ad_v_days" placeholder="days"><button class="btn ghost sm" onclick="adminVoucher()">Create voucher</button>
+      </div></div>
+    <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Custom Badge</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px"><input id="ad_badge_user" placeholder="username"><input id="ad_badge_name" placeholder="badge name"><input id="ad_badge_color" placeholder="color"><button class="btn sm" onclick="adminBadge(false)">Add</button><button class="btn ghost sm" onclick="adminBadge(true)">Remove</button></div></div>
     <div class="card"><h2 style="font-size:15px;margin-bottom:12px">Users (${users.length})</h2>
       ${users.map(u=>`<div style="display:flex;align-items:center;gap:11px;padding:9px 0;border-top:1px solid var(--border)">
         ${avatarHTML(u,32)}<b style="cursor:pointer" onclick="nav('#/u/${u}')">@${u}</b>
@@ -1662,14 +1998,29 @@ async function adminAct(kind){
   if(d&&d.ok)toast("Done: "+kind+" → "+val);
 }
 
+async function adminCoins(){
+  const target=$("#ad_coin_user").value.trim(),amount=Number($("#ad_coin_amt").value),note=$("#ad_coin_note").value.trim();
+  const d=await api("/admin/coins",{target,amount,note});if(d&&d.ok)toast("Coins updated");
+}
+async function adminVoucher(){
+  const d=await api("/admin/voucher",{code:$("#ad_v_code").value.trim(),coins:Number($("#ad_v_amt").value),uses:Number($("#ad_v_uses").value||1),days:Number($("#ad_v_days").value||30)});
+  if(d&&d.ok){toast("Voucher: "+d.code);navigator.clipboard&&navigator.clipboard.writeText(d.code);}
+}
+async function adminBadge(remove){
+  const d=await api("/admin/badge",{target:$("#ad_badge_user").value.trim(),name:$("#ad_badge_name").value.trim(),color:$("#ad_badge_color").value.trim(),remove});
+  if(d&&d.ok)toast(remove?"Badge removed":"Badge added");
+}
+
 /* ============ ACHIEVEMENTS PAGE ============ */
 routes.achievements=()=>{
   head("Achievements","missions to flex");
+  if(LIVE&&S.token&&!LIVEWALLET)loadWallet(true).then(()=>{if(CUR==="achievements")render();});
   const st=myStats();S.claimed=S.claimed||[];S.showcase=S.showcase||[];
+  const paid=LIVEWALLET?.claimedAchievements||[];
   const rows=ACH.map(a=>{
-    const cur=st[a.stat]||0,done=cur>=a.goal,claimed=S.claimed.includes(a.id);
-    return{...a,cur,done,claimed,ready:done&&!claimed};
-  }).sort((x,y)=>(y.ready-x.ready)||(y.claimed-x.claimed)||(x.tier-y.tier));
+    const cur=st[a.stat]||0,done=cur>=a.goal,claimed=S.claimed.includes(a.id),coinReady=done&&claimed&&a.coins&&!paid.includes(a.id);
+    return{...a,cur,done,claimed,coinReady,ready:done&&!claimed};
+  }).sort((x,y)=>(y.ready-x.ready)||(y.coinReady-x.coinReady)||(y.claimed-x.claimed)||(x.tier-y.tier));
   const claimedCount=rows.filter(r=>r.claimed).length;
   $("#content").innerHTML=`
     <div class="card" style="display:flex;align-items:center;gap:16px">
@@ -1681,12 +2032,13 @@ routes.achievements=()=>{
     ${rows.map(a=>`<div class="ach ${(!a.done&&!a.claimed)?"locked":""}">
       <div class="medal" style="background:${TIERCOL[a.tier]}22">${aIc(a.icon,TIERCOL[a.tier],22)}</div>
       <div style="min-width:0;flex:1">
-        <b>${a.n}</b> <span class="showbadge" style="border-color:${TIERCOL[a.tier]}44;color:${TIERCOL[a.tier]};margin-left:6px">${TIERNAME[a.tier]}</span>
+        <b>${a.n}</b> <span class="showbadge" style="border-color:${TIERCOL[a.tier]}44;color:${TIERCOL[a.tier]};margin-left:6px">${TIERNAME[a.tier]}</span>${a.coins?` <span class="showbadge" style="border-color:var(--gold);color:var(--gold);margin-left:6px">+${a.coins} coins</span>`:""}
         <div class="muted" style="margin-top:3px">${a.d}</div>
         ${!a.claimed?`<div class="bar" style="max-width:240px"><i style="width:${Math.min(100,(a.cur/a.goal)*100)}%"></i></div>
         <div class="muted" style="margin-top:4px;font-size:11px">${Math.min(a.cur,a.goal)} / ${a.goal}</div>`:""}
       </div>
       ${a.ready?`<button class="btn sm" onclick="claimAch('${a.id}')">Claim</button>`
+        :a.coinReady?`<button class="btn sm" onclick="claimAchCoins('${a.id}')">Claim coins</button>`
         :a.claimed?(S.showcase.includes(a.id)
           ?`<button class="btn ghost sm" onclick="unshowcase('${a.id}')">Showcased ✓</button>`
           :`<button class="btn ghost sm" onclick="showcase('${a.id}')">Showcase</button>`)
@@ -1696,8 +2048,12 @@ routes.achievements=()=>{
 function claimAch(id){
   S.claimed=S.claimed||[];if(!S.claimed.includes(id))S.claimed.push(id);
   const a=ACH.find(x=>x.id===id);save();render();
-  toast("Unlocked: "+a.n+" ("+TIERNAME[a.tier]+")");
+  toast("Unlocked: "+a.n+" ("+TIERNAME[a.tier]+")"+(a.coins?" · +"+a.coins+" coins":""));
+  claimAchCoins(id,true);
   syncShowcase();
+}
+function claimAchCoins(id,silent){
+  if(LIVE&&S.token)api("/coins-ach",{id,_silent:!!silent}).then(async d=>{if(d&&d.ok){await loadWallet(true);if(!silent)toast("Coins claimed");render();}});
 }
 function showcase(id){
   S.showcase=S.showcase||[];
@@ -1779,29 +2135,44 @@ I.mic=I.mic||'<svg class="ic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" 
 function openCompose(topic,type){
   if(requireLogin())return;
   type=type||"text";
+  const isStory=type==="story";
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
       <h2>${ic("plus",18)} Add to the Lore</h2>
       <div class="tabs">
-        ${[["text","Text"],["image","Image"],["video","Video"],["audio","Audio"]].map(([t,l])=>`<button class="tab ${t===type?"on":""}" onclick="openCompose('${topic||""}','${t}')">${l}</button>`).join("")}
+        ${[["text","Text"],["image","Image"],["video","Video"],["audio","Audio"],["story","Story"]].map(([t,l])=>`<button class="tab ${t===type?"on":""}" onclick="openCompose('${topic||""}','${t}')">${l}</button>`).join("")}
       </div>
-      <div class="field"><textarea id="c_text" rows="5" placeholder="${type==="text"?"What's on your mind, @"+esc(S.me)+"?  —  **bold**, *italic*, \`code\`, > quote, #hashtags, @mentions":"Write a caption…"}"></textarea>
+      <div class="field"><textarea id="c_text" rows="5" placeholder="${isStory?"Write a story caption…":type==="text"?"What's on your mind, @"+esc(S.me)+"?  —  **bold**, *italic*, \`code\`, > quote, #hashtags, @mentions":"Write a caption…"}"></textarea>
       <div class="muted" style="margin-top:5px">Supports **bold** *italic* \`code\` &gt; quote · #hashtags link to topics · media links auto-embed</div></div>
-      ${type!=="text"?`<div class="field"><label>${type==="image"?"IMAGE LINKS (1 PER LINE — IMGUR/CATBOX)":type==="video"?"VIDEO LINKS (1 PER LINE — MP4/CATBOX/YOUTUBE)":"AUDIO LINKS (1 PER LINE — MP3/OGG/CATBOX)"}</label>
+      ${isStory?`<div class="field"><label>STORY IMAGE / VIDEO LINK</label><textarea id="c_media" rows="2" placeholder="https://…  (image or video link)"></textarea></div>
+        <div class="field"><label>BACKGROUND AUDIO LINK (OPTIONAL)</label><input id="c_audio" placeholder="https://…mp3 / ogg / m4a"></div>
+        <div class="field"><label>WHO CAN SEE THIS STORY</label><select id="c_privacy"><option value="public">Public</option><option value="followers">Followers</option><option value="close">Close friends</option></select></div>`:
+        type!=="text"?`<div class="field"><label>${type==="image"?"IMAGE LINKS (1 PER LINE — IMGUR/CATBOX)":type==="video"?"VIDEO LINKS (1 PER LINE — MP4/CATBOX/YOUTUBE)":"AUDIO LINKS (1 PER LINE — MP3/OGG/CATBOX)"}</label>
         <textarea id="c_media" rows="2" placeholder="https://…&#10;https://… (multiple allowed)"></textarea></div>`:""}
-      <div class="field"><label>TOPIC (REQUIRED)</label>
+      ${!isStory?`<div class="field"><label>TOPIC (REQUIRED)</label>
         <select id="c_topic">${SEED.tags.map(t=>`<option ${t===topic?"selected":""}>${esc(t)}</option>`).join("")}</select></div>
       <div class="field" style="display:flex;align-items:center;gap:10px">
         <input type="checkbox" id="c_priv" style="width:auto"><label for="c_priv" style="margin:0;font-size:13px;color:var(--text2)">Private — only I can see this post (toggle anytime)</label>
-      </div>
+      </div>`:""}
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button class="btn ghost" onclick="closeModal()">Cancel</button>
-        <button class="btn" onclick="submitPost()">Post</button>
+        <button class="btn" onclick="${isStory?"submitStory()":"submitPost()"}">${isStory?"Share story":"Post"}</button>
       </div>
     </div></div>`;
-  setTimeout(()=>$("#c_text").focus(),60);
+  setTimeout(()=>$("#c_text")&&$("#c_text").focus(),60);
 }
+
 function closeModal(){$("#modalroot").innerHTML="";}
+async function submitStory(){
+  const text=$("#c_text").value.trim();
+  const media=$("#c_media")?$("#c_media").value.trim().split("\n").map(x=>x.trim()).filter(Boolean)[0]||"":"";
+  const audio=$("#c_audio")?$("#c_audio").value.trim():"";
+  const privacy=$("#c_privacy")?$("#c_privacy").value:"public";
+  if(!text&&!media&&!audio){toast("Add something to your story");return;}
+  closeModal();toast("Posting story…");
+  const d=await api("/story-create",{text,media,audio,privacy});
+  if(d&&d.ok){toast("Story shared");await loadStories();render();}
+}
 function submitPost(){
   let text=$("#c_text").value.trim();
   const media=$("#c_media")?$("#c_media").value.trim():"";
@@ -1824,7 +2195,7 @@ function submitPost(){
 
 /* ============ LIVE DATA LOADER ============ */
 let LIVEFEED=null, LIVEUSERS=null, LIVENOTIFS=null, LASTFEED=0;
-let LIVEINBOX=null;
+let LIVEINBOX=null, LIVESTORIES=null, LIVEWALLET=null, COINCAT=null;
 function RAWBASE(){return "https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";}
 
 /* lazy user-profile loader: fetches users/<name>.json for any unknown
@@ -1902,6 +2273,10 @@ async function loadLive(){
           }
           drawChrome();
         }
+        const sd=await api("/stories",{_silent:true});
+        if(sd&&sd.ok){LIVESTORIES=sd.stories||[];ensureUsers(LIVESTORIES.map(x=>x.user));if(CUR==="explore")render();}
+        const wd=await api("/wallet",{_silent:true});
+        if(wd&&wd.ok){LIVEWALLET=wd.wallet;COINCAT=wd.catalog;drawChrome();}
       }catch(e){}
     }
   }catch(e){}
@@ -1941,5 +2316,5 @@ render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0b795907b10594b',t:'MTc4MTQyMTc0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
