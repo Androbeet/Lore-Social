@@ -20,9 +20,11 @@
  *   4. Copy the worker URL into CONFIG.WORKER_URL in index.html
  *
  * BUILT-IN ACCOUNTS: /signup and /login give users real accounts
- * (email + password). Passwords are salted & hashed 10,000× before
- * storage — never stored in plain text. Sessions are signed tokens
- * valid 30 days. Banned users are rejected on every request.
+ * (email + password). Passwords are salted & hashed 100,000× with
+ * PBKDF2-SHA256 before storage — never stored in plain text. Sessions
+ * are signed tokens valid 30 days. Banned users are rejected on every
+ * request.
+ *
  * Admin endpoints (/admin/ban, /admin/seal) only work for ADMIN_USER.
  */
 
@@ -49,35 +51,39 @@ export default {
 
       // --- public endpoints (no login needed) ---
       if (route === "/signup") return await signup(body, env);
-      if (route === "/login")  return await login(body, env);
+      if (route === "/login") return await login(body, env);
 
       // --- everything below requires a valid session token ---
       const user = await identify(request, body, env); // throws if invalid
 
       switch (route) {
-        case "/post":            return await createPost(user, body, env);
-        case "/vote":            return await vote(user, body, env);
-        case "/comment":         return await comment(user, body, env);
-        case "/follow":          return await follow(user, body, env);
-        case "/join-community":  return await joinCommunity(user, body, env);
-        case "/update-profile":  return await updateProfile(user, body, env);
-        case "/upload-pfp":      return await uploadPfp(user, body, env);
-        case "/message":         return await dm(user, body, env);
-        case "/dm-thread":       return await dmThread(user, body, env);
-        case "/dm-inbox":        return await dmInbox(user, body, env);
-        case "/request-tag":     return await requestTag(user, body, env);
-        case "/report":          return await report(user, body, env);
-        case "/delete-post":     return await deletePost(user, body, env);
-        case "/set-privacy":     return await setPrivacy(user, body, env);
-        case "/block":           return await blockUser(user, body, env);
-        case "/edit-post":       return await editPost(user, body, env);
-        case "/group-create":    return await groupCreate(user, body, env);
-        case "/group-message":   return await groupMessage(user, body, env);
-        case "/group-thread":    return await groupThread(user, body, env);
-        // --- admin-only (aNDROBEET) ---
-        case "/admin/ban":       return await adminBan(user, body, env);
-        case "/admin/seal":      return await adminSeal(user, body, env);
-        default:                 return reply({ error: "unknown endpoint" }, 404);
+        case "/post":              return await createPost(user, body, env);
+        case "/vote":              return await vote(user, body, env);
+        case "/comment":           return await comment(user, body, env);
+        case "/follow":            return await follow(user, body, env);
+        case "/join-community":    return await joinCommunity(user, body, env);
+        case "/update-profile":    return await updateProfile(user, body, env);
+        case "/upload-pfp":        return await uploadPfp(user, body, env);
+        case "/message":           return await dm(user, body, env);
+        case "/dm-thread":         return await dmThread(user, body, env);
+        case "/dm-inbox":          return await dmInbox(user, body, env);
+        case "/request-tag":       return await requestTag(user, body, env);
+        case "/report":            return await report(user, body, env);
+        case "/delete-post":       return await deletePost(user, body, env);
+        case "/set-privacy":       return await setPrivacy(user, body, env);
+        case "/block":             return await blockUser(user, body, env);
+        case "/edit-post":         return await editPost(user, body, env);
+        case "/group-create":      return await groupCreate(user, body, env);
+        case "/group-message":     return await groupMessage(user, body, env);
+        case "/group-thread":      return await groupThread(user, body, env);
+        case "/mark-notifs-read":  return await markNotifsRead(user, env);
+        case "/upload":            return await uploadMedia(user, body, env);
+        case "/gif-search":        return await gifSearch(user, body, env);
+        case "/export":            return await exportData(user, body, env);
+        // --- admin-only (ANDROBEET) ---
+        case "/admin/ban":         return await adminBan(user, body, env);
+        case "/admin/seal":        return await adminSeal(user, body, env);
+        default:                    return reply({ error: "unknown endpoint" }, 404);
       }
     } catch (e) {
       return reply({ error: String(e.message || e) }, 400);
@@ -94,27 +100,38 @@ async function sha256hex(str) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+
 async function hashPassword(password, salt) {
   // PBKDF2-SHA256, 100k iterations (Web Crypto, native in Workers).
   const key = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(password), { name: "PBKDF2" }, false, ["deriveBits"]);
+    "raw",
+    new TextEncoder().encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits"],
+  );
   const bits = await crypto.subtle.deriveBits(
     { name: "PBKDF2", salt: new TextEncoder().encode(salt), iterations: 100000, hash: "SHA-256" },
-    key, 256);
+    key,
+    256,
+  );
   return "pbkdf2$" + [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+
 async function legacyHash(password, salt) {
   // old scheme (SHA-256 ×10k) — kept ONLY to verify pre-upgrade accounts
   let h = salt + ":" + password;
   for (let i = 0; i < 10000; i++) h = await sha256hex(h);
   return h;
 }
+
 async function makeToken(username, env) {
   // HMAC-style token: username.expiry.signature — stateless, no DB needed
   const exp = Date.now() + 1000 * 60 * 60 * 24 * 30; // 30 days
   const sig = await sha256hex(`${username}.${exp}.${env.SESSION_SECRET}`);
   return `${username}.${exp}.${sig}`;
 }
+
 async function verifyToken(token, env) {
   const [username, exp, sig] = (token || "").split(".");
   if (!username || !exp || !sig) throw new Error("not logged in");
@@ -154,21 +171,43 @@ async function signup(body, env) {
   } else {
     const profile = {
       bio: "New to LORE. Writing my first pages.",
-      pfp: "", voice: "", tags: [], followers: [], following: [],
+      pfp: "",
+      voice: "",
+      tags: [],
+      followers: [],
+      following: [],
       joined: new Date().toISOString().slice(0, 10),
-      streak: { count: 0, tier: "—" }, seal: false,
-      echoes: 0, resonance: 0, pioneer: 0, ranks: {}, theme: "maroon",
-      banned: false, shadowbanned: false,
+      streak: { count: 0, tier: "—" },
+      seal: false,
+      echoes: 0,
+      resonance: 0,
+      pioneer: 0,
+      ranks: {},
+      theme: "maroon",
+      banned: false,
+      shadowbanned: false,
     };
     await ghPutJSON(env, env.DATA_REPO, `users/${username}.json`, profile, null, `signup ${username}`);
   }
+
   // credentials live in a separate file (never sent to the frontend)
   const emailOn = !!(env.BREVO_KEY && env.BREVO_SENDER);
   const vtoken = crypto.randomUUID().replace(/-/g, "");
-  await ghPutJSON(env, env.DATA_REPO, `auth/${username}.json`,
-    { email, salt, hash: await hashPassword(password, salt), created: new Date().toISOString(),
-      verified: !emailOn, ...(emailOn ? { vtoken } : {}) },
-    null, `auth ${username}`);
+  await ghPutJSON(
+    env,
+    env.DATA_REPO,
+    `auth/${username}.json`,
+    {
+      email,
+      salt,
+      hash: await hashPassword(password, salt),
+      created: new Date().toISOString(),
+      verified: !emailOn,
+      ...(emailOn ? { vtoken } : {}),
+    },
+    null,
+    `auth ${username}`,
+  );
   if (emailOn) {
     const origin = env.WORKER_ORIGIN || "";
     await sendVerifyEmail(env, email, username, vtoken, origin).catch(() => {});
@@ -182,8 +221,7 @@ async function signup(body, env) {
     await ghPutJSON(env, env.DATA_REPO, "config/userindex.json", list, idx.sha, `index ${username}`);
   }
   await log(env, username, "signup", { email });
-  return reply({ ok: true, token: await makeToken(username, env), username,
-    needsVerify: emailOn });
+  return reply({ ok: true, token: await makeToken(username, env), username, needsVerify: emailOn });
 }
 
 async function login(body, env) {
@@ -209,7 +247,7 @@ async function login(body, env) {
     throw new Error("wrong password");
   }
   const { json: u } = await ghGetJSON(env, env.DATA_REPO, `users/${username}.json`);
-  if (u && u.banned) throw new Error("account banned — contact " + "andrewz772k6@gmail.com");
+  if (u && u.banned) throw new Error("account banned — contact andrewz772k6@gmail.com");
   await log(env, username, "login", {});
   return reply({ ok: true, token: await makeToken(username, env), username });
 }
@@ -228,31 +266,70 @@ async function identify(request, body, env) {
 function assertAdmin(user, env) {
   if (user !== (env.ADMIN_USER || "androbeet")) throw new Error("admins only");
 }
+
+async function updateBanList(env, target, flags, actor) {
+  try {
+    const path = "admin/banned_users.json";
+    const { json, sha } = await ghGetJSON(env, env.DATA_REPO, path);
+    const list = json && typeof json === "object" && !Array.isArray(json)
+      ? json
+      : { banned: [], shadowbanned: [], users: {} };
+    list.banned = Array.isArray(list.banned) ? list.banned : [];
+    list.shadowbanned = Array.isArray(list.shadowbanned) ? list.shadowbanned : [];
+    list.users = list.users && typeof list.users === "object" ? list.users : {};
+
+    if (flags.banned || flags.shadowbanned) {
+      list.users[target] = {
+        banned: !!flags.banned,
+        shadowbanned: !!flags.shadowbanned,
+        updated: new Date().toISOString(),
+        by: actor,
+      };
+    } else {
+      delete list.users[target];
+    }
+
+    list.banned = Object.keys(list.users).filter((u) => list.users[u].banned).sort();
+    list.shadowbanned = Object.keys(list.users).filter((u) => list.users[u].shadowbanned).sort();
+    list.updated = new Date().toISOString();
+    await ghPutJSON(env, env.DATA_REPO, path, list, sha, `ban list ${target}`);
+  } catch (e) {
+    // Ban itself must not fail just because the convenience list had a conflict.
+  }
+}
+
 async function adminBan(user, body, env) {
   assertAdmin(user, env);
-  const target = String(body.target || "").toLowerCase();
+  const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  if (!target) throw new Error("missing target");
+  if (target === user || target === (env.ADMIN_USER || "androbeet")) {
+    throw new Error("admin cannot ban or shadowban himself");
+  }
   const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`);
   if (!json) throw new Error("user not found");
   if (body.mode === "shadowban") json.shadowbanned = !json.shadowbanned;
   else json.banned = !json.banned;
   await ghPutJSON(env, env.DATA_REPO, `users/${target}.json`, json, sha, `admin action ${target}`);
+  await updateBanList(env, target, { banned: !!json.banned, shadowbanned: !!json.shadowbanned }, user);
   await log(env, user, "admin_" + (body.mode || "ban"), { target });
   return reply({ ok: true, banned: json.banned, shadowbanned: json.shadowbanned });
 }
+
 async function adminSeal(user, body, env) {
   assertAdmin(user, env);
   if (body.post) {
     const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
     if (!json) throw new Error("post not found");
     json.seal = true;
-    await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, json, sha, `seal post`);
+    await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, json, sha, "seal post");
     await notify(env, json.author, { type: "seal", from: user, post: json.id });
   } else if (body.target) {
-    const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `users/${body.target}.json`);
+    const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+    const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`);
     if (!json) throw new Error("user not found");
     json.seal = !json.seal;
-    await ghPutJSON(env, env.DATA_REPO, `users/${body.target}.json`, json, sha, `seal user`);
-    await notify(env, body.target, { type: "seal", from: user });
+    await ghPutJSON(env, env.DATA_REPO, `users/${target}.json`, json, sha, "seal user");
+    await notify(env, target, { type: "seal", from: user });
   }
   await log(env, user, "admin_seal", body);
   return reply({ ok: true });
@@ -317,13 +394,23 @@ async function checkRate(env, user, action, minSeconds) {
 /* ---------- Firebase Realtime DB (real-time DM layer) ----------
    Activates when FIREBASE_URL + FIREBASE_SECRET secrets exist.
    Old GitHub DM threads auto-migrate on first touch — ZERO data loss. */
-function fbOn(env) { return !!(env.FIREBASE_URL && env.FIREBASE_SECRET); }
+function fbOn(env) {
+  return !!(env.FIREBASE_URL && env.FIREBASE_SECRET);
+}
+
 async function fb(env, path, method = "GET", body, query = "") {
-  const url = env.FIREBASE_URL.replace(/\/+$/, "") + "/" + path + ".json?auth=" + env.FIREBASE_SECRET + (query ? "&" + query : "");
+  const url =
+    env.FIREBASE_URL.replace(/\/+$/, "") +
+    "/" +
+    path +
+    ".json?auth=" +
+    env.FIREBASE_SECRET +
+    (query ? "&" + query : "");
   const res = await fetch(url, { method, body: body !== undefined ? JSON.stringify(body) : undefined });
   if (!res.ok) throw new Error("firebase " + res.status);
   return res.json();
 }
+
 async function migrateThread(env, pair) {
   try {
     if (await fb(env, `threads/${pair}/migrated`)) return;
@@ -333,14 +420,26 @@ async function migrateThread(env, pair) {
     await fb(env, `threads/${pair}`, "PATCH", { migrated: true, ...(Object.keys(seed).length ? { messages: seed } : {}) });
   } catch (e) {}
 }
+
 async function migrateGroup(env, id) {
   try {
     if (await fb(env, `groups/${id}/migrated`)) return;
     const { json } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`).catch(() => ({ json: null }));
-    if (!json) { await fb(env, `groups/${id}/migrated`, "PUT", true); return; }
-    const msgs = {}; (json.messages || []).forEach((m, i) => { msgs["m" + String(i).padStart(6, "0")] = m; });
-    const members = {}; (json.members || []).forEach((m) => { members[m] = true; });
-    await fb(env, `groups/${id}`, "PATCH", { migrated: true, name: json.name, owner: json.owner, members, ...(Object.keys(msgs).length ? { messages: msgs } : {}) });
+    if (!json) {
+      await fb(env, `groups/${id}/migrated`, "PUT", true);
+      return;
+    }
+    const msgs = {};
+    (json.messages || []).forEach((m, i) => { msgs["m" + String(i).padStart(6, "0")] = m; });
+    const members = {};
+    (json.members || []).forEach((m) => { members[m] = true; });
+    await fb(env, `groups/${id}`, "PATCH", {
+      migrated: true,
+      name: json.name,
+      owner: json.owner,
+      members,
+      ...(Object.keys(msgs).length ? { messages: msgs } : {}),
+    });
   } catch (e) {}
 }
 
@@ -366,6 +465,7 @@ async function sendVerifyEmail(env, email, username, token, workerOrigin) {
   });
   return res.ok;
 }
+
 async function verifyEmail(url, env) {
   const username = (url.searchParams.get("u") || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
   const token = url.searchParams.get("k") || "";
@@ -373,11 +473,13 @@ async function verifyEmail(url, env) {
     `<!DOCTYPE html><html><body style="font-family:Georgia,serif;background:#13040a;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">
      <div style="text-align:center"><h1 style="letter-spacing:8px">L<span style="color:#e63956">O</span>RE</h1>
      <p style="font-size:18px">${msg}</p>${ok && env.SITE_URL ? `<a href="${env.SITE_URL}" style="color:#e63956">→ Open LORE and log in</a>` : ""}</div></body></html>`,
-    { headers: { "Content-Type": "text/html" } });
+    { headers: { "Content-Type": "text/html" } },
+  );
   if (!username || !token) return page("Invalid verification link.", false);
   const { json: creds, sha } = await ghGetJSON(env, env.DATA_REPO, `auth/${username}.json`);
   if (!creds || creds.vtoken !== token) return page("Invalid or expired verification link.", false);
-  creds.verified = true; delete creds.vtoken;
+  creds.verified = true;
+  delete creds.vtoken;
   await ghPutJSON(env, env.DATA_REPO, `auth/${username}.json`, creds, sha, `verified ${username}`);
   await log(env, username, "email_verified", {});
   return page(`@${username} verified. Welcome to the Lore.`, true);
@@ -391,7 +493,9 @@ async function log(env, user, action, details) {
     const arr = json || [];
     arr.push({ ts: new Date().toISOString(), user, action, details });
     await ghPutJSON(env, env.DATA_REPO, `admin/logs/${day}.json`, arr, sha, `log ${action}`);
-  } catch (e) { /* logging never blocks the action */ }
+  } catch (e) {
+    /* logging never blocks the action */
+  }
 }
 
 /* ---------- notifications ---------- */
@@ -400,11 +504,34 @@ async function notify(env, target, item) {
     const path = `users/${target}/notifications.json`;
     const { json, sha } = await ghGetJSON(env, env.DATA_REPO, path);
     const n = json || { unread_count: 0, items: [] };
+    n.items = Array.isArray(n.items) ? n.items : [];
+    // DEDUP: skip if same from+type already exists unread within 2 hours
+    if (item.from) {
+      const cutoff = Date.now() - 7200000;
+      const dup = n.items.find((x) =>
+        x.type === item.type &&
+        x.from === item.from &&
+        !x.read &&
+        (item.post ? x.post === item.post : !x.post) &&
+        (typeof x.ts === "string" ? Date.parse(x.ts) : (x.ts || 0)) > cutoff
+      );
+      if (dup) return;
+    }
     n.items.unshift({ ...item, ts: new Date().toISOString(), read: false });
     n.items = n.items.slice(0, 100);
-    n.unread_count++;
+    n.unread_count = n.items.filter((x) => !x.read).length;
     await ghPutJSON(env, env.DATA_REPO, path, n, sha, `notify ${target}`);
   } catch (e) {}
+}
+
+async function markNotifsRead(user, env) {
+  const path = `users/${user}/notifications.json`;
+  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, path);
+  if (!json) return reply({ ok: true });
+  json.items = (json.items || []).map((n) => ({ ...n, read: true }));
+  json.unread_count = 0;
+  await ghPutJSON(env, env.DATA_REPO, path, json, sha, `read notifs ${user}`);
+  return reply({ ok: true });
 }
 
 /* feed updates retry on write conflicts (two posts at the same time) */
@@ -414,7 +541,10 @@ async function updateFeed(env, mutate) {
       const { json, sha } = await ghGetJSON(env, env.DATA_REPO, "config/feed.json");
       await ghPutJSON(env, env.DATA_REPO, "config/feed.json", mutate(json || []), sha, "feed update");
       return;
-    } catch (e) { if (i === 2) throw e; await new Promise((r) => setTimeout(r, 400)); }
+    } catch (e) {
+      if (i === 2) throw e;
+      await new Promise((r) => setTimeout(r, 400));
+    }
   }
 }
 
@@ -428,10 +558,18 @@ async function createPost(user, body, env) {
   await checkRate(env, user, "post", 60); // max 1 post/min
   const id = "p_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
   const post = {
-    id, author: user, topic: String(body.topic || "General").slice(0, 40),
+    id,
+    author: user,
+    topic: String(body.topic || "General").slice(0, 40),
     text: String(body.text || "").slice(0, 4000),
     img: String(body.img || "").slice(0, 500),
-    ts: Date.now(), up: [], down: [], shares: 0, echo: "", pioneer: "", comments: [],
+    ts: Date.now(),
+    up: [],
+    down: [],
+    shares: 0,
+    echo: "",
+    pioneer: "",
+    comments: [],
     private: !!body.private,
   };
   if (!post.text) throw new Error("empty post");
@@ -444,7 +582,18 @@ async function createPost(user, body, env) {
 
   if (!post.private && !shadow) {
     await updateFeed(env, (feed) => {
-      feed.unshift({ id, author: user, topic: post.topic, snippet: post.text.slice(0, 280), img: post.img, ts: post.ts, up: 0, down: 0, comments: 0, echo: "" });
+      feed.unshift({
+        id,
+        author: user,
+        topic: post.topic,
+        snippet: post.text.slice(0, 280),
+        img: post.img,
+        ts: post.ts,
+        up: 0,
+        down: 0,
+        comments: 0,
+        echo: "",
+      });
       return feed.slice(0, 500);
     });
   }
@@ -455,6 +604,8 @@ async function createPost(user, body, env) {
 async function vote(user, body, env) {
   const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
   if (!post) throw new Error("post not found");
+  post.up = Array.isArray(post.up) ? post.up : [];
+  post.down = Array.isArray(post.down) ? post.down : [];
   for (const k of ["up", "down"]) post[k] = post[k].filter((u) => u !== user);
   if (body.dir === "up") post.up.push(user);
   if (body.dir === "down") post.down.push(user);
@@ -462,11 +613,15 @@ async function vote(user, body, env) {
   // keep explore-page counts in sync with reality
   await updateFeed(env, (feed) => {
     const e = feed.find((x) => x.id === body.post);
-    if (e) { e.up = post.up.length; e.down = post.down.length; }
+    if (e) {
+      e.up = post.up.length;
+      e.down = post.down.length;
+    }
     return feed;
   }).catch(() => {});
-  if (body.dir === "up" && post.author !== user)
+  if (body.dir === "up" && post.author !== user) {
     await notify(env, post.author, { type: "upvote", from: user, post: post.id });
+  }
   await log(env, user, "vote", { post: body.post, dir: body.dir });
   return reply({ ok: true, up: post.up.length, down: post.down.length });
 }
@@ -475,25 +630,31 @@ async function comment(user, body, env) {
   await checkRate(env, user, "comment", 10);
   const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
   if (!post) throw new Error("post not found");
+  post.comments = Array.isArray(post.comments) ? post.comments : [];
   if (post.comments.length === 0) post.pioneer = user; // PIONEER badge
-  post.comments.push({ a: user, t: String(body.text || "").slice(0, 1000), ts: Date.now(),
+  post.comments.push({
+    a: user,
+    t: String(body.text || "").slice(0, 1000),
+    ts: Date.now(),
     parent: body.parent != null ? String(body.parent).slice(0, 30) : null,
-    cid: "c" + Date.now() + Math.random().toString(36).slice(2, 6) });
+    cid: "c" + Date.now() + Math.random().toString(36).slice(2, 6),
+  });
   await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, sha, `comment ${user}`);
   await updateFeed(env, (feed) => {
     const e = feed.find((x) => x.id === body.post);
     if (e) e.comments = post.comments.length;
     return feed;
   }).catch(() => {});
-  if (post.author !== user)
+  if (post.author !== user) {
     await notify(env, post.author, { type: "comment", from: user, post: post.id, snippet: String(body.text).slice(0, 60) });
+  }
   await log(env, user, "comment", { post: body.post });
   return reply({ ok: true });
 }
 
 async function follow(user, body, env) {
   await checkRate(env, user, "follow", 12); // max ~5/min
-  const target = String(body.target || "").toLowerCase();
+  const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
   if (!target || target === user) throw new Error("bad target");
   const a = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
   const b = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`);
@@ -532,8 +693,9 @@ async function updateProfile(user, body, env) {
   if (typeof body.privateProfile === "boolean") u.privateProfile = body.privateProfile;
   if (body.socials && typeof body.socials === "object") {
     u.socials = {};
-    for (const k of ["instagram", "x", "youtube", "snapchat", "facebook", "tiktok", "discord", "website"])
+    for (const k of ["instagram", "x", "youtube", "snapchat", "facebook", "tiktok", "discord", "website"]) {
       if (body.socials[k]) u.socials[k] = String(body.socials[k]).slice(0, 200);
+    }
   }
   if (Array.isArray(body.showcase)) u.showcase = body.showcase.slice(0, 3).map((x) => String(x).slice(0, 30));
   if (Array.isArray(body.claimed)) u.claimed = [...new Set(body.claimed.map((x) => String(x).slice(0, 30)))].slice(0, 100);
@@ -562,7 +724,11 @@ async function uploadPfp(user, body, env) {
   b64 = m[2];
   if (b64.length > 150_000) throw new Error("image too large — must be under ~110KB");
   // basic sanity: decodes as base64?
-  try { atob(b64.slice(0, 100)); } catch { throw new Error("invalid image data"); }
+  try {
+    atob(b64.slice(0, 100));
+  } catch {
+    throw new Error("invalid image data");
+  }
 
   const path = `pfp/${user}.jpg`;
   // need existing sha if overwriting
@@ -570,7 +736,9 @@ async function uploadPfp(user, body, env) {
   let sha;
   if (head.status === 200) sha = (await head.json()).sha;
   const res = await gh(env, env.DATA_REPO, path, "PUT", {
-    message: `pfp ${user}`, content: b64, sha: sha || undefined,
+    message: `pfp ${user}`,
+    content: b64,
+    sha: sha || undefined,
   });
   if (!res.ok) throw new Error("upload failed " + res.status);
 
@@ -594,8 +762,9 @@ async function dm(user, body, env) {
   if ((rec.json.blocked || []).includes(user)) throw new Error("you can't message this user");
   const me = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
   if (me.json && (me.json.blocked || []).includes(other)) throw new Error("you blocked this user — unblock first");
-  if (rec.json.privateProfile && !(rec.json.following || []).includes(user))
+  if (rec.json.privateProfile && !(rec.json.following || []).includes(user)) {
     throw new Error("private profile — they can only be messaged by people they follow");
+  }
   const text = String(body.text || "").slice(0, 2000).trim();
   if (!text) throw new Error("empty message");
 
@@ -630,7 +799,10 @@ async function updateInbox(env, owner, withUser, lastText, isUnread) {
     const { json, sha } = await ghGetJSON(env, env.DMS_REPO, path);
     const inbox = json || { threads: [] };
     let t = inbox.threads.find((x) => x.with === withUser);
-    if (!t) { t = { with: withUser, unread: 0 }; inbox.threads.push(t); }
+    if (!t) {
+      t = { with: withUser, unread: 0 };
+      inbox.threads.push(t);
+    }
     t.last = lastText.slice(0, 80);
     t.ts = Date.now();
     t.unread = isUnread ? (t.unread || 0) + 1 : 0;
@@ -664,12 +836,14 @@ async function dmThread(user, body, env) {
 async function dmInbox(user, body, env) {
   if (fbOn(env)) {
     const data = (await fb(env, `inbox/${user}`).catch(() => null)) || {};
-    const threads = Object.entries(data).map(([w, t]) => ({ with: w, ...t }))
+    const threads = Object.entries(data)
+      .map(([w, t]) => ({ with: w, ...t }))
       .sort((a, b) => (b.ts || 0) - (a.ts || 0));
     try {
       const { json } = await ghGetJSON(env, env.DMS_REPO, `inbox/${user}.json`);
-      if (json && json.threads) for (const t of json.threads)
-        if (!threads.some((x) => x.with === t.with)) threads.push(t);
+      if (json && json.threads) {
+        for (const t of json.threads) if (!threads.some((x) => x.with === t.with)) threads.push(t);
+      }
     } catch (e) {}
     return reply({ ok: true, threads });
   }
@@ -682,18 +856,22 @@ async function report(user, body, env) {
   await checkRate(env, user, "report", 20);
   const { json, sha } = await ghGetJSON(env, env.DATA_REPO, "admin/reports.json");
   const arr = json || [];
-  arr.push({ by: user, target: String(body.target || "").slice(0, 60),
+  arr.push({
+    by: user,
+    target: String(body.target || "").slice(0, 60),
     kind: String(body.kind || "post").slice(0, 12),
     reason: String(body.reason || "").slice(0, 24),
     note: String(body.note || "").slice(0, 500),
-    ts: new Date().toISOString(), status: "pending" });
+    ts: new Date().toISOString(),
+    status: "pending",
+  });
   await ghPutJSON(env, env.DATA_REPO, "admin/reports.json", arr, sha, `report by ${user}`);
   return reply({ ok: true });
 }
 
 async function deletePost(user, body, env) {
   const id = String(body.post || "");
-  const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${id}.json`);
+  const { json: post } = await ghGetJSON(env, env.DATA_REPO, `posts/${id}.json`);
   if (!post) throw new Error("post not found");
   if (post.author !== user && user !== (env.ADMIN_USER || "androbeet")) throw new Error("not your post");
   // delete the file
@@ -721,8 +899,20 @@ async function setPrivacy(user, body, env) {
   const f = await ghGetJSON(env, env.DATA_REPO, "config/feed.json");
   let feed = f.json || [];
   if (post.private) feed = feed.filter((e) => e.id !== id);
-  else if (!feed.some((e) => e.id === id))
-    feed.unshift({ id, author: post.author, topic: post.topic, snippet: post.text.slice(0, 280), img: post.img, ts: post.ts, up: post.up.length, down: post.down.length, comments: post.comments.length, echo: post.echo });
+  else if (!feed.some((e) => e.id === id)) {
+    feed.unshift({
+      id,
+      author: post.author,
+      topic: post.topic,
+      snippet: post.text.slice(0, 280),
+      img: post.img,
+      ts: post.ts,
+      up: post.up.length,
+      down: post.down.length,
+      comments: post.comments.length,
+      echo: post.echo,
+    });
+  }
   await ghPutJSON(env, env.DATA_REPO, "config/feed.json", feed.slice(0, 500), f.sha, `feed privacy ${id}`);
   return reply({ ok: true, private: post.private });
 }
@@ -740,18 +930,24 @@ async function groupCreate(user, body, env) {
   if (exists.json) throw new Error("group name taken");
   const members = [...new Set([user, ...(body.members || []).map((m) => String(m).toLowerCase()).slice(0, 20)])];
   if (fbOn(env)) {
-    const mem = {}; members.forEach((m) => { mem[m] = true; });
+    const mem = {};
+    members.forEach((m) => { mem[m] = true; });
     await fb(env, `groups/${id}`, "PUT", { id, name, owner: user, members: mem, migrated: true });
-    for (const m of members)
-      await fb(env, `inbox/${m}/${encodeURIComponent("👥 " + name)}`, "PATCH",
-        { last: "Group created by @" + user, ts: Date.now(), unread: m !== user ? 1 : 0, group: id }).catch(() => {});
+    for (const m of members) {
+      await fb(env, `inbox/${m}/${encodeURIComponent("👥 " + name)}`, "PATCH", {
+        last: "Group created by @" + user,
+        ts: Date.now(),
+        unread: m !== user ? 1 : 0,
+        group: id,
+      }).catch(() => {});
+    }
     return reply({ ok: true, id });
   }
-  await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`,
-    { id, name, owner: user, members, messages: [] }, null, `group ${id}`);
+  await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`, { id, name, owner: user, members, messages: [] }, null, `group ${id}`);
   for (const m of members) await updateInbox(env, m, "👥 " + name, "Group created by @" + user, m !== user);
   return reply({ ok: true, id });
 }
+
 async function groupMessage(user, body, env) {
   await checkRate(env, user, "group", 3); // separate bucket from DMs
   const id = String(body.group || "");
@@ -772,6 +968,7 @@ async function groupMessage(user, body, env) {
   await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`, g, sha, `gmsg ${id}`);
   return reply({ ok: true });
 }
+
 async function groupThread(user, body, env) {
   const id = String(body.group || "");
   if (fbOn(env)) {
@@ -780,8 +977,13 @@ async function groupThread(user, body, env) {
     if (!g || !g.id) throw new Error("group not found");
     if (!(g.members || {})[user]) throw new Error("not a member");
     const msgs = g.messages || {};
-    return reply({ ok: true, name: g.name, members: Object.keys(g.members || {}),
-      messages: Object.keys(msgs).sort().map((k) => msgs[k]), live: true });
+    return reply({
+      ok: true,
+      name: g.name,
+      members: Object.keys(g.members || {}),
+      messages: Object.keys(msgs).sort().map((k) => msgs[k]),
+      live: true,
+    });
   }
   const { json: g } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
   if (!g) throw new Error("group not found");
@@ -814,8 +1016,6 @@ async function blockUser(user, body, env) {
   return reply({ ok: true, blocked: !was });
 }
 
-/* DM block enforcement lives in dm(): */
-
 /* ---------- edit post ---------- */
 async function editPost(user, body, env) {
   const id = String(body.post || "");
@@ -829,12 +1029,91 @@ async function editPost(user, body, env) {
   if (!post.private) {
     await updateFeed(env, (feed) => {
       const e = feed.find((x) => x.id === id);
-      if (e) { e.snippet = post.text.slice(0, 280); e.topic = post.topic; }
+      if (e) {
+        e.snippet = post.text.slice(0, 280);
+        e.topic = post.topic;
+      }
       return feed;
     });
   }
   await log(env, user, "post_edited", { id });
   return reply({ ok: true });
+}
+
+/* ---------- device uploads (voice notes, images) via Catbox proxy ----------
+   Browser can't call catbox.moe directly (no CORS) — the Worker proxies it.
+   Free, permanent hosting, no account, no key. Cap ~1.4MB per file. */
+async function uploadMedia(user, body, env) {
+  await checkRate(env, user, "upload", 10);
+  const m = String(body.data || "").match(/^data:(image\/(?:png|jpe?g|gif|webp)|audio\/(?:webm|ogg|mpeg|mp4|wav));base64,(.+)$/);
+  if (!m) throw new Error("unsupported file type (images & audio only)");
+  const b64 = m[2];
+  if (b64.length > 2_000_000) throw new Error("file too large — max ~1.4MB (host bigger files on catbox.moe and paste the link)");
+  const bin = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+  const ext = m[1].split("/")[1].replace("mpeg", "mp3").replace("jpeg", "jpg");
+  const fd = new FormData();
+  fd.append("reqtype", "fileupload");
+  fd.append("fileToUpload", new Blob([bin], { type: m[1] }), "lore_" + Date.now() + "." + ext);
+  const res = await fetch("https://catbox.moe/user/api.php", { method: "POST", body: fd });
+  const url = (await res.text()).trim();
+  if (!res.ok || !url.startsWith("http")) throw new Error("upload host rejected the file — try again");
+  await log(env, user, "upload", { url });
+  return reply({ ok: true, url });
+}
+
+/* ---------- GIF search (Tenor when available; GIPHY fallback) ----------
+   If Tenor keys are unavailable for new apps, create a GIPHY app key and set
+   GIPHY_KEY. The frontend stays unchanged because /gif-search keeps the same shape. */
+async function gifSearch(user, body, env) {
+  const q = encodeURIComponent(String(body.q || "").slice(0, 60));
+  if (!q) throw new Error("empty search");
+
+  if (env.TENOR_KEY) {
+    try {
+      const r = await fetch(`https://tenor.googleapis.com/v2/search?q=${q}&key=${env.TENOR_KEY}&limit=24&media_filter=gif,tinygif&contentfilter=medium`);
+      const d = await r.json();
+      const results = (d.results || [])
+        .map((x) => ({ url: x.media_formats?.gif?.url, preview: x.media_formats?.tinygif?.url || x.media_formats?.gif?.url }))
+        .filter((x) => x.url);
+      if (results.length) return reply({ ok: true, results });
+    } catch (e) {
+      // fall through to GIPHY if configured
+    }
+  }
+
+  if (env.GIPHY_KEY) {
+    const r = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${env.GIPHY_KEY}&q=${q}&limit=24&rating=pg-13&lang=en`);
+    const d = await r.json();
+    const results = (d.data || [])
+      .map((x) => ({
+        url: x.images?.original?.url || x.images?.downsized?.url,
+        preview: x.images?.fixed_width_small?.url || x.images?.downsized_small?.mp4 || x.images?.original?.url,
+      }))
+      .filter((x) => x.url);
+    return reply({ ok: true, results });
+  }
+
+  throw new Error("GIFs aren't enabled yet");
+}
+
+/* ---------- GDPR data export ---------- */
+async function exportData(user, body, env) {
+  const prof = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`).catch(() => ({ json: null }));
+  const auth = await ghGetJSON(env, env.DATA_REPO, `auth/${user}.json`).catch(() => ({ json: null }));
+  let dm_contacts = [];
+  if (fbOn(env)) {
+    const d = (await fb(env, `inbox/${user}`).catch(() => null)) || {};
+    dm_contacts = Object.keys(d);
+  }
+  await log(env, user, "data_export", {});
+  return reply({
+    ok: true,
+    exported: new Date().toISOString(),
+    username: user,
+    profile: prof.json,
+    email: auth.json ? auth.json.email : null,
+    dm_contacts,
+  });
 }
 
 async function requestTag(user, body, env) {
