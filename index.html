@@ -201,6 +201,33 @@ svg.ic{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;str
   z-index:300;box-shadow:var(--glow);animation:pop .2s;max-width:88vw;text-align:center}
 @keyframes pop{from{transform:translateX(-50%) scale(.94);opacity:0}}
 
+
+/* coins/store visuals */
+.coinbar{display:flex;align-items:center;gap:8px;border:1px solid rgba(234,179,8,.38);background:linear-gradient(135deg,rgba(234,179,8,.16),var(--card));color:var(--text);border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:900;box-shadow:0 0 18px rgba(234,179,8,.12);position:relative;margin-bottom:8px}
+.coinbar:hover{border-color:var(--gold);box-shadow:0 0 24px rgba(234,179,8,.22)}
+.coinbar.small{height:40px;margin:0;padding:0 12px}
+.coinbar svg.ic{width:16px;height:16px;color:var(--gold)}
+.coinbar .nbadge{position:absolute;top:-5px;right:-5px}
+.dailygrid{display:grid;grid-template-columns:repeat(7,minmax(92px,1fr));gap:9px;overflow-x:auto}
+.daycard{border:1px solid var(--border);background:var(--bg2);border-radius:16px;padding:14px;text-align:center;min-width:92px}
+.daycard.on{border-color:var(--gold);box-shadow:0 0 20px rgba(234,179,8,.22);background:linear-gradient(135deg,rgba(234,179,8,.16),var(--bg2))}
+.giftgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:12px}
+.giftcard{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:18px;padding:14px;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .2s;position:relative;overflow:hidden}
+.giftcard:hover,.giftcard.on{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 0 24px color-mix(in srgb,var(--accent) 24%,transparent)}
+.giftcard.premium{border-color:rgba(234,179,8,.42);box-shadow:0 0 22px rgba(234,179,8,.15)}
+.giftart{width:58px;height:58px;margin:0 auto 10px;border-radius:18px;background:radial-gradient(circle at 35% 25%,#fff8,transparent 24%),linear-gradient(135deg,hsl(var(--h),80%,62%),hsl(calc(var(--h) + 42),78%,42%));display:flex;align-items:center;justify-content:center;color:white;font-weight:1000;font-size:18px;text-shadow:0 2px 8px #0009;box-shadow:0 12px 28px hsla(var(--h),80%,55%,.28);position:relative}
+.giftart::before,.giftart::after{content:"";position:absolute;background:#fff9;border-radius:999px;opacity:.65}.giftart::before{width:28px;height:5px;top:9px;right:-8px;transform:rotate(35deg)}.giftart::after{width:18px;height:5px;bottom:8px;left:-5px;transform:rotate(-24deg)}
+.giftprice{display:inline-flex;align-items:center;gap:5px;color:var(--gold);font-weight:900;margin-top:5px}
+.storegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.storecard{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:18px;padding:14px;text-align:center;transition:border-color .15s,box-shadow .2s}
+.storecard:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.framepv{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;background:conic-gradient(from 20deg,hsl(var(--h),90%,58%),hsl(calc(var(--h) + 70),90%,65%),hsl(var(--h),90%,45%),hsl(var(--h),90%,58%));padding:6px;box-shadow:0 0 calc(10px + var(--glowp)*1px) hsla(var(--h),90%,60%,.45)}
+.framepv i{display:block;width:100%;height:100%;border-radius:50%;background:var(--card);border:1px solid rgba(255,255,255,.12)}
+.bubblepv{width:112px;min-height:46px;margin:4px auto 12px;border-radius:18px 18px 6px 18px;background:linear-gradient(135deg,hsl(var(--h),85%,62%),hsl(calc(var(--h) + 45),85%,48%));box-shadow:0 10px 25px hsla(var(--h),80%,55%,.25);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:900;position:relative;overflow:hidden}
+.bubblepv::before,.bubblepv::after{content:"";position:absolute;border-radius:50%;background:#fff7}.bubblepv::before{width:16px;height:16px;left:7px;top:6px}.bubblepv::after{width:24px;height:8px;right:-6px;bottom:6px;transform:rotate(-25deg)}
+.exportgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}.exportopt{border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--bg2);display:flex;gap:9px;align-items:flex-start}.exportopt input{width:auto;margin-top:3px}
+@media(max-width:860px){.dailygrid{grid-template-columns:repeat(7,92px)}.giftgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.storegrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 /* posts */
 .post{padding:18px 20px 14px}
 .phead{display:flex;align-items:center;gap:11px;margin-bottom:11px}
@@ -323,6 +350,7 @@ svg.donut .seg:hover{stroke-width:33}
 <header id="mtop">
   <div class="logo" onclick="nav('#/explore')">L<b>O</b>RE</div>
   <div class="acts">
+    <button id="topcoinbar" class="coinbar small" onclick="nav('#/coins')" aria-label="Lore Coins"></button>
     <button class="iconbtn" onclick="nav('#/dms')" aria-label="Messages"><svg class="ic" viewBox="0 0 24 24"><path d="M21 11.5c0 4.1-4 7.5-9 7.5-1.2 0-2.4-.2-3.4-.6L3 20l1.8-3.6C3.7 15 3 13.3 3 11.5 3 7.4 7 4 12 4s9 3.4 9 7.5Z"/></svg></button>
     <button class="iconbtn" onclick="nav('#/search')" aria-label="Search"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></button>
     <button class="iconbtn" onclick="nav('#/settings')" aria-label="Settings"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg></button>
@@ -686,6 +714,12 @@ function avatarHTML(u,s){
   if(fs)return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008);${fs}">${esc((u[0]||"?").toUpperCase())}</div>`;
   return genAv(u,s);
 }
+function bubbleStyle(u,mine){
+  const b=SEED.users[u]?.chatBubble||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";
+  if(!b)return `background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"}`;
+  const n=Number(String(b).match(/(\d+)/)?.[1]||1),h=(n*41)%360;
+  return `background:radial-gradient(circle at 12% 18%,rgba(255,255,255,.35),transparent 16%),linear-gradient(135deg,hsl(${h},82%,62%),hsl(${(h+45)%360},82%,46%));color:#fff;border:1px solid hsla(${h},90%,70%,.55);box-shadow:0 8px 24px hsla(${h},80%,55%,.28)`;
+}
 function toast(m){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
 function allPosts(){
   const mine=LIVE?[]:S.myPosts.map(p=>({...p}));
@@ -761,10 +795,13 @@ const NAVS=[["explore","Explore","explore"],["topics","Topics","topics"],["commu
 ["search","Search","search"],["notifications","Activity","alerts"],["coins","Lore Coins","coin"],["dms","Messages","msg"],["achievements","Achievements","trophy"],["me","Profile","user"],["settings","Settings","gear"]];
 I.coin='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9 9.2c.7-.8 1.7-1.2 3-1.2 2 0 3.2 1 3.2 2.4 0 1.6-1.4 2.2-3 2.5-1.6.3-3 .7-3 2.2 0 1.2 1.1 2.1 3 2.1 1.4 0 2.5-.4 3.2-1.3"/></svg>';
 I.trophy='<svg class="ic" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/></svg>';
+function coinInner(){return `${ic("coin",14)}<b>${LIVEWALLET?LIVEWALLET.balance:0}</b>${LIVECLAIM?`<span class="nbadge">!</span>`:""}`;}
+function coinBar(){return `<button class="coinbar" onclick="nav('#/coins')">${coinInner()}<span style="font-size:11px;color:var(--muted);font-weight:700">LORE</span></button>`;}
 function drawChrome(){
   const n=unread();
   $("#leftrail").innerHTML=`
     <div class="logo" onclick="nav('#/explore')">L<b>O</b>RE</div>
+    ${coinBar()}
     ${NAVS.map(([id,label,icon])=>`<button class="nbtn ${CUR===id||(CUR==="u"&&id==="me")?"on":""}" onclick="nav('#/${id}')">
       ${ic(icon)} ${label} ${id==="notifications"&&n?`<span class="nbadge">${n}</span>`:""}
       ${id==="settings"&&S.me===CONFIG.ADMIN?'':''}</button>`).join("")}
@@ -781,6 +818,7 @@ function drawChrome(){
     ?`<button class="fab" onclick="openCompose()">${ic("plus")}</button>`
     :`<button class="${CUR===id||(CUR==="u"&&id==="me")?"on":""}" onclick="nav('#/${id}')">${ic(icon)}${label?`<span>${label}</span>`:""}${id==="notifications"&&n?`<span class="nbadge">${n}</span>`:""}</button>`
   ).join("");
+  const topCoin=$("#topcoinbar");if(topCoin)topCoin.innerHTML=coinInner();
   drawRight();
 }
 function drawRight(){
@@ -1493,7 +1531,7 @@ async function loadWallet(force){
   if(!LIVE||!S.token)return null;
   if(LIVEWALLET&&!force)return LIVEWALLET;
   const d=await api("/wallet",{_silent:true});
-  if(d&&d.ok){LIVEWALLET=d.wallet;COINCAT=d.catalog;drawChrome();}
+  if(d&&d.ok){LIVEWALLET=d.wallet;COINCAT=d.catalog;LIVECLAIM=!!d.canClaim;drawChrome();}
   return LIVEWALLET;
 }
 function txRows(tx){
@@ -1502,6 +1540,14 @@ function txRows(tx){
     <b style="color:${(t.amount||0)>=0?'var(--green)':'#f87171'}">${(t.amount||0)>=0?"+":""}${t.amount||0}</b>
   </div>`).join(""):`<div class="muted">No transactions yet.</div>`;
 }
+function giftHue(id){let h=0;for(const c of String(id))h=(h*33+c.charCodeAt(0))%360;return h;}
+function giftArt(g){const h=giftHue(g.id),txt=(g.name||g.id).split(/\s|_/).map(x=>x[0]).join("").slice(0,2).toUpperCase();return `<div class="giftart" style="--h:${h}"><span>${esc(txt)}</span></div>`;}
+function giftCard(g,sel){return `<div class="giftcard ${g.price>=320?'premium':''} ${sel?'on':''}" onclick="openGift('', '${esc(g.id)}')">${giftArt(g)}<b>${esc(g.name)}</b><div class="giftprice">${ic('coin',13)} ${g.price}</div></div>`;}
+function giftChoice(g,sel){return `<div class="giftcard ${g.price>=320?'premium':''} ${sel?'on':''}" data-gift="${esc(g.id)}" onclick="selectGift('${esc(g.id)}')">${giftArt(g)}<b>${esc(g.name)}</b><div class="giftprice">${ic('coin',13)} ${g.price}</div></div>`;}
+function selectGift(id){const inp=$("#gift_id");if(inp)inp.value=id;document.querySelectorAll('[data-gift]').forEach(e=>e.classList.toggle('on',e.dataset.gift===id));}
+function framePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*29)%360,g=n%10;return `<div class="framepv" style="--h:${h};--glowp:${g}"><i></i></div>`;}
+function bubblePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*41)%360;const names=["Capy","Frog","Cat Dog","Facepalm","Heart","Doge","Dino","Aurora","Velvet","Neon"];return `<div class="bubblepv" style="--h:${h}">${esc(names[n%names.length])}</div>`;}
+function dailyRewardsHTML(w){const rewards=[10,15,20,25,30,50,90],cur=w.streak?.count||0;return `<div class="dailygrid">${rewards.map((r,i)=>`<div class="daycard ${cur==i+1?'on':''}"><div style="font-size:19px;font-weight:900;color:var(--gold);display:flex;gap:5px;justify-content:center">${ic('coin',15)}${r}</div><div class="muted" style="margin-top:10px">day ${i+1}</div></div>`).join("")}</div>`;}
 routes.coins=async()=>{
   head("Lore Coins","claim, gift, redeem and unlock");
   if(!LIVE||!S.token){$("#content").innerHTML=`<div class="empty">${ic("coin")}Log in to use Lore Coins.<br><br><button class="btn sm" onclick="openAuth()">Log in / Create account</button></div>`;return;}
@@ -1509,35 +1555,35 @@ routes.coins=async()=>{
   const w=await loadWallet(true);if(!w)return;
   const cat=COINCAT||{gifts:[],frames:[],bubbles:[]};
   $("#content").innerHTML=`
-    <div class="card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-      <div class="medal" style="background:var(--soft)">${ic("coin",24)}</div>
-      <div><div class="muted">BALANCE</div><div style="font-size:28px;font-weight:900">${w.balance||0} Lore Coins</div></div>
+    <div class="card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-color:rgba(234,179,8,.35);box-shadow:0 0 30px rgba(234,179,8,.10)">
+      <div class="medal" style="background:var(--soft);color:var(--gold)">${ic("coin",24)}</div>
+      <div><div class="muted">BALANCE</div><div style="font-size:31px;font-weight:1000;letter-spacing:.2px">${w.balance||0} Lore Coins</div></div>
       <button class="btn sm" style="margin-left:auto" onclick="claimCoins()">Claim daily</button>
       <button class="btn ghost sm" onclick="loadWallet(true).then(()=>render())">Refresh</button>
+      <button class="btn ghost sm" onclick="toast('Recharge is coming after payment setup')">Recharge</button>
     </div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Free Daily Rewards</h2>${dailyRewardsHTML(w)}</div>
     <div class="grid2">
       <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Voucher</h2>
         <div style="display:flex;gap:8px"><input id="voucher_code" placeholder="Enter code"><button class="btn sm" onclick="redeemVoucher()">Redeem</button></div></div>
-      <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Daily streak</h2>
-        <p class="muted">Current day: <b>${w.streak?.count||0}</b>. Rewards cycle: 10, 15, 20, 25, 30, 50, 90.</p></div>
+      <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Store status</h2>
+        <p class="muted">Frames owned: <b>${w.inventory?.frames?.length||0}</b> · Bubbles owned: <b>${w.inventory?.bubbles?.length||0}</b> · Gifts held: <b>${w.inventory?.gifts?.length||0}</b></p></div>
     </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Gifts</h2>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">${cat.gifts.map(g=>`<button class="btn ghost sm" onclick="openGift('', '${esc(g.id)}')">${esc(g.name)} · ${g.price}</button>`).join("")}</div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Award Gifts</h2><div class="giftgrid">${cat.gifts.map(g=>giftCard(g)).join("")}</div></div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Avatar Frame Store</h2>
+      <div class="storegrid">${cat.frames.slice(0,50).map(i=>storeItem(i,'frame',w)).join("")}</div>
     </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Avatar Frames</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${cat.frames.slice(0,50).map(i=>storeItem(i,'frame',w)).join("")}</div>
-    </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Chat Bubbles</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${cat.bubbles.slice(0,50).map(i=>storeItem(i,'bubble',w)).join("")}</div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Chat Bubble Store</h2>
+      <div class="storegrid">${cat.bubbles.slice(0,50).map(i=>storeItem(i,'bubble',w)).join("")}</div>
     </div>
     <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Received gifts</h2>
-      ${(w.inventory?.gifts||[]).length?(w.inventory.gifts||[]).map(g=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border)"><b>${esc(g.name||g.id)}</b><span class="muted">from @${esc(g.from||"")}</span><span class="muted" style="margin-left:auto">${g.price||0}</span><button class="btn ghost sm" onclick="convertGift('${esc(g.uid||g.id)}')">Convert</button></div>`).join(""):`<div class="muted">No gifts yet.</div>`}
+      ${(w.inventory?.gifts||[]).length?(w.inventory.gifts||[]).map(g=>`<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--border)">${giftArt(g)}<div><b>${esc(g.name||g.id)}</b><div class="muted">from @${esc(g.from||"")}</div></div><span class="muted" style="margin-left:auto">${g.price||0}</span><button class="btn ghost sm" onclick="convertGift('${esc(g.uid||g.id)}')">Convert</button></div>`).join(""):`<div class="muted">No gifts yet.</div>`}
     </div>
     <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Transactions</h2>${txRows(w.tx)}</div>`;
 };
 function storeItem(i,type,w){
   const key=type==="frame"?"frames":"bubbles",owned=(w.inventory?.[key]||[]).includes(i.id),ap=w.applied?.[type]===i.id;
-  return `<div class="card" style="margin:0;padding:12px"><b>${esc(i.name)}</b><div class="muted" style="margin:4px 0 10px">${i.price} coins</div>
+  return `<div class="storecard">${type==="frame"?framePreview(i.id):bubblePreview(i.id)}<b>${esc(i.name)}</b><div class="muted" style="margin:4px 0 10px">${i.price} coins</div>
     ${owned?`<button class="btn ${ap?"":"ghost"} sm" onclick="applyStore('${type}','${esc(i.id)}')">${ap?"Applied":"Apply"}</button>`:`<button class="btn sm" onclick="buyStore('${type}','${esc(i.id)}')">Buy</button>`}</div>`;
 }
 async function claimCoins(){const d=await api("/coins-claim",{});if(d&&d.ok){toast("Claimed "+d.reward+" Lore Coins");await loadWallet(true);render();}}
@@ -1549,11 +1595,13 @@ async function openGift(target,giftId,ref){
   if(requireLogin())return;
   await loadWallet();
   const gifts=(COINCAT&&COINCAT.gifts)||[];
+  const chosen=giftId||gifts[0]?.id||"";
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Send gift</h2>
+    <input type="hidden" id="gift_id" value="${esc(chosen)}">
     <div class="field"><label>TO USERNAME</label><input id="gift_to" value="${esc(target||"")}" placeholder="username"></div>
-    <div class="field"><label>GIFT</label><select id="gift_id">${gifts.map(g=>`<option value="${esc(g.id)}" ${g.id===giftId?"selected":""}>${esc(g.name)} · ${g.price}</option>`).join("")}</select></div>
+    <div class="field"><label>AWARD</label><div class="giftgrid" style="max-height:42vh;overflow-y:auto">${gifts.map(g=>giftChoice(g,g.id===chosen)).join("")}</div></div>
     <div class="field"><label>MESSAGE</label><textarea id="gift_note" rows="2" placeholder="Optional message…"></textarea></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="sendGift('${esc(ref||"")}')">Send gift</button></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="sendGift('${esc(ref||"")}')">Award</button></div>
   </div></div>`;
 }
 async function sendGift(ref){
@@ -1661,7 +1709,7 @@ routes.group=async(id)=>{
         const mine=m.from===S.me;
         return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
           ${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(m.from)}</div>`:""}
-          <div style="background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
+          <div style="${bubbleStyle(m.from,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
         </div>`;}).join(""):`<div class="muted" style="margin:auto;text-align:center">No messages yet.</div>`;
       if(stick)box.scrollTop=box.scrollHeight;
     }
@@ -1692,7 +1740,7 @@ function appendPendingBubble(boxId,text,from){
   const div=document.createElement("div");
   div.style.cssText=`align-self:${mine?"flex-end":"flex-start"};max-width:78%`;
   div.setAttribute("data-pending","1");
-  div.innerHTML=`${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(from)}</div>`:""}<div style="background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${md(text)}</div><div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">just now</div>`;
+  div.innerHTML=`${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(from)}</div>`:""}<div style="${bubbleStyle(from||S.me,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${md(text)}</div><div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">just now</div>`;
   box.appendChild(div);box.scrollTop=box.scrollHeight;return div;
 }
 async function sendGroup(id){
@@ -1745,7 +1793,7 @@ async function refreshThread(other){
   box.innerHTML=d.messages.length?d.messages.map(m=>{
     const mine=m.from===S.me;
     return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
-      <div style="background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
+      <div style="${bubbleStyle(m.from,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
       <div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">${timeAgo(m.ts)}</div>
     </div>`;}).join("")
     :`<div class="muted" style="text-align:center;margin:auto">No messages yet. Say something — it's private.</div>`;
@@ -1847,7 +1895,7 @@ routes.settings=()=>{
     <div class="field"><label>CLOSE FRIENDS (USERNAMES, COMMA-SEPARATED)</label><input id="f_close" value="${esc((S.closeFriends||[]).join(', '))}" placeholder="alice, bob, charlie"></div>
     <button class="btn ghost sm" onclick="saveCloseFriends()">Save close friends</button>
     <div class="hr"></div>
-    <button class="btn ghost sm" onclick="exportMyData()">Download my data (JSON)</button>
+    <button class="btn ghost sm" onclick="exportMyData()">Download my data</button>
     <span class="muted" style="margin-left:10px">Everything LORE knows about you — yours to keep.</span>
     ${(S.blocked||[]).length?`<div class="hr"></div><div class="muted" style="margin-bottom:8px">BLOCKED USERS</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">${S.blocked.map(b=>`<span class="chip" onclick="blockToggle('${esc(b)}')">@${esc(b)} ✕</span>`).join("")}</div>`:""}
@@ -1909,17 +1957,72 @@ async function saveCloseFriends(){
   S.closeFriends=[...new Set(list)];save();toast("Close friends saved");
   if(LIVE&&S.token)api("/close-friends",{list:S.closeFriends});
 }
+function exportHistKey(){return "lore_exports_"+S.me;}
+function exportHistory(){try{return JSON.parse(localStorage.getItem(exportHistKey()))||[]}catch(e){return[]}}
+function saveExportHistory(item){const h=exportHistory();h.unshift(item);localStorage.setItem(exportHistKey(),JSON.stringify(h.slice(0,30)));}
 async function exportMyData(){
   if(!LIVE||!S.token){toast("Log in first");return;}
-  toast("Preparing your export…");
-  const d=await api("/export",{});
-  if(!d||!d.ok)return;
-  d.local_posts=S.myPosts;d.claimed_achievements=S.claimed||[];
-  const blob=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-  a.download="lore-data-"+S.me+".json";a.click();
-  toast("Export downloaded");
+  const hist=exportHistory();
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Download my data</h2>
+    <div class="notice">Choose what to include. Small exports download instantly. Large chat exports may take a little longer while LORE prepares your archive.</div>
+    <div class="field"><label>INCLUDE</label><div class="exportgrid">
+      ${[["posts","Posts & media links"],["dms","Inbox & chats"],["info","Account information"],["activity","Activity history"],["interests","Interests summary"]].map(([id,l])=>`<label class="exportopt"><input type="checkbox" id="exp_${id}" checked><span>${l}</span></label>`).join("")}
+    </div></div>
+    <div class="grid2"><div class="field"><label>DURATION</label><select id="exp_range"><option value="30">Last 1 month</option><option value="90">Last 90 days</option><option value="all" selected>All time</option><option value="custom">Custom dates</option></select></div>
+    <div class="field"><label>FORMAT</label><select id="exp_format"><option value="html">HTML visual archive</option><option value="json">JSON developer archive</option></select></div></div>
+    <div class="grid2"><div class="field"><label>FROM</label><input type="date" id="exp_from"></div><div class="field"><label>TO</label><input type="date" id="exp_to"></div></div>
+    <div id="exp_status" class="muted" style="margin-bottom:12px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="startExport()">Generate ZIP</button></div>
+    ${hist.length?`<div class="hr"></div><h3 style="font-size:13px;margin-bottom:8px">Export history</h3>${hist.map(x=>`<div class="muted" style="padding:6px 0;border-top:1px solid var(--border)">${new Date(x.ts).toLocaleString()} · ${esc(x.format.toUpperCase())} · ${esc(x.range)} · ${x.files} files</div>`).join("")}`:""}
+  </div></div>`;
 }
+function expDateRange(){
+  const r=$("#exp_range").value,now=Date.now();let from=0,to=now;
+  if(r==="30")from=now-30*86400000;else if(r==="90")from=now-90*86400000;else if(r==="custom"){from=$("#exp_from").value?new Date($("#exp_from").value).getTime():0;to=$("#exp_to").value?new Date($("#exp_to").value).getTime()+86400000:now;}
+  return{from,to,label:r==="all"?"all time":r==="custom"?"custom":r+" days"};
+}
+function inRangeTs(ts,range){return !ts||(ts>=range.from&&ts<=range.to);}
+function mediaLinksFrom(text){return [...String(text||"").matchAll(/https?:\/\/\S+/g)].map(m=>m[0]);}
+async function startExport(){
+  const st=$("#exp_status"),range=expDateRange(),format=$("#exp_format").value;
+  const include={posts:$("#exp_posts").checked,dms:$("#exp_dms").checked,info:$("#exp_info").checked,activity:$("#exp_activity").checked,interests:$("#exp_interests").checked};
+  const est=include.dms&&LIVEINBOX&&LIVEINBOX.length>10?Math.ceil(LIVEINBOX.length/8):1;
+  if(st)st.textContent=`Preparing your data… estimated ${est<2?"under 1 minute":est+" minutes"}.`;
+  const data=await buildExportData(include,range);
+  const files=format==="html"?exportHtmlFiles(data):exportJsonFiles(data);
+  const blob=makeZip(files);
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${S.me}_lore_data.zip`;a.click();
+  saveExportHistory({ts:Date.now(),format,range:range.label,files:Object.keys(files).length});
+  if(st)st.textContent="Export ready. ZIP downloaded.";toast("Export downloaded");
+}
+async function buildExportData(include,range){
+  const base=await api("/export",{_silent:true});
+  const wallet=await api("/wallet",{_silent:true});
+  const mine=allPosts().filter(p=>p.author===S.me&&inRangeTs(p.ts,range));
+  const comments=allPosts().flatMap(p=>(p.comments||[]).filter(c=>c.a===S.me&&inRangeTs(c.ts,range)).map(c=>({post:p.id,topic:p.topic,...c})));
+  const votes=Object.entries(S.votes||{}).map(([post,dir])=>({post,dir,ts:(S.voteTimes||{})[post]||0})).filter(v=>inRangeTs(v.ts,range));
+  let dms=[];
+  if(include.dms){
+    const dmraw=LIVEINBOX?{threads:LIVEINBOX}:await api("/dm-inbox",{_silent:true});
+    const inbox=(dmraw&&dmraw.threads)||[];
+    for(const t of inbox.slice(0,80)){
+      try{
+        if(String(t.with).startsWith("👥 ")){const g=await api("/group-thread",{group:t.group||("g_"+t.with.slice(3)),_silent:true});if(g&&g.ok)dms.push({group:t.with,...g});}
+        else{const th=await api("/dm-thread",{with:t.with,_silent:true});if(th&&th.ok)dms.push({with:t.with,messages:(th.messages||[]).filter(m=>inRangeTs(m.ts,range))});}
+      }catch(e){}
+    }
+  }
+  const media=[...mine.flatMap(p=>mediaLinksFrom(p.text).concat(mediaLinksFrom(p.img))),...comments.flatMap(c=>mediaLinksFrom(c.t))];
+  const topicCount={};mine.forEach(p=>topicCount[p.topic]=(topicCount[p.topic]||0)+1);comments.forEach(c=>topicCount[c.topic]=(topicCount[c.topic]||0)+1);
+  return{exported:new Date().toISOString(),range,include,user:S.me,content:{posts:include.posts?mine:[],mediaLinks:[...new Set(media)],dms:include.dms?dms:[]},information:include.info?{server:base,profile:S.profile,wallet:wallet&&wallet.ok?wallet.wallet:null,claimed:S.claimed||[],showcase:S.showcase||[]}:null,activity:include.activity?{comments,votes,follows:S.follows,counters:S.counters||{}}:null,interests:include.interests?{topics:topicCount,tags:S.profile.tags||[]}:null};
+}
+function exportJsonFiles(d){const f={"README.json":JSON.stringify({user:d.user,exported:d.exported,range:d.range.label},null,2)};if(d.content){f["Content/posts.json"]=JSON.stringify(d.content.posts,null,2);f["Content/media-links.json"]=JSON.stringify(d.content.mediaLinks,null,2);f["Content/direct-messages.json"]=JSON.stringify(d.content.dms,null,2);}if(d.information)f["Information/account.json"]=JSON.stringify(d.information,null,2);if(d.activity)f["Activity/activity.json"]=JSON.stringify(d.activity,null,2);if(d.interests)f["Interests/interests.json"]=JSON.stringify(d.interests,null,2);return f;}
+function htmlPage(title,body){return `<!doctype html><meta charset="utf-8"><title>${esc(title)}</title><body style="font-family:Inter,Segoe UI,sans-serif;background:#13040a;color:#f6edf0;padding:28px;line-height:1.7"><h1>${esc(title)}</h1>${body}</body>`;}
+function exportHtmlFiles(d){const f={"README.html":htmlPage("LORE data export",`<p>@${esc(d.user)} · ${esc(d.exported)} · ${esc(d.range.label)}</p>`)};if(d.content){f["Content/posts.html"]=htmlPage("Posts",d.content.posts.map(p=>`<article><h2>#${esc(p.topic)} · ${new Date(p.ts).toLocaleString()}</h2><pre>${esc(p.text)}</pre></article>`).join(""));f["Content/media-links.html"]=htmlPage("Media links",d.content.mediaLinks.map(u=>`<p><a href="${esc(u)}">${esc(u)}</a></p>`).join(""));f["Content/direct-messages.html"]=htmlPage("Direct messages",d.content.dms.map(t=>`<h2>${esc(t.with||t.group||"")}</h2><pre>${esc(JSON.stringify(t.messages||[],null,2))}</pre>`).join(""));}if(d.information)f["Information/account.html"]=htmlPage("Account information",`<pre>${esc(JSON.stringify(d.information,null,2))}</pre>`);if(d.activity)f["Activity/activity.html"]=htmlPage("Activity",`<pre>${esc(JSON.stringify(d.activity,null,2))}</pre>`);if(d.interests)f["Interests/interests.html"]=htmlPage("Interests",`<pre>${esc(JSON.stringify(d.interests,null,2))}</pre>`);return f;}
+const CRC_TABLE=(()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xffffffff;for(const b of u8)c=CRC_TABLE[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0;}
+function makeZip(files){const enc=new TextEncoder(),locals=[],centrals=[];let offset=0;const u16=(n)=>[n&255,(n>>>8)&255],u32=(n)=>[n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255];for(const [name,content] of Object.entries(files)){const nameB=enc.encode(name),data=enc.encode(content),crc=crc32(data),local=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(nameB.length),...u16(0),...nameB,...data]);locals.push(local);const central=new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(nameB.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset),...nameB]);centrals.push(central);offset+=local.length;}const csize=centrals.reduce((a,b)=>a+b.length,0),end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(centrals.length),...u16(centrals.length),...u32(csize),...u32(offset),...u16(0)]);return new Blob([...locals,...centrals,end],{type:"application/zip"});}
+
 function togglePrivateProfile(v){
   S.profile.privateProfile=v;save();
   toast(v?"Profile is now private":"Profile is public");
@@ -2195,7 +2298,7 @@ function submitPost(){
 
 /* ============ LIVE DATA LOADER ============ */
 let LIVEFEED=null, LIVEUSERS=null, LIVENOTIFS=null, LASTFEED=0;
-let LIVEINBOX=null, LIVESTORIES=null, LIVEWALLET=null, COINCAT=null;
+let LIVEINBOX=null, LIVESTORIES=null, LIVEWALLET=null, COINCAT=null, LIVECLAIM=false;
 function RAWBASE(){return "https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";}
 
 /* lazy user-profile loader: fetches users/<name>.json for any unknown
@@ -2276,7 +2379,7 @@ async function loadLive(){
         const sd=await api("/stories",{_silent:true});
         if(sd&&sd.ok){LIVESTORIES=sd.stories||[];ensureUsers(LIVESTORIES.map(x=>x.user));if(CUR==="explore")render();}
         const wd=await api("/wallet",{_silent:true});
-        if(wd&&wd.ok){LIVEWALLET=wd.wallet;COINCAT=wd.catalog;drawChrome();}
+        if(wd&&wd.ok){LIVEWALLET=wd.wallet;COINCAT=wd.catalog;LIVECLAIM=!!wd.canClaim;drawChrome();}
       }catch(e){}
     }
   }catch(e){}
