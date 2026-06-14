@@ -35,6 +35,231 @@ const JSON_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
+// Best-effort isolate cache: reduces Tenor/GIPHY calls and makes repeat GIF searches instant.
+const GIF_CACHE = new Map();
+
+const GIFT_CATALOG = [
+  {
+    "id": "flower",
+    "name": "flower",
+    "price": 20
+  },
+  {
+    "id": "coffee",
+    "name": "coffee",
+    "price": 20
+  },
+  {
+    "id": "cake",
+    "name": "cake",
+    "price": 10
+  },
+  {
+    "id": "candy",
+    "name": "candy",
+    "price": 20
+  },
+  {
+    "id": "mood",
+    "name": "mood",
+    "price": 20
+  },
+  {
+    "id": "fr",
+    "name": "FR",
+    "price": 60
+  },
+  {
+    "id": "surprize",
+    "name": "surprize",
+    "price": 120
+  },
+  {
+    "id": "dance",
+    "name": "dance",
+    "price": 120
+  },
+  {
+    "id": "gemstone",
+    "name": "gemstone",
+    "price": 320
+  },
+  {
+    "id": "fireworks",
+    "name": "fireworks",
+    "price": 2500
+  },
+  {
+    "id": "winner",
+    "name": "winner",
+    "price": 40
+  },
+  {
+    "id": "rocket",
+    "name": "rocket",
+    "price": 80
+  },
+  {
+    "id": "relatable",
+    "name": "relatable",
+    "price": 40
+  },
+  {
+    "id": "all_stars",
+    "name": "all stars",
+    "price": 240
+  },
+  {
+    "id": "mvp",
+    "name": "mvp",
+    "price": 480
+  },
+  {
+    "id": "throne",
+    "name": "throne",
+    "price": 1000
+  },
+  {
+    "id": "kiss",
+    "name": "kiss",
+    "price": 20
+  },
+  {
+    "id": "yes",
+    "name": "yes",
+    "price": 20
+  },
+  {
+    "id": "baddie",
+    "name": "baddie",
+    "price": 60
+  },
+  {
+    "id": "daddy",
+    "name": "daddy",
+    "price": 60
+  }
+];
+const ACH_REWARDS = {
+  "first_post": 10,
+  "first_vote": 10,
+  "first_comment": 10,
+  "first_follow": 10,
+  "pfp_set": 10,
+  "bio_set": 10,
+  "tag_3": 10,
+  "theme_swap": 10,
+  "posts_5": 10,
+  "posts_10": 20,
+  "posts_25": 20,
+  "posts_50": 40,
+  "posts_100": 40,
+  "posts_250": 80,
+  "posts_500": 160,
+  "fol_10": 20,
+  "fol_50": 40,
+  "fol_100": 40,
+  "fol_300": 80,
+  "fol_1000": 160,
+  "up_10": 10,
+  "up_50": 20,
+  "up_100": 40,
+  "up_500": 80,
+  "up_1000": 160,
+  "votes_25": 10,
+  "votes_100": 20,
+  "votes_500": 80,
+  "cmt_10": 10,
+  "cmt_50": 20,
+  "cmt_200": 80,
+  "streak_3": 10,
+  "streak_7": 20,
+  "streak_30": 40,
+  "streak_90": 80,
+  "streak_365": 160,
+  "following_10": 10,
+  "following_50": 20,
+  "dm_1": 10,
+  "dm_100": 40,
+  "group_1": 20,
+  "comm_3": 10,
+  "echo_1": 40,
+  "reso_1": 160,
+  "pioneer_1": 40,
+  "seal_1": 160,
+  "rank_top10": 40,
+  "rank_top3": 80,
+  "rank_1": 160,
+  "night_post": 20,
+  "early_100": 80,
+  "posts_2": 10,
+  "posts_3": 10,
+  "posts_15": 20,
+  "posts_75": 40,
+  "posts_150": 60,
+  "posts_300": 100,
+  "posts_750": 180,
+  "posts_1000": 240,
+  "votes_5": 10,
+  "votes_10": 10,
+  "votes_50": 20,
+  "votes_250": 50,
+  "votes_750": 100,
+  "votes_1000": 180,
+  "votes_2000": 260,
+  "cmt_3": 10,
+  "cmt_5": 10,
+  "cmt_25": 25,
+  "cmt_75": 45,
+  "cmt_100": 65,
+  "cmt_250": 120,
+  "cmt_500": 220,
+  "following_3": 10,
+  "following_5": 10,
+  "following_15": 20,
+  "following_25": 45,
+  "following_75": 60,
+  "following_100": 110,
+  "fol_3": 10,
+  "fol_5": 10,
+  "fol_25": 30,
+  "fol_75": 55,
+  "fol_150": 80,
+  "fol_500": 140,
+  "fol_2000": 300,
+  "tags_5": 10,
+  "tags_8": 25,
+  "tags_12": 50,
+  "dm_3": 10,
+  "dm_5": 10,
+  "dm_25": 25,
+  "dm_150": 60,
+  "dm_500": 200,
+  "groups_1": 15,
+  "groups_3": 30,
+  "groups_10": 120,
+  "ups_5": 10,
+  "ups_25": 25,
+  "ups_250": 110,
+  "ups_2000": 320,
+  "night_3": 25,
+  "night_10": 60
+};
+
+function storeFrames() {
+  return Array.from({ length: 50 }, (_, i) => {
+    const n = i + 1;
+    return { id: "frame_" + String(n).padStart(2, "0"), name: "Avatar Frame " + n, price: n <= 15 ? 80 : n <= 35 ? 180 : n <= 45 ? 420 : 900 };
+  });
+}
+function storeBubbles() {
+  return Array.from({ length: 50 }, (_, i) => {
+    const n = i + 1;
+    return { id: "bubble_" + String(n).padStart(2, "0"), name: "Chat Bubble " + n, price: n <= 15 ? 60 : n <= 35 ? 140 : n <= 45 ? 360 : 800 };
+  });
+}
+
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { headers: JSON_HEADERS });
@@ -67,6 +292,8 @@ export default {
         case "/message":           return await dm(user, body, env);
         case "/dm-thread":         return await dmThread(user, body, env);
         case "/dm-inbox":          return await dmInbox(user, body, env);
+        case "/dm-requests":       return await dmRequests(user, body, env);
+        case "/dm-accept":         return await dmAccept(user, body, env);
         case "/request-tag":       return await requestTag(user, body, env);
         case "/report":            return await report(user, body, env);
         case "/delete-post":       return await deletePost(user, body, env);
@@ -76,13 +303,30 @@ export default {
         case "/group-create":      return await groupCreate(user, body, env);
         case "/group-message":     return await groupMessage(user, body, env);
         case "/group-thread":      return await groupThread(user, body, env);
+        case "/close-friends":     return await closeFriends(user, body, env);
+        case "/stories":           return await storiesList(user, body, env);
+        case "/story-create":      return await storyCreate(user, body, env);
+        case "/story-view":        return await storyView(user, body, env);
+        case "/story-react":       return await storyReact(user, body, env);
+        case "/story-delete":      return await storyDelete(user, body, env);
         case "/mark-notifs-read":  return await markNotifsRead(user, env);
         case "/upload":            return await uploadMedia(user, body, env);
         case "/gif-search":        return await gifSearch(user, body, env);
         case "/export":            return await exportData(user, body, env);
+        case "/wallet":            return await walletState(user, body, env);
+        case "/coins-claim":       return await coinsClaim(user, body, env);
+        case "/coins-ach":         return await coinsAchievement(user, body, env);
+        case "/coins-gift":        return await coinsGift(user, body, env);
+        case "/coins-buy":         return await coinsBuy(user, body, env);
+        case "/coins-apply":       return await coinsApply(user, body, env);
+        case "/coins-convert":     return await coinsConvert(user, body, env);
+        case "/voucher-redeem":    return await voucherRedeem(user, body, env);
         // --- admin-only (ANDROBEET) ---
         case "/admin/ban":         return await adminBan(user, body, env);
         case "/admin/seal":        return await adminSeal(user, body, env);
+        case "/admin/coins":       return await adminCoins(user, body, env);
+        case "/admin/voucher":     return await adminVoucher(user, body, env);
+        case "/admin/badge":       return await adminBadge(user, body, env);
         default:                    return reply({ error: "unknown endpoint" }, 404);
       }
     } catch (e) {
@@ -364,6 +608,27 @@ async function ghPutJSON(env, repo, path, json, sha, message) {
   if (!res.ok) throw new Error(`write failed ${res.status}`);
 }
 
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+function isConflict(e) {
+  return /409|conflict/i.test(String(e && (e.message || e)));
+}
+async function mutateJSON(env, repo, path, fallback, mutate, message, tries = 4) {
+  for (let i = 0; i < tries; i++) {
+    const { json, sha } = await ghGetJSON(env, repo, path);
+    const base = json == null ? JSON.parse(JSON.stringify(fallback)) : json;
+    const next = await mutate(base);
+    try {
+      await ghPutJSON(env, repo, path, next, sha, message);
+      return next;
+    } catch (e) {
+      if (!isConflict(e) || i === tries - 1) throw e;
+      await sleep(250 + i * 400);
+    }
+  }
+}
+
 /* ---------- rate limiting ----------
    PREMIUM: Upstash Redis (atomic, ~5ms, can't be raced by fast bots).
    Activates when UPSTASH_URL + UPSTASH_TOKEN secrets exist.
@@ -383,12 +648,20 @@ async function checkRate(env, user, action, minSeconds) {
       // Upstash hiccup → fall through to repo fallback
     }
   }
-  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `ratelimits/${user}.json`);
-  const now = Date.now();
-  const r = json || {};
-  if (r[action] && now - r[action] < minSeconds * 1000) throw new Error("slow down");
-  r[action] = now;
-  await ghPutJSON(env, env.DATA_REPO, `ratelimits/${user}.json`, r, sha, `rate ${user}`);
+  for (let i = 0; i < 3; i++) {
+    const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `ratelimits/${user}.json`);
+    const now = Date.now();
+    const r = json || {};
+    if (r[action] && now - r[action] < minSeconds * 1000) throw new Error("slow down");
+    r[action] = now;
+    try {
+      await ghPutJSON(env, env.DATA_REPO, `ratelimits/${user}.json`, r, sha, `rate ${user}`);
+      return;
+    } catch (e) {
+      if (!isConflict(e) || i === 2) throw e;
+      await sleep(250 + i * 300);
+    }
+  }
 }
 
 /* ---------- Firebase Realtime DB (real-time DM layer) ----------
@@ -500,38 +773,54 @@ async function log(env, user, action, details) {
 
 /* ---------- notifications ---------- */
 async function notify(env, target, item) {
-  try {
-    const path = `users/${target}/notifications.json`;
-    const { json, sha } = await ghGetJSON(env, env.DATA_REPO, path);
-    const n = json || { unread_count: 0, items: [] };
-    n.items = Array.isArray(n.items) ? n.items : [];
-    // DEDUP: skip if same from+type already exists unread within 2 hours
-    if (item.from) {
-      const cutoff = Date.now() - 7200000;
-      const dup = n.items.find((x) =>
-        x.type === item.type &&
-        x.from === item.from &&
-        !x.read &&
-        (item.post ? x.post === item.post : !x.post) &&
-        (typeof x.ts === "string" ? Date.parse(x.ts) : (x.ts || 0)) > cutoff
-      );
-      if (dup) return;
+  const path = `users/${target}/notifications.json`;
+  for (let i = 0; i < 4; i++) {
+    try {
+      const { json, sha } = await ghGetJSON(env, env.DATA_REPO, path);
+      const n = json || { unread_count: 0, items: [] };
+      n.items = Array.isArray(n.items) ? n.items : [];
+      // DEDUP: skip if same from+type already exists unread within 2 hours
+      if (item.from && item.type !== "gift" && item.type !== "coins") {
+        const cutoff = Date.now() - 7200000;
+        const dup = n.items.find((x) =>
+          x.type === item.type &&
+          x.from === item.from &&
+          !x.read &&
+          (item.story ? x.story === item.story : item.post ? x.post === item.post : !x.post && !x.story) &&
+          (typeof x.ts === "string" ? Date.parse(x.ts) : (x.ts || 0)) > cutoff
+        );
+        if (dup) return;
+      }
+      n.items.unshift({ ...item, ts: new Date().toISOString(), read: false });
+      n.items = n.items.slice(0, 100);
+      n.unread_count = n.items.filter((x) => !x.read).length;
+      await ghPutJSON(env, env.DATA_REPO, path, n, sha, `notify ${target}`);
+      return;
+    } catch (e) {
+      if (!isConflict(e) || i === 3) return;
+      await sleep(300 + i * 450);
     }
-    n.items.unshift({ ...item, ts: new Date().toISOString(), read: false });
-    n.items = n.items.slice(0, 100);
-    n.unread_count = n.items.filter((x) => !x.read).length;
-    await ghPutJSON(env, env.DATA_REPO, path, n, sha, `notify ${target}`);
-  } catch (e) {}
+  }
 }
 
 async function markNotifsRead(user, env) {
   const path = `users/${user}/notifications.json`;
-  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, path);
-  if (!json) return reply({ ok: true });
-  json.items = (json.items || []).map((n) => ({ ...n, read: true }));
-  json.unread_count = 0;
-  await ghPutJSON(env, env.DATA_REPO, path, json, sha, `read notifs ${user}`);
-  return reply({ ok: true });
+  for (let i = 0; i < 4; i++) {
+    try {
+      const { json, sha } = await ghGetJSON(env, env.DATA_REPO, path);
+      if (!json) return reply({ ok: true });
+      json.items = Array.isArray(json.items) ? json.items : [];
+      if (!json.items.some((n) => !n.read) && !json.unread_count) return reply({ ok: true });
+      json.items = json.items.map((n) => ({ ...n, read: true }));
+      json.unread_count = 0;
+      await ghPutJSON(env, env.DATA_REPO, path, json, sha, `read notifs ${user}`);
+      return reply({ ok: true });
+    } catch (e) {
+      if (!isConflict(e) || i === 3) return reply({ ok: true, delayed: true });
+      await sleep(300 + i * 500);
+    }
+  }
+  return reply({ ok: true, delayed: true });
 }
 
 /* feed updates retry on write conflicts (two posts at the same time) */
@@ -602,14 +891,24 @@ async function createPost(user, body, env) {
 }
 
 async function vote(user, body, env) {
-  const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
-  if (!post) throw new Error("post not found");
-  post.up = Array.isArray(post.up) ? post.up : [];
-  post.down = Array.isArray(post.down) ? post.down : [];
-  for (const k of ["up", "down"]) post[k] = post[k].filter((u) => u !== user);
-  if (body.dir === "up") post.up.push(user);
-  if (body.dir === "down") post.down.push(user);
-  await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, sha, `vote ${user}`);
+  let post;
+  for (let i = 0; i < 4; i++) {
+    const got = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
+    post = got.json;
+    if (!post) throw new Error("post not found");
+    post.up = Array.isArray(post.up) ? post.up : [];
+    post.down = Array.isArray(post.down) ? post.down : [];
+    for (const k of ["up", "down"]) post[k] = post[k].filter((u) => u !== user);
+    if (body.dir === "up") post.up.push(user);
+    if (body.dir === "down") post.down.push(user);
+    try {
+      await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, got.sha, `vote ${user}`);
+      break;
+    } catch (e) {
+      if (!isConflict(e) || i === 3) throw e;
+      await sleep(250 + i * 350);
+    }
+  }
   // keep explore-page counts in sync with reality
   await updateFeed(env, (feed) => {
     const e = feed.find((x) => x.id === body.post);
@@ -628,25 +927,38 @@ async function vote(user, body, env) {
 
 async function comment(user, body, env) {
   await checkRate(env, user, "comment", 10);
-  const { json: post, sha } = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
-  if (!post) throw new Error("post not found");
-  post.comments = Array.isArray(post.comments) ? post.comments : [];
-  if (post.comments.length === 0) post.pioneer = user; // PIONEER badge
-  post.comments.push({
+  const text = String(body.text || "").slice(0, 1000).trim();
+  if (!text) throw new Error("empty comment");
+  const item = {
     a: user,
-    t: String(body.text || "").slice(0, 1000),
+    t: text,
     ts: Date.now(),
     parent: body.parent != null ? String(body.parent).slice(0, 30) : null,
     cid: "c" + Date.now() + Math.random().toString(36).slice(2, 6),
-  });
-  await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, sha, `comment ${user}`);
+  };
+  let post;
+  for (let i = 0; i < 4; i++) {
+    const got = await ghGetJSON(env, env.DATA_REPO, `posts/${body.post}.json`);
+    post = got.json;
+    if (!post) throw new Error("post not found");
+    post.comments = Array.isArray(post.comments) ? post.comments : [];
+    if (post.comments.length === 0) post.pioneer = user; // PIONEER badge
+    if (!post.comments.some((c) => c.cid === item.cid)) post.comments.push(item);
+    try {
+      await ghPutJSON(env, env.DATA_REPO, `posts/${body.post}.json`, post, got.sha, `comment ${user}`);
+      break;
+    } catch (e) {
+      if (!isConflict(e) || i === 3) throw e;
+      await sleep(300 + i * 450);
+    }
+  }
   await updateFeed(env, (feed) => {
     const e = feed.find((x) => x.id === body.post);
     if (e) e.comments = post.comments.length;
     return feed;
   }).catch(() => {});
   if (post.author !== user) {
-    await notify(env, post.author, { type: "comment", from: user, post: post.id, snippet: String(body.text).slice(0, 60) });
+    await notify(env, post.author, { type: "comment", from: user, post: post.id, snippet: text.slice(0, 60) });
   }
   await log(env, user, "comment", { post: body.post });
   return reply({ ok: true });
@@ -752,44 +1064,273 @@ async function uploadPfp(user, body, env) {
   return reply({ ok: true, url });
 }
 
+
+/* ---------- DM requests + shared DM helpers ---------- */
+function requestBoxFallback() { return { accepted: [], items: [] }; }
+function pairId(a, b) { return [a, b].sort().join("_"); }
+
+async function appendDmThread(env, participants, messages) {
+  const pair = pairId(participants[0], participants[1]);
+  if (fbOn(env)) {
+    await migrateThread(env, pair);
+    for (const m of messages) await fb(env, `threads/${pair}/messages`, "POST", m);
+    return;
+  }
+  const path = `threads/${pair}.json`;
+  await mutateJSON(env, env.DMS_REPO, path, { participants: [...participants].sort(), messages: [] }, (thread) => {
+    thread.participants = thread.participants || [...participants].sort();
+    thread.messages = Array.isArray(thread.messages) ? thread.messages : [];
+    for (const m of messages) {
+      if (!thread.messages.some((x) => x.from === m.from && x.text === m.text && x.ts === m.ts)) thread.messages.push(m);
+    }
+    thread.messages = thread.messages.slice(-500);
+    return thread;
+  }, `dm ${pair}`);
+}
+
+async function touchDmInbox(env, owner, withUser, lastText, unread) {
+  if (fbOn(env)) {
+    const prev = unread ? ((await fb(env, `inbox/${owner}/${withUser}/unread`).catch(() => 0)) || 0) : 0;
+    await fb(env, `inbox/${owner}/${withUser}`, "PATCH", { last: String(lastText || "").slice(0, 80), ts: Date.now(), unread: unread ? prev + 1 : 0 });
+  } else {
+    await updateInbox(env, owner, withUser, String(lastText || ""), !!unread);
+  }
+}
+
+async function dmThreadExists(env, a, b) {
+  const pair = pairId(a, b);
+  if (fbOn(env)) {
+    await migrateThread(env, pair);
+    const data = await fb(env, `threads/${pair}/messages`).catch(() => null);
+    return !!(data && Object.keys(data).length);
+  }
+  const { json } = await ghGetJSON(env, env.DMS_REPO, `threads/${pair}.json`).catch(() => ({ json: null }));
+  return !!(json && Array.isArray(json.messages) && json.messages.length);
+}
+
+async function dmIsApproved(env, sender, recipient, recipientProfile) {
+  if ((recipientProfile.following || []).includes(sender)) return true; // people I follow can enter Primary
+  if (await dmThreadExists(env, sender, recipient)) return true; // existing chats stay open
+  const { json } = await ghGetJSON(env, env.DMS_REPO, `requests/${recipient}.json`).catch(() => ({ json: null }));
+  return !!(json && Array.isArray(json.accepted) && json.accepted.includes(sender));
+}
+
+async function queueDmRequest(env, from, to, text) {
+  const msg = { from, text, ts: Date.now() };
+  await mutateJSON(env, env.DMS_REPO, `requests/${to}.json`, requestBoxFallback(), (box) => {
+    box.accepted = Array.isArray(box.accepted) ? box.accepted : [];
+    box.items = Array.isArray(box.items) ? box.items : [];
+    let item = box.items.find((x) => x.from === from);
+    if (!item) { item = { from, messages: [], unread: 0, ts: msg.ts, last: "" }; box.items.unshift(item); }
+    item.messages = Array.isArray(item.messages) ? item.messages : [];
+    item.messages.push(msg);
+    item.messages = item.messages.slice(-50);
+    item.last = text.slice(0, 80);
+    item.ts = msg.ts;
+    item.unread = (item.unread || 0) + 1;
+    box.items.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    return box;
+  }, `dm request ${to}`);
+  await notify(env, to, { type: "dm_request", from });
+  return reply({ ok: true, requested: true });
+}
+
+async function pendingRequestMessages(env, viewer, other) {
+  // I sent a request to other
+  const out = await ghGetJSON(env, env.DMS_REPO, `requests/${other}.json`).catch(() => ({ json: null }));
+  let item = out.json && Array.isArray(out.json.items) ? out.json.items.find((x) => x.from === viewer) : null;
+  if (item) return { messages: item.messages || [], requested: true, outgoing: true };
+  // other sent a request to me
+  const mine = await ghGetJSON(env, env.DMS_REPO, `requests/${viewer}.json`).catch(() => ({ json: null }));
+  item = mine.json && Array.isArray(mine.json.items) ? mine.json.items.find((x) => x.from === other) : null;
+  if (item) return { messages: item.messages || [], requested: true, incoming: true };
+  return null;
+}
+
+async function dmRequests(user, body, env) {
+  const { json } = await ghGetJSON(env, env.DMS_REPO, `requests/${user}.json`).catch(() => ({ json: null }));
+  const box = json || requestBoxFallback();
+  const items = (box.items || []).map((x) => ({ from: x.from, last: x.last || "", ts: x.ts || 0, unread: x.unread || 0, count: (x.messages || []).length }));
+  return reply({ ok: true, items, accepted: box.accepted || [] });
+}
+
+async function dmAccept(user, body, env) {
+  const from = String(body.from || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  if (!from || from === user) throw new Error("bad request");
+  const accept = body.accept !== false;
+  const got = await ghGetJSON(env, env.DMS_REPO, `requests/${user}.json`).catch(() => ({ json: null }));
+  const box = got.json || requestBoxFallback();
+  const item = (box.items || []).find((x) => x.from === from);
+  if (accept && item && (item.messages || []).length) {
+    await appendDmThread(env, [user, from], item.messages);
+    const last = item.messages[item.messages.length - 1].text || "";
+    await touchDmInbox(env, user, from, last, false);
+    await touchDmInbox(env, from, user, last, false);
+  }
+  await mutateJSON(env, env.DMS_REPO, `requests/${user}.json`, requestBoxFallback(), (b) => {
+    b.accepted = Array.isArray(b.accepted) ? b.accepted : [];
+    b.items = Array.isArray(b.items) ? b.items : [];
+    b.items = b.items.filter((x) => x.from !== from);
+    if (accept && !b.accepted.includes(from)) b.accepted.push(from);
+    return b;
+  }, `dm ${accept ? "accept" : "reject"} ${user}`);
+  if (accept) await notify(env, from, { type: "dm_accept", from: user });
+  return reply({ ok: true, accepted: accept });
+}
+
+/* ---------- Close Friends + Stories ---------- */
+function storyIndexFallback() { return { stories: {}, updated: new Date().toISOString() }; }
+function cleanStoryIndex(idx) {
+  idx = idx && typeof idx === "object" ? idx : storyIndexFallback();
+  idx.stories = idx.stories && typeof idx.stories === "object" ? idx.stories : {};
+  const now = Date.now();
+  for (const u of Object.keys(idx.stories)) {
+    idx.stories[u] = (idx.stories[u] || []).filter((s) => (s.expires || 0) > now);
+    if (!idx.stories[u].length) delete idx.stories[u];
+  }
+  idx.updated = new Date().toISOString();
+  return idx;
+}
+async function getCloseFriends(env, owner) {
+  const { json } = await ghGetJSON(env, env.DMS_REPO, `settings/${owner}.json`).catch(() => ({ json: null }));
+  return json && Array.isArray(json.closeFriends) ? json.closeFriends : [];
+}
+async function closeFriends(user, body, env) {
+  if (Array.isArray(body.list)) {
+    const list = [...new Set(body.list.map((x) => String(x).toLowerCase().replace(/[^a-z0-9_]/g, "")).filter((x) => x && x !== user))].slice(0, 200);
+    await mutateJSON(env, env.DMS_REPO, `settings/${user}.json`, { closeFriends: [] }, (s) => ({ ...(s || {}), closeFriends: list, updated: new Date().toISOString() }), `close friends ${user}`);
+    return reply({ ok: true, list });
+  }
+  return reply({ ok: true, list: await getCloseFriends(env, user) });
+}
+function storyKind(media, audio, text) {
+  if (/\.(mp4|webm)(\?|$)/i.test(media)) return "video";
+  if (/\.(mp3|ogg|wav|m4a)(\?|$)/i.test(media || audio)) return "audio";
+  if (media) return "image";
+  return text ? "text" : "story";
+}
+async function canViewStory(env, viewer, owner, story, profile) {
+  if (viewer === owner) return true;
+  if (profile && (profile.blocked || []).includes(viewer)) return false;
+  if (story.privacy === "followers") return !!(profile && (profile.followers || []).includes(viewer));
+  if (story.privacy === "close") return (await getCloseFriends(env, owner)).includes(viewer);
+  return story.privacy !== "private";
+}
+async function storyCreate(user, body, env) {
+  await checkRate(env, user, "story", 30);
+  const text = String(body.text || "").slice(0, 1000).trim();
+  const media = String(body.media || "").slice(0, 700).trim();
+  const audio = String(body.audio || "").slice(0, 700).trim();
+  const privacy = ["public", "followers", "close"].includes(body.privacy) ? body.privacy : "public";
+  if (!text && !media && !audio) throw new Error("empty story");
+  const st = { id: "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), author: user, text, media, audio, privacy, kind: storyKind(media, audio, text), ts: Date.now(), expires: Date.now() + 86400000, views: [], likes: [], comments: [] };
+  await mutateJSON(env, env.DMS_REPO, "stories/index.json", storyIndexFallback(), (idx) => {
+    idx = cleanStoryIndex(idx);
+    idx.stories[user] = Array.isArray(idx.stories[user]) ? idx.stories[user] : [];
+    idx.stories[user].unshift(st);
+    idx.stories[user] = idx.stories[user].slice(0, 10);
+    return idx;
+  }, `story ${user}`);
+  return reply({ ok: true, id: st.id });
+}
+async function storiesList(user, body, env) {
+  const { json } = await ghGetJSON(env, env.DMS_REPO, "stories/index.json").catch(() => ({ json: null }));
+  const idx = cleanStoryIndex(json || storyIndexFallback());
+  const out = [];
+  for (const owner of Object.keys(idx.stories)) {
+    const prof = await ghGetJSON(env, env.DATA_REPO, `users/${owner}.json`).then((r) => r.json).catch(() => null);
+    const visible = [];
+    for (const st of idx.stories[owner]) if (await canViewStory(env, user, owner, st, prof)) visible.push({ id: st.id, ts: st.ts, kind: st.kind, privacy: st.privacy, text: st.text ? st.text.slice(0, 80) : "" });
+    if (visible.length) out.push({ user: owner, count: visible.length, latest: Math.max(...visible.map((x) => x.ts || 0)), items: visible });
+  }
+  out.sort((a, b) => b.latest - a.latest);
+  return reply({ ok: true, stories: out });
+}
+async function findStoryForView(env, viewer, owner, id) {
+  const { json } = await ghGetJSON(env, env.DMS_REPO, "stories/index.json").catch(() => ({ json: null }));
+  const idx = cleanStoryIndex(json || storyIndexFallback());
+  const story = ((idx.stories || {})[owner] || []).find((s) => s.id === id);
+  if (!story) throw new Error("post unavailable");
+  const prof = await ghGetJSON(env, env.DATA_REPO, `users/${owner}.json`).then((r) => r.json).catch(() => null);
+  if (!(await canViewStory(env, viewer, owner, story, prof))) throw new Error("post unavailable");
+  return story;
+}
+async function storyView(user, body, env) {
+  const owner = String(body.owner || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const id = String(body.id || "");
+  const first = await findStoryForView(env, user, owner, id);
+  let viewed = (first.views || []).includes(user) || user === owner;
+  if (!viewed) {
+    await mutateJSON(env, env.DMS_REPO, "stories/index.json", storyIndexFallback(), async (idx) => {
+      idx = cleanStoryIndex(idx);
+      const st = ((idx.stories || {})[owner] || []).find((s) => s.id === id);
+      if (st && !(st.views || []).includes(user)) { st.views = Array.isArray(st.views) ? st.views : []; st.views.push(user); }
+      return idx;
+    }, `story view ${owner}`).catch(() => {});
+  }
+  const st = await findStoryForView(env, user, owner, id).catch(() => first);
+  return reply({ ok: true, story: { ...st, viewsCount: (st.views || []).length, likesCount: (st.likes || []).length, liked: (st.likes || []).includes(user), viewers: user === owner ? (st.views || []) : [] } });
+}
+async function storyReact(user, body, env) {
+  const owner = String(body.owner || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const id = String(body.id || "");
+  const action = body.action === "comment" ? "comment" : "like";
+  const text = String(body.text || "").slice(0, 500).trim();
+  let result = {};
+  await mutateJSON(env, env.DMS_REPO, "stories/index.json", storyIndexFallback(), async (idx) => {
+    idx = cleanStoryIndex(idx);
+    const st = ((idx.stories || {})[owner] || []).find((s) => s.id === id);
+    if (!st) throw new Error("post unavailable");
+    const prof = await ghGetJSON(env, env.DATA_REPO, `users/${owner}.json`).then((r) => r.json).catch(() => null);
+    if (!(await canViewStory(env, user, owner, st, prof))) throw new Error("post unavailable");
+    st.likes = Array.isArray(st.likes) ? st.likes : [];
+    st.comments = Array.isArray(st.comments) ? st.comments : [];
+    if (action === "like") {
+      const had = st.likes.includes(user);
+      st.likes = had ? st.likes.filter((x) => x !== user) : [...st.likes, user];
+      result = { liked: !had, likesCount: st.likes.length };
+    } else {
+      if (!text) throw new Error("empty comment");
+      st.comments.push({ a: user, t: text, ts: Date.now(), cid: "sc" + Date.now() + Math.random().toString(36).slice(2, 5) });
+      st.comments = st.comments.slice(-100);
+      result = { comments: st.comments };
+    }
+    return idx;
+  }, `story react ${owner}`);
+  if (owner !== user) await notify(env, owner, { type: action === "like" ? "story_like" : "story_comment", from: user, story: id, owner });
+  return reply({ ok: true, ...result });
+}
+async function storyDelete(user, body, env) {
+  const id = String(body.id || "");
+  await mutateJSON(env, env.DMS_REPO, "stories/index.json", storyIndexFallback(), (idx) => {
+    idx = cleanStoryIndex(idx);
+    idx.stories[user] = (idx.stories[user] || []).filter((s) => s.id !== id);
+    if (!idx.stories[user].length) delete idx.stories[user];
+    return idx;
+  }, `story delete ${user}`);
+  return reply({ ok: true });
+}
+
 async function dm(user, body, env) {
   await checkRate(env, user, "dm", 3); // max 1 msg / 3s
   const other = String(body.to || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
   if (!other || other === user) throw new Error("missing recipient");
-  // recipient must exist + block + privacy checks
+  // recipient must exist + block checks
   const rec = await ghGetJSON(env, env.DATA_REPO, `users/${other}.json`);
   if (!rec.json) throw new Error("user not found");
   if ((rec.json.blocked || []).includes(user)) throw new Error("you can't message this user");
   const me = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
   if (me.json && (me.json.blocked || []).includes(other)) throw new Error("you blocked this user — unblock first");
-  if (rec.json.privateProfile && !(rec.json.following || []).includes(user)) {
-    throw new Error("private profile — they can only be messaged by people they follow");
-  }
   const text = String(body.text || "").slice(0, 2000).trim();
   if (!text) throw new Error("empty message");
 
-  const pair = [user, other].sort().join("_");
+  const approved = await dmIsApproved(env, user, other, rec.json);
+  if (!approved) return await queueDmRequest(env, user, other, text);
 
-  if (fbOn(env)) {
-    // PREMIUM PATH: Firebase — instant write, unlimited history, no commits
-    await migrateThread(env, pair);
-    await fb(env, `threads/${pair}/messages`, "POST", { from: user, text, ts: Date.now() });
-    await fb(env, `inbox/${user}/${other}`, "PATCH", { last: text.slice(0, 80), ts: Date.now(), unread: 0 });
-    const prev = (await fb(env, `inbox/${other}/${user}/unread`).catch(() => 0)) || 0;
-    await fb(env, `inbox/${other}/${user}`, "PATCH", { last: text.slice(0, 80), ts: Date.now(), unread: prev + 1 });
-    return reply({ ok: true });
-  }
-
-  // fallback: GitHub repo threads
-  const path = `threads/${pair}.json`;
-  const { json, sha } = await ghGetJSON(env, env.DMS_REPO, path);
-  const thread = json || { participants: [user, other].sort(), messages: [] };
-  if (!thread.participants.includes(user)) throw new Error("not your thread");
-  thread.messages.push({ from: user, text, ts: Date.now() });
-  thread.messages = thread.messages.slice(-500);
-  await ghPutJSON(env, env.DMS_REPO, path, thread, sha, `dm ${pair}`);
-  await updateInbox(env, user, other, text, false);
-  await updateInbox(env, other, user, text, true);
+  const msg = { from: user, text, ts: Date.now() };
+  await appendDmThread(env, [user, other], [msg]);
+  await touchDmInbox(env, user, other, text, false);
+  await touchDmInbox(env, other, user, text, true);
   return reply({ ok: true });
 }
 
@@ -822,11 +1363,18 @@ async function dmThread(user, body, env) {
     const data = (await fb(env, `threads/${pair}/messages`).catch(() => null)) || {};
     const messages = Object.keys(data).sort().map((k) => data[k]);
     await fb(env, `inbox/${user}/${other}/unread`, "PUT", 0).catch(() => {});
+    if (!messages.length) {
+      const pending = await pendingRequestMessages(env, user, other);
+      if (pending) return reply({ ok: true, ...pending, live: true });
+    }
     return reply({ ok: true, messages, live: true });
   }
 
   const { json } = await ghGetJSON(env, env.DMS_REPO, `threads/${pair}.json`);
-  if (!json) return reply({ ok: true, messages: [] });
+  if (!json) {
+    const pending = await pendingRequestMessages(env, user, other);
+    return reply({ ok: true, messages: pending ? pending.messages : [], ...(pending || {}) });
+  }
   if (!json.participants.includes(user)) throw new Error("not your thread");
   await updateInbox(env, user, other, (json.messages.slice(-1)[0] || { text: "" }).text || "", false);
   return reply({ ok: true, messages: json.messages });
@@ -1065,8 +1613,12 @@ async function uploadMedia(user, body, env) {
    If Tenor keys are unavailable for new apps, create a GIPHY app key and set
    GIPHY_KEY. The frontend stays unchanged because /gif-search keeps the same shape. */
 async function gifSearch(user, body, env) {
-  const q = encodeURIComponent(String(body.q || "").slice(0, 60));
+  const qRaw = String(body.q || "").slice(0, 60).trim();
+  const q = encodeURIComponent(qRaw);
   if (!q) throw new Error("empty search");
+  const cacheKey = `${env.TENOR_KEY ? "tenor" : "giphy"}:${qRaw.toLowerCase()}`;
+  const hit = GIF_CACHE.get(cacheKey);
+  if (hit && Date.now() - hit.ts < 10 * 60 * 1000) return reply({ ok: true, results: hit.results });
 
   if (env.TENOR_KEY) {
     try {
@@ -1075,25 +1627,269 @@ async function gifSearch(user, body, env) {
       const results = (d.results || [])
         .map((x) => ({ url: x.media_formats?.gif?.url, preview: x.media_formats?.tinygif?.url || x.media_formats?.gif?.url }))
         .filter((x) => x.url);
-      if (results.length) return reply({ ok: true, results });
+      if (results.length) {
+        GIF_CACHE.set(cacheKey, { ts: Date.now(), results });
+        return reply({ ok: true, results });
+      }
     } catch (e) {
       // fall through to GIPHY if configured
     }
   }
 
   if (env.GIPHY_KEY) {
+    const giphyKey = `giphy:${qRaw.toLowerCase()}`;
+    const ghit = GIF_CACHE.get(giphyKey);
+    if (ghit && Date.now() - ghit.ts < 10 * 60 * 1000) return reply({ ok: true, results: ghit.results });
     const r = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${env.GIPHY_KEY}&q=${q}&limit=24&rating=pg-13&lang=en`);
     const d = await r.json();
     const results = (d.data || [])
       .map((x) => ({
-        url: x.images?.original?.url || x.images?.downsized?.url,
-        preview: x.images?.fixed_width_small?.url || x.images?.downsized_small?.mp4 || x.images?.original?.url,
+        url: x.images?.downsized_medium?.url || x.images?.downsized?.url || x.images?.original?.url,
+        preview: x.images?.fixed_width_small?.url || x.images?.fixed_width?.url || x.images?.downsized?.url,
       }))
-      .filter((x) => x.url);
+      .filter((x) => x.url && x.preview);
+    GIF_CACHE.set(giphyKey, { ts: Date.now(), results });
+    GIF_CACHE.set(cacheKey, { ts: Date.now(), results });
     return reply({ ok: true, results });
   }
 
   throw new Error("GIFs aren't enabled yet");
+}
+
+/* ---------- LORE Coins, gifts, vouchers, store ---------- */
+function walletFallback() {
+  return { balance: 0, streak: { count: 0, lastClaim: 0 }, claimedAchievements: [], inventory: { frames: [], bubbles: [], gifts: [] }, applied: {}, tx: [], giftsSent: [], giftsReceived: [] };
+}
+function normalizeWallet(w) {
+  w = w && typeof w === "object" ? w : walletFallback();
+  w.balance = Number(w.balance || 0);
+  w.streak = w.streak || { count: 0, lastClaim: 0 };
+  w.claimedAchievements = Array.isArray(w.claimedAchievements) ? w.claimedAchievements : [];
+  w.inventory = w.inventory || {};
+  w.inventory.frames = Array.isArray(w.inventory.frames) ? w.inventory.frames : [];
+  w.inventory.bubbles = Array.isArray(w.inventory.bubbles) ? w.inventory.bubbles : [];
+  w.inventory.gifts = Array.isArray(w.inventory.gifts) ? w.inventory.gifts : [];
+  w.applied = w.applied || {};
+  w.tx = Array.isArray(w.tx) ? w.tx : [];
+  w.giftsSent = Array.isArray(w.giftsSent) ? w.giftsSent : [];
+  w.giftsReceived = Array.isArray(w.giftsReceived) ? w.giftsReceived : [];
+  return w;
+}
+async function getWallet(env, user) {
+  const { json } = await ghGetJSON(env, env.DMS_REPO, `wallets/${user}.json`).catch(() => ({ json: null }));
+  return normalizeWallet(json);
+}
+function addTx(w, type, amount, note, meta = {}) {
+  w.tx = Array.isArray(w.tx) ? w.tx : [];
+  w.tx.unshift({ id: "tx_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), ts: Date.now(), type, amount, note: String(note || "").slice(0, 140), ...meta });
+  w.tx = w.tx.slice(0, 300);
+}
+async function mutateWallet(env, user, fn, message) {
+  return await mutateJSON(env, env.DMS_REPO, `wallets/${user}.json`, walletFallback(), (w) => fn(normalizeWallet(w)), message);
+}
+function publicWallet(w) {
+  w = normalizeWallet(w);
+  return { balance: w.balance, streak: w.streak, claimedAchievements: w.claimedAchievements, inventory: w.inventory, applied: w.applied, tx: w.tx.slice(0, 80), giftsSent: w.giftsSent.slice(0, 80), giftsReceived: w.giftsReceived.slice(0, 80) };
+}
+async function walletState(user, body, env) {
+  const wallet = await getWallet(env, user);
+  const now = Date.now();
+  const canClaim = !wallet.streak.lastClaim || now - wallet.streak.lastClaim >= 86400000;
+  const day = canClaim ? ((now - (wallet.streak.lastClaim || 0) > 48 * 3600000 ? 0 : (wallet.streak.count || 0)) % 7) + 1 : ((wallet.streak.count || 1));
+  const rewards = [10, 15, 20, 25, 30, 50, 90];
+  return reply({ ok: true, wallet: publicWallet(wallet), canClaim, nextReward: rewards[Math.max(0, Math.min(6, day - 1))], catalog: { gifts: GIFT_CATALOG, frames: storeFrames(), bubbles: storeBubbles() } });
+}
+async function coinsClaim(user, body, env) {
+  const rewards = [10, 15, 20, 25, 30, 50, 90];
+  let result;
+  await mutateWallet(env, user, (w) => {
+    const now = Date.now();
+    if (w.streak.lastClaim && now - w.streak.lastClaim < 86400000) throw new Error("daily coins already claimed");
+    const reset = !w.streak.lastClaim || now - w.streak.lastClaim > 48 * 3600000;
+    const day = (reset ? 0 : (w.streak.count || 0)) % 7;
+    const reward = rewards[day];
+    w.balance += reward;
+    w.streak = { count: day + 1, lastClaim: now };
+    addTx(w, "daily", reward, `Daily claim day ${day + 1}`);
+    result = { reward, balance: w.balance, day: day + 1 };
+    return w;
+  }, `coins claim ${user}`);
+  await log(env, user, "coins_claim", result);
+  return reply({ ok: true, ...result });
+}
+async function coinsAchievement(user, body, env) {
+  const id = String(body.id || "").replace(/[^a-z0-9_]/g, "").slice(0, 50);
+  const reward = ACH_REWARDS[id];
+  if (!reward) throw new Error("unknown achievement");
+  let result;
+  await mutateWallet(env, user, (w) => {
+    if (w.claimedAchievements.includes(id)) throw new Error("achievement already paid");
+    w.claimedAchievements.push(id);
+    w.balance += reward;
+    addTx(w, "achievement", reward, "Achievement: " + id, { achievement: id });
+    result = { reward, balance: w.balance };
+    return w;
+  }, `achievement coins ${user}`);
+  return reply({ ok: true, ...result });
+}
+function giftById(id) { return GIFT_CATALOG.find((g) => g.id === id); }
+async function updateCoinBoard(env, from, to, amount) {
+  try {
+    const month = new Date().toISOString().slice(0, 7);
+    await mutateJSON(env, env.DMS_REPO, "coins/leaderboard.json", { months: {} }, (b) => {
+      b.months = b.months || {};
+      const m = b.months[month] || { sent: {}, received: {} };
+      m.sent[from] = (m.sent[from] || 0) + amount;
+      m.received[to] = (m.received[to] || 0) + amount;
+      b.months[month] = m;
+      return b;
+    }, "coins leaderboard");
+  } catch (e) {}
+}
+async function coinsGift(user, body, env) {
+  const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const gift = giftById(String(body.gift || ""));
+  const note = String(body.note || "").slice(0, 300);
+  const ref = String(body.ref || "").slice(0, 120);
+  if (!target || target === user) throw new Error("bad target");
+  if (!gift) throw new Error("unknown gift");
+  const exists = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`).catch(() => ({ json: null }));
+  if (!exists.json) throw new Error("user not found");
+  await mutateWallet(env, user, (w) => {
+    if (w.balance < gift.price) throw new Error("not enough Lore Coins");
+    w.balance -= gift.price;
+    const item = { id: gift.id, name: gift.name, price: gift.price, to: target, note, ref, ts: Date.now() };
+    w.giftsSent.unshift(item); w.giftsSent = w.giftsSent.slice(0, 200);
+    addTx(w, "gift_sent", -gift.price, `Gift ${gift.name} to @${target}`, { target, gift: gift.id, ref });
+    return w;
+  }, `gift sent ${user}`);
+  await mutateWallet(env, target, (w) => {
+    const item = { uid: "g_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6), id: gift.id, name: gift.name, price: gift.price, from: user, note, ref, ts: Date.now() };
+    w.inventory.gifts.unshift(item);
+    w.giftsReceived.unshift(item); w.giftsReceived = w.giftsReceived.slice(0, 200);
+    addTx(w, "gift_received", 0, `Gift ${gift.name} from @${user}`, { from: user, gift: gift.id, ref });
+    return w;
+  }, `gift received ${target}`);
+  await updateCoinBoard(env, user, target, gift.price);
+  await notify(env, target, { type: "gift", from: user, gift: gift.name });
+  return reply({ ok: true });
+}
+async function coinsBuy(user, body, env) {
+  const type = body.type === "bubble" ? "bubble" : "frame";
+  const list = type === "frame" ? storeFrames() : storeBubbles();
+  const item = list.find((x) => x.id === body.id);
+  if (!item) throw new Error("unknown store item");
+  let result;
+  await mutateWallet(env, user, (w) => {
+    const key = type === "frame" ? "frames" : "bubbles";
+    if (w.inventory[key].includes(item.id)) { result = { balance: w.balance, owned: true }; return w; }
+    if (w.balance < item.price) throw new Error("not enough Lore Coins");
+    w.balance -= item.price;
+    w.inventory[key].push(item.id);
+    addTx(w, "store_buy", -item.price, `Bought ${item.name}`, { item: item.id, type });
+    result = { balance: w.balance, owned: true };
+    return w;
+  }, `store buy ${user}`);
+  return reply({ ok: true, ...result });
+}
+async function coinsApply(user, body, env) {
+  const type = body.type === "bubble" ? "bubble" : "frame";
+  const id = String(body.id || "");
+  await mutateWallet(env, user, (w) => {
+    const key = type === "frame" ? "frames" : "bubbles";
+    if (id && !w.inventory[key].includes(id)) throw new Error("not owned");
+    w.applied[type] = id;
+    addTx(w, "apply", 0, `Applied ${type} ${id || "none"}`, { item: id, type });
+    return w;
+  }, `apply ${type} ${user}`);
+  try {
+    const u = await ghGetJSON(env, env.DATA_REPO, `users/${user}.json`);
+    if (u.json) {
+      if (type === "frame") u.json.avatarFrame = id;
+      else u.json.chatBubble = id;
+      await ghPutJSON(env, env.DATA_REPO, `users/${user}.json`, u.json, u.sha, `public ${type} ${user}`);
+    }
+  } catch (e) {}
+  return reply({ ok: true });
+}
+async function coinsConvert(user, body, env) {
+  const uid = String(body.uid || "");
+  let credit = 0, adminCut = 0, giftName = "gift";
+  await mutateWallet(env, user, (w) => {
+    const i = w.inventory.gifts.findIndex((g) => g.uid === uid || g.id === uid);
+    if (i < 0) throw new Error("gift not found");
+    const g = w.inventory.gifts.splice(i, 1)[0];
+    giftName = g.name || g.id;
+    credit = Math.floor((g.price || 0) * 0.8);
+    adminCut = Math.max(0, (g.price || 0) - credit);
+    w.balance += credit;
+    addTx(w, "gift_convert", credit, `Converted ${giftName}`, { gift: g.id });
+    return w;
+  }, `gift convert ${user}`);
+  if (adminCut) {
+    const admin = env.ADMIN_USER || "androbeet";
+    await mutateWallet(env, admin, (w) => { w.balance += adminCut; addTx(w, "vault_cut", adminCut, `Vault cut from @${user} gift conversion`); return w; }, `admin vault ${user}`).catch(() => {});
+  }
+  return reply({ ok: true, coins: credit });
+}
+async function voucherRedeem(user, body, env) {
+  const code = String(body.code || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 40);
+  if (!code) throw new Error("enter voucher code");
+  let value = 0;
+  await mutateJSON(env, env.DMS_REPO, "coins/vouchers.json", { codes: {} }, (v) => {
+    v.codes = v.codes || {};
+    const c = v.codes[code];
+    if (!c) throw new Error("invalid voucher");
+    if (c.expires && Date.now() > c.expires) throw new Error("voucher expired");
+    c.usedBy = Array.isArray(c.usedBy) ? c.usedBy : [];
+    if (c.usedBy.includes(user)) throw new Error("voucher already used");
+    if ((c.usedBy.length || 0) >= (c.uses || 1)) throw new Error("voucher fully used");
+    c.usedBy.push(user);
+    value = Math.max(0, Number(c.coins || 0));
+    return v;
+  }, `voucher redeem ${code}`);
+  await mutateWallet(env, user, (w) => { w.balance += value; addTx(w, "voucher", value, `Voucher ${code}`); return w; }, `voucher coins ${user}`);
+  return reply({ ok: true, coins: value });
+}
+async function adminCoins(user, body, env) {
+  assertAdmin(user, env);
+  const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const amount = Math.trunc(Number(body.amount || 0));
+  const note = String(body.note || "Admin grant").slice(0, 200);
+  if (!target || !amount) throw new Error("target and amount required");
+  await mutateWallet(env, target, (w) => { w.balance = Math.max(0, w.balance + amount); addTx(w, amount >= 0 ? "admin_grant" : "admin_take", amount, note, { from: user }); return w; }, `admin coins ${target}`);
+  await notify(env, target, { type: "coins", from: user, amount, note });
+  await log(env, user, "admin_coins", { target, amount });
+  return reply({ ok: true });
+}
+async function adminVoucher(user, body, env) {
+  assertAdmin(user, env);
+  const code = (String(body.code || "") || ("LORE" + Math.random().toString(36).slice(2, 8))).toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 40);
+  const coins = Math.max(1, Math.min(100000, Math.trunc(Number(body.coins || 0))));
+  const uses = Math.max(1, Math.min(10000, Math.trunc(Number(body.uses || 1))));
+  const days = Math.max(1, Math.min(365, Math.trunc(Number(body.days || 30))));
+  const note = String(body.note || "").slice(0, 200);
+  await mutateJSON(env, env.DMS_REPO, "coins/vouchers.json", { codes: {} }, (v) => {
+    v.codes = v.codes || {};
+    v.codes[code] = { coins, uses, usedBy: [], expires: Date.now() + days * 86400000, note, createdBy: user, created: new Date().toISOString() };
+    return v;
+  }, `voucher ${code}`);
+  return reply({ ok: true, code, coins, uses, days });
+}
+async function adminBadge(user, body, env) {
+  assertAdmin(user, env);
+  const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const name = String(body.name || "").slice(0, 40);
+  const color = String(body.color || "gold").slice(0, 20);
+  const remove = !!body.remove;
+  if (!target || !name) throw new Error("target and badge required");
+  const { json, sha } = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`);
+  if (!json) throw new Error("user not found");
+  json.customBadges = Array.isArray(json.customBadges) ? json.customBadges : [];
+  if (remove) json.customBadges = json.customBadges.filter((b) => b.name !== name);
+  else if (!json.customBadges.some((b) => b.name === name)) json.customBadges.push({ name, color, by: user, ts: new Date().toISOString() });
+  await ghPutJSON(env, env.DATA_REPO, `users/${target}.json`, json, sha, `badge ${target}`);
+  return reply({ ok: true });
 }
 
 /* ---------- GDPR data export ---------- */
