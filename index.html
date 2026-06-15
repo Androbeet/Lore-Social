@@ -379,6 +379,37 @@ svg.donut .seg:hover{stroke-width:33}
 .bubblepv.wave,.chatbubble.wave{background:radial-gradient(circle at 20% 80%,rgba(255,255,255,.28),transparent 24%),radial-gradient(circle at 85% 20%,rgba(255,255,255,.2),transparent 22%),linear-gradient(135deg,hsl(var(--h),85%,62%),hsl(calc(var(--h) + 90),85%,44%))}
 .chatbubble{position:relative;overflow:hidden}.chatbubble::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent,rgba(255,255,255,.10),transparent);transform:translateX(-100%);animation:bubbleshine 5s ease-in-out infinite}@keyframes bubbleshine{35%,100%{transform:translateX(120%)}}
 
+
+/* extra frame + bubble variety pack */
+.avwrap.glyph::before,.framepv.glyph{background:repeating-conic-gradient(from 0deg,hsl(var(--fh,0),90%,74%) 0 3deg,transparent 3deg 10deg),radial-gradient(circle,transparent 56%,hsl(var(--fh,0),90%,80%) 58% 60%,transparent 62%)}
+.framepv.glyph{--fh:var(--h)}.avwrap.rune::before,.framepv.rune{background:repeating-conic-gradient(from 0deg,transparent 0 7deg,#fff 7deg 10deg,transparent 10deg 17deg),radial-gradient(circle,transparent 52%,hsl(var(--fh,0),80%,70%) 53% 55%,transparent 57%)}.framepv.rune{--fh:var(--h)}
+.avwrap.crescent::before,.framepv.crescent{background:conic-gradient(from 45deg,transparent 0 18%,hsl(var(--fh,0),90%,74%) 18% 31%,transparent 31% 57%,hsl(calc(var(--fh,0) + 35),90%,74%) 57% 70%,transparent 70%)}.framepv.crescent{--fh:var(--h)}
+.avwrap.hands::before,.framepv.hands{background:radial-gradient(circle at 8% 48%,#fff 0 8%,transparent 9%),radial-gradient(circle at 92% 52%,#fff 0 8%,transparent 9%),conic-gradient(from 0deg,transparent 0 20%,hsl(var(--fh,0),90%,78%) 20% 32%,transparent 32% 68%,hsl(var(--fh,0),90%,78%) 68% 80%,transparent 80%)}.framepv.hands{--fh:var(--h)}
+.avwrap.ornate::before,.framepv.ornate{background:radial-gradient(circle at 50% 2%,#fff 0 7%,transparent 8%),radial-gradient(circle at 50% 98%,#fff 0 7%,transparent 8%),radial-gradient(circle at 2% 50%,#fff 0 6%,transparent 7%),radial-gradient(circle at 98% 50%,#fff 0 6%,transparent 7%),conic-gradient(hsl(var(--fh,0),90%,62%),hsl(calc(var(--fh,0) + 80),90%,74%),hsl(var(--fh,0),90%,45%))}.framepv.ornate{--fh:var(--h)}
+.avwrap.starforge::before,.framepv.starforge{background:radial-gradient(circle at 18% 20%,#fff 0 5%,transparent 6%),radial-gradient(circle at 82% 72%,#fff 0 6%,transparent 7%),repeating-conic-gradient(hsl(var(--fh,0),90%,70%) 0 5deg,transparent 5deg 16deg)}.framepv.starforge{--fh:var(--h)}
+.avwrap.crown::before,.framepv.crown{background:radial-gradient(circle at 50% 0,#fff 0 9%,transparent 10%),radial-gradient(circle at 18% 16%,#fff 0 5%,transparent 6%),radial-gradient(circle at 82% 16%,#fff 0 5%,transparent 6%),conic-gradient(transparent 0 12%,hsl(var(--fh,0),90%,70%) 12% 88%,transparent 88%)}.framepv.crown{--fh:var(--h)}
+.avwrap.clock::before,.framepv.clock{background:repeating-conic-gradient(from 0deg,#fff 0 1deg,transparent 1deg 15deg),radial-gradient(circle,transparent 57%,hsl(var(--fh,0),90%,72%) 58% 60%,transparent 61%)}.framepv.clock{--fh:var(--h)}
+.avwrap.blade::before,.framepv.blade{background:conic-gradient(from 0deg,hsl(var(--fh,0),90%,70%) 0 6%,transparent 6% 20%,hsl(calc(var(--fh,0) + 60),90%,70%) 20% 27%,transparent 27% 50%,hsl(var(--fh,0),90%,70%) 50% 56%,transparent 56% 70%,hsl(calc(var(--fh,0) + 60),90%,70%) 70% 77%,transparent 77%)}.framepv.blade{--fh:var(--h)}
+.avwrap.halo::before,.framepv.halo{background:radial-gradient(circle,transparent 54%,rgba(255,255,255,.95) 56% 59%,transparent 61%),conic-gradient(hsl(var(--fh,0),90%,70%),transparent,hsl(var(--fh,0),90%,70%));filter:blur(.2px)}.framepv.halo{--fh:var(--h)}
+.avwrap.pulse::before,.framepv.pulse{background:radial-gradient(circle,transparent 50%,hsl(var(--fh,0),90%,70%) 54% 57%,transparent 61%),repeating-conic-gradient(hsl(var(--fh,0),90%,70%) 0 3deg,transparent 3deg 20deg);animation:framespin var(--fs) linear infinite, giftpulse 2.6s ease-in-out infinite}.framepv.pulse{--fh:var(--h)}
+.avwrap.arc::before,.framepv.arc{background:conic-gradient(from 20deg,hsl(var(--fh,0),90%,70%) 0 18%,transparent 18% 38%,hsl(calc(var(--fh,0) + 90),90%,72%) 38% 46%,transparent 46% 75%,hsl(var(--fh,0),90%,70%) 75% 92%,transparent 92%)}.framepv.arc{--fh:var(--h)}
+.avwrap.mythic::before,.avwrap.mythicx::before,.framepv.mythic,.framepv.mythicx{background:radial-gradient(circle at 18% 20%,#fff 0 6%,transparent 7%),radial-gradient(circle at 82% 78%,#fff 0 6%,transparent 7%),repeating-conic-gradient(from 0deg,hsl(var(--fh,0),95%,72%) 0 4deg,transparent 4deg 10deg,hsl(calc(var(--fh,0) + 130),95%,72%) 10deg 14deg,transparent 14deg 22deg);box-shadow:0 0 34px hsla(var(--fh,0),90%,68%,.72)}.framepv.mythic,.framepv.mythicx{--fh:var(--h)}
+.bubblepv.cloud,.chatbubble.cloud{background:radial-gradient(circle at 15% 30%,#fff8 0 14%,transparent 15%),radial-gradient(circle at 50% 20%,#fff7 0 18%,transparent 19%),linear-gradient(135deg,hsl(var(--h),70%,72%),hsl(calc(var(--h) + 35),75%,58%));color:#102}
+.bubblepv.chrome,.chatbubble.chrome{background:linear-gradient(135deg,#fff,#888 25%,#222 45%,#ddd 65%,#555);color:#111;border-color:#eee;text-shadow:0 1px #fff8}
+.bubblepv.ember,.chatbubble.ember{background:radial-gradient(circle at 20% 85%,#ffdf6b,transparent 18%),linear-gradient(135deg,#2a0505,#ef4444,#f97316);box-shadow:0 0 24px rgba(249,115,22,.35)}
+.bubblepv.frost,.chatbubble.frost{background:linear-gradient(135deg,#e0f2fe,#38bdf8,#1e3a8a);color:#001b2e;border-color:#bae6fd;box-shadow:0 0 22px rgba(56,189,248,.32)}
+.bubblepv.matrix,.chatbubble.matrix{background:#020b05;color:#74ff9e;border-color:#16a34a;background-image:linear-gradient(90deg,transparent 0 85%,rgba(116,255,158,.18) 86% 100%)}
+.bubblepv.pastel,.chatbubble.pastel{background:linear-gradient(135deg,#ffd1dc,#d8b4fe,#bfdbfe);color:#35133d;border-color:#fff5}
+.bubblepv.galaxy,.chatbubble.galaxy{background:radial-gradient(circle at 20% 30%,#fff 0 2%,transparent 3%),radial-gradient(circle at 72% 22%,#fff 0 2%,transparent 3%),linear-gradient(135deg,#111827,#4c1d95,#0e7490);box-shadow:0 0 24px rgba(76,29,149,.42)}
+.bubblepv.comic,.chatbubble.comic{background:#fff;color:#000;border:3px solid #000;box-shadow:5px 5px 0 #000;border-radius:18px 18px 6px 18px}
+.bubblepv.luxury,.chatbubble.luxury{background:linear-gradient(135deg,#1f1300,#b45309,#facc15);border-color:#fde68a;color:#fff7dc;box-shadow:0 0 26px rgba(250,204,21,.28)}
+.bubblepv.holo,.chatbubble.holo{background:linear-gradient(120deg,#ff0080,#ff8c00,#40e0d0,#8a2be2);color:#fff;border-color:#fff8;box-shadow:0 0 26px rgba(138,43,226,.33)}
+.bubblepv.sakura,.chatbubble.sakura{background:radial-gradient(circle at 18% 20%,#fff 0 5%,transparent 6%),linear-gradient(135deg,#fb7185,#fbcfe8);color:#4a0714;border-color:#fecdd3}
+.bubblepv.ocean,.chatbubble.ocean{background:linear-gradient(135deg,#0f766e,#38bdf8,#1d4ed8);color:white;box-shadow:0 0 24px rgba(56,189,248,.25)}
+.bubblepv.toxic,.chatbubble.toxic{background:linear-gradient(135deg,#172554,#84cc16,#22c55e);color:#061;filter:saturate(1.25);border-color:#bef264}
+.bubblepv.ruby,.chatbubble.ruby{background:linear-gradient(135deg,#450a0a,#dc2626,#fb7185);color:#fff;border-color:#fecaca}
+.bubblepv.pearl,.chatbubble.pearl{background:linear-gradient(135deg,#fff,#e9d5ff,#bae6fd);color:#312e81;border-color:#fff;box-shadow:0 0 20px rgba(255,255,255,.3)}
+
 </style>
 </head>
 <body data-theme="maroon">
@@ -741,13 +772,14 @@ function userColor(u){if(SEED.users[u])return SEED.users[u].color;let h=0;for(co
 function genAv(u,s){return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008)">${esc((u[0]||"?").toUpperCase())}</div>`;}
 function frameMeta(id){
   const n=Number(String(id||"").match(/(\d+)/)?.[1]||0);
-  const hues=[42,0,215,270,0,135,292,185,24,48,330,95];
-  const white=n%10===4||n%10===9;
-  let cls=["","rope","tech","roman","sigil"][n%5],speed=(n>35?10:n>15?14:18)+"s";
-  if(n>=51&&n<=60){cls="static clean";speed="999s";}
-  else if(n>=61&&n<=70){cls="static double";speed="999s";}
-  else if(n>=71){cls=["orbit","tech","roman","sigil","rope"][n%5];speed="8s";}
-  if(white)cls+=" white";
+  const hues=[42,0,215,270,0,135,292,185,24,48,330,95,155,200,350];
+  const classes=["clean","rope","tech","roman","sigil","orbit","double","glyph","rune","crescent","hands","ornate","starforge","crown","clock","blade","halo","pulse","arc","mythic"];
+  let cls=classes[n%classes.length];
+  const simple=n<=45, glow=n>45&&n<=110, spin=n>110&&n<=170, mythic=n>170;
+  let speed=simple?"999s":glow?"999s":spin?"12s":"8s";
+  if(simple)cls="static "+cls;
+  if(n%10===4||n%10===9||String(id).includes("white"))cls+=" white";
+  if(mythic)cls+=" mythicx";
   return{n,h:hues[n%hues.length],p:n%9,cls,speed};
 }
 function frameWrap(u,s,inner){
@@ -761,7 +793,7 @@ function avatarHTML(u,s){
   const inner=url?`<img class="av" src="${esc(url)}" width="${s}" height="${s}" alt="" onerror="this.outerHTML=genAv('${esc(u)}',${s})">`:genAv(u,s);
   return frameWrap(u,s,inner);
 }
-function bubbleClass(id){const n=Number(String(id||"").match(/(\d+)/)?.[1]||0);return ["","texture","pixel","animal","glass","neon","paper","royal","terminal","stripe","wave"][n%11];}
+function bubbleClass(id){const n=Number(String(id||"").match(/(\d+)/)?.[1]||0);return ["","texture","pixel","animal","glass","neon","paper","royal","terminal","stripe","wave","cloud","chrome","ember","frost","matrix","pastel","galaxy","comic","luxury","holo","sakura","ocean","toxic","ruby","pearl"][n%26];}
 function bubbleStyle(u,mine){
   const b=(u==="lore"?(SEED.users[CONFIG.ADMIN]?.chatBubble||SEED.users[S.me]?.chatBubble||LIVEWALLET?.applied?.bubble):SEED.users[u]?.chatBubble)||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";
   if(!b)return `background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"}`;
@@ -1645,7 +1677,7 @@ function giftCard(g,sel){return `<div class="giftcard ${g.price>=320?'premium':'
 function giftChoice(g,sel){return `<div class="giftcard ${g.price>=320?'premium':''} ${sel?'on':''}" data-gift="${esc(g.id)}" onclick="selectGift('${esc(g.id)}')">${giftArt(g)}<b>${esc(g.name)}</b><div class="giftprice">${ic('coin',13)} ${g.price}</div></div>`;}
 function selectGift(id){const inp=$("#gift_id");if(inp)inp.value=id;document.querySelectorAll('[data-gift]').forEach(e=>e.classList.toggle('on',e.dataset.gift===id));}
 function framePreview(id){const m=frameMeta(id);return `<div class="framepv ${m.cls}" style="--h:${m.h};--glowp:${m.p}"><i></i></div>`;}
-function bubblePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*41)%360;const names=["Capy","Frog","Cat Dog","Facepalm","Heart","Doge","Dino","Aurora","Velvet","Neon","Glass","Pixel","Royal","Noir","Wave"],cls=bubbleClass(id);return `<div class="bubblepv ${cls}" style="--h:${h}">${esc(names[n%names.length])}</div>`;}
+function bubblePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*41)%360;const names=["Capy","Frog","Cat Dog","Facepalm","Heart","Doge","Dino","Aurora","Velvet","Neon","Glass","Pixel","Royal","Noir","Wave","Ink","Cloud","Chrome","Ember","Frost","Matrix","Pastel","Galaxy","Comic","Holo","Pearl"],cls=bubbleClass(id);return `<div class="bubblepv ${cls}" style="--h:${h}">${esc(names[n%names.length])}</div>`;}
 function dailyRewardsHTML(w){const rewards=[10,15,20,25,30,50,90],cur=w.streak?.count||0;return `<div class="dailygrid">${rewards.map((r,i)=>`<div class="daycard ${cur==i+1?'on':''}"><div style="font-size:19px;font-weight:900;color:var(--gold);display:flex;gap:5px;justify-content:center">${ic('coin',15)}${r}</div><div class="muted" style="margin-top:10px">day ${i+1}</div></div>`).join("")}</div>`;}
 function coinStoreTab(t){sessionStorage.setItem("coinTab",t);render();}
 routes.coins=async()=>{
