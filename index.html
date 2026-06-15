@@ -693,6 +693,8 @@ function checkAch(){
 /* ============ MARKDOWN-LITE + MEDIA EMBEDS ============ */
 function md(raw){
   let h=esc(raw);
+  h=h.replace(/&lt;lore&gt;/gi,`<span style="display:inline-flex;align-items:center;gap:6px;font-family:Georgia,serif;font-weight:900;letter-spacing:4px;color:var(--text);text-shadow:0 0 12px var(--accent)">L<span style="color:var(--accent)">O</span>RE</span>`);
+  h=h.replace(/&lt;lc&gt;/gi,`<span style="display:inline-flex;align-items:center;gap:5px;color:var(--gold);font-weight:900;text-shadow:0 0 10px rgba(234,179,8,.6)">${ic("coin",16)}LC</span>`);
   // media links on their own line → embeds
   h=h.replace(/(^|\n)(https?:\/\/\S+\.(?:png|jpe?g|gif|webp)(?:\?\S*)?)(?=\n|$)/gi,
     (m,p,url)=>p+`<img class="pimg" src="${url}" loading="lazy" onerror="this.style.display='none'">`);
@@ -761,12 +763,12 @@ function avatarHTML(u,s){
 }
 function bubbleClass(id){const n=Number(String(id||"").match(/(\d+)/)?.[1]||0);return ["","texture","pixel","animal","glass","neon","paper","royal","terminal","stripe","wave"][n%11];}
 function bubbleStyle(u,mine){
-  const b=SEED.users[u]?.chatBubble||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";
+  const b=(u==="lore"?(SEED.users[CONFIG.ADMIN]?.chatBubble||SEED.users[S.me]?.chatBubble||LIVEWALLET?.applied?.bubble):SEED.users[u]?.chatBubble)||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";
   if(!b)return `background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"}`;
   const n=Number(String(b).match(/(\d+)/)?.[1]||1),h=(n*41)%360;
   return `--h:${h};`;
 }
-function bubbleCls(u){const b=SEED.users[u]?.chatBubble||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";return b?" chatbubble "+bubbleClass(b):"";}
+function bubbleCls(u){const b=(u==="lore"?(SEED.users[CONFIG.ADMIN]?.chatBubble||SEED.users[S.me]?.chatBubble||LIVEWALLET?.applied?.bubble):SEED.users[u]?.chatBubble)||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";return b?" chatbubble "+bubbleClass(b):"";}
 function toast(m){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
 function allPosts(){
   const mine=LIVE?[]:S.myPosts.map(p=>({...p}));
@@ -834,6 +836,10 @@ function render(){
   const fn=routes[page]||routes.explore;
   try{fn(rest.join("/"));}catch(e){$("#content").innerHTML=`<div class="empty">Something glitched. <span class="link" onclick="nav('#/explore')">Back to Explore</span></div>`;}
   window.scrollTo({top:0,behavior:"instant"});
+}
+function liveRender(){
+  if(CUR==="dm"||CUR==="group"){drawChrome();return;}
+  render();
 }
 function head(t,s){$("#ptitle").textContent=t;$("#psub").textContent=s||"";}
 
@@ -1380,7 +1386,7 @@ function profilePage(uname){
   <div class="pcard">
     <div class="pbanner" style="background:${banner?`url('${esc(banner)}') center/cover no-repeat`:`linear-gradient(120deg,${userColor(uname)},var(--accent2) 60%,#000a)`}"></div>
     <div class="pbody">
-      <span class="ring">${avatarHTML(uname,90)}</span>
+      <span style="display:inline-block">${avatarHTML(uname,90)}</span>
       <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">
         <h2 style="font-size:21px">@${esc(uname)}</h2>${nickName(uname)?`<span class="badge mut">${esc(nickName(uname))}</span>`:""}
         ${u.seal?`<span class="badge seal">${ic("seal")} ${CONFIG.ADMIN_DISPLAY} SEAL</span>`:""}
@@ -1692,12 +1698,12 @@ Thank you.`);
 function storeItem(i,type,w){
   const key=type==="frame"?"frames":"bubbles",owned=(w.inventory?.[key]||[]).includes(i.id),ap=w.applied?.[type]===i.id;
   return `<div class="storecard">${type==="frame"?framePreview(i.id):bubblePreview(i.id)}<b>${esc(i.name)}</b><div class="muted" style="margin:4px 0 10px">${i.price} coins${i.tier?" · "+esc(i.tier):""}</div>
-    ${owned?`<button class="btn ${ap?"":"ghost"} sm" onclick="applyStore('${type}','${esc(i.id)}')">${ap?"Applied":"Apply"}</button>`:`<button class="btn sm" onclick="buyStore('${type}','${esc(i.id)}')">Buy</button>`}</div>`;
+    ${owned?(ap?`<button class="btn ghost sm" onclick="applyStore('${type}','')">Remove</button>`:`<button class="btn ghost sm" onclick="applyStore('${type}','${esc(i.id)}')">Apply</button>`):`<button class="btn sm" onclick="buyStore('${type}','${esc(i.id)}')">Buy</button>`}</div>`;
 }
 async function claimCoins(){const d=await api("/coins-claim",{});if(d&&d.ok){toast("Claimed "+d.reward+" Lore Coins");await loadWallet(true);render();}}
 async function redeemVoucher(){const code=$("#voucher_code").value.trim();if(!code)return;const d=await api("/voucher-redeem",{code});if(d&&d.ok){toast("Redeemed "+d.coins+" coins");await loadWallet(true);render();}}
 async function buyStore(type,id){const d=await api("/coins-buy",{type,id});if(d&&d.ok){toast("Unlocked");await loadWallet(true);render();}}
-async function applyStore(type,id){const d=await api("/coins-apply",{type,id});if(d&&d.ok){toast("Applied");await loadWallet(true);render();}}
+async function applyStore(type,id){const d=await api("/coins-apply",{type,id});if(d&&d.ok){toast(id?"Applied":"Removed");await loadWallet(true);render();}}
 async function convertGift(uid){const d=await api("/coins-convert",{uid});if(d&&d.ok){toast("Converted for "+d.coins+" coins");await loadWallet(true);render();}}
 async function openGift(target,giftId,ref){
   if(requireLogin())return;
@@ -1720,8 +1726,13 @@ async function sendGift(ref){
 }
 
 /* ============ DIRECT MESSAGES ============ */
-let DM_POLL=null;
+let DM_POLL=null, CHAT_RENDER_CACHE={}, GROUPCACHE={};
 function stopDmPoll(){if(DM_POLL){clearInterval(DM_POLL);DM_POLL=null;}}
+const msgTime=m=>Number(m&&m.ts)||Date.parse(m&&m.ts)||Number(m&&m.ts_ms)||0;
+const sortedMsgs=arr=>(arr||[]).slice().sort((a,b)=>msgTime(a)-msgTime(b));
+function chatKey(arr){return sortedMsgs(arr).map(m=>(m.from||"")+"|"+msgTime(m)+"|"+String(m.text||"").slice(0,80)).join("~");}
+function currentDmUser(){const h=(location.hash||"").slice(2).split("/").map(decodeURIComponent);return h[0]==="dm"?String(h[1]||"").toLowerCase():"";}
+function currentGroupId(){const h=(location.hash||"").slice(2).split("/").map(decodeURIComponent);return h[0]==="group"?String(h[1]||""):"";}
 routes.dms=async()=>{
   stopDmPoll();
   head("Messages","private threads");
@@ -1777,7 +1788,7 @@ function renderInbox(threads){
     const id=isGroup?"g_"+t.with.slice(3):t.with;
     return`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer" onclick="${isGroup?`nav('#/group/${esc(id)}')`:`openThread('${esc(t.with)}')`}">
       ${isGroup?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:isLore?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--gold),var(--accent))">L</div>`:avatarHTML(t.with,44)}
-      <div style="min-width:0"><b>${isGroup?esc(t.with.slice(3)):isLore?"LORE":esc(displayName(t.with))}</b>${isGroup?' <span class="muted">· group</span>':isLore?' <span class="muted">· official</span>':""}
+      <div style="min-width:0"><b>${isGroup?esc(t.with.slice(3)):isLore?"LORE":esc(displayName(t.with))}</b>${isGroup?` <span class="muted">· ${t.request?"request":"group"}</span>`:isLore?' <span class="muted">· official</span>':""}
         <div class="muted" style="margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.last||"")}</div></div>
       <div style="margin-left:auto;text-align:right;flex-shrink:0">
         <div class="muted">${t.ts?timeAgo(t.ts):""}</div>
@@ -1810,14 +1821,33 @@ routes.group=async(id)=>{
   stopDmPoll();
   head("Group","loading…");
   if(!LIVE||!S.token){$("#content").innerHTML=`<div class="empty">Log in first.</div>`;return;}
-  const draw=async()=>{
-    const d=await api("/group-thread",{group:id});
+  const draw=async(force)=>{
+    if(currentGroupId()!==id)return;
+    const d=await api("/group-thread",{group:id,_silent:true});
+    if(currentGroupId()!==id)return;
     if(!d||!d.ok)return;
+    GROUPCACHE[id]=d;
+    const msgs=sortedMsgs(d.messages||[]);
+    ensureUsers([...(d.members||[]),...msgs.map(m=>m.from)],()=>{if(currentGroupId()===id)draw(true);});
     head(d.name,d.members.length+" members");
+    const title=$("#g_title");if(title)title.textContent=d.name||id.replace(/^g_/,"");
+    const gi=$("#g_icon");if(gi)gi.innerHTML=d.icon?`<img class="av" src="${esc(d.icon)}" width="34" height="34" onerror="this.outerHTML='<div class=\'avg\' style=\'width:34px;height:34px;font-size:15px;background:linear-gradient(135deg,var(--accent2),var(--accent))\'>👥</div>'">`:'👥';
+    const card=$("#g_card");if(card)card.style.background=d.wallpaper?`linear-gradient(rgba(12,2,5,.82),rgba(12,2,5,.90)),url('${esc(d.wallpaper)}') center/cover no-repeat`:"";
+    const row=$("#g_input_row");
+    if(d.pending){
+      const box=$("#g_msgs");if(box)box.innerHTML=`<div class="empty">${ic("msg")}Group invite from @${esc(d.pendingBy||"")}. Accept to join this group.</div>`;
+      if(row)row.innerHTML=`<button class="btn sm" onclick="acceptGroup('${esc(id)}')">Accept invite</button><button class="btn ghost sm" onclick="nav('#/dms')">Not now</button>`;
+      return;
+    }
+    const muted=(d.muted||[]).includes(S.me)&&!["owner","admin","moderator"].includes(d.role);
+    if(row&&muted)row.innerHTML=`<div class="muted" style="padding:10px">You are muted in this group.</div>`;
     const box=$("#g_msgs");
     if(box){
       const stick=box.scrollHeight-box.scrollTop-box.clientHeight<80;
-      box.innerHTML=d.messages.length?d.messages.map(m=>{
+      const key=chatKey(msgs);
+      if(!force&&CHAT_RENDER_CACHE["g:"+id]===key)return;
+      CHAT_RENDER_CACHE["g:"+id]=key;
+      box.innerHTML=msgs.length?msgs.map(m=>{
         const mine=m.from===S.me;
         return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
           ${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">${esc(displayName(m.from))}</div>`:""}
@@ -1827,14 +1857,14 @@ routes.group=async(id)=>{
     }
   };
   $("#content").innerHTML=`
-    <div class="card" style="padding:0;display:flex;flex-direction:column;height:64vh">
+    <div class="card" id="g_card" style="padding:0;display:flex;flex-direction:column;height:64vh">
       <div style="display:flex;align-items:center;gap:11px;padding:13px 17px;border-bottom:1px solid var(--border)">
         <button class="iconbtn" onclick="nav('#/dms')" style="margin-left:-8px"><svg class="ic" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></button>
-        <div class="avg" style="width:34px;height:34px;font-size:15px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>
-        <b id="g_title">${esc(id.replace(/^g_/,""))}</b>
+        <div id="g_icon" class="avg" style="width:34px;height:34px;font-size:15px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>
+        <b id="g_title" style="cursor:pointer" onclick="openGroupInfo('${esc(id)}')">${esc(id.replace(/^g_/,""))}</b>
       </div>
       <div id="g_msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px"><div class="muted">Loading…</div></div>
-      <div style="display:flex;gap:5px;padding:10px 12px;border-top:1px solid var(--border);align-items:center">
+      <div id="g_input_row" style="display:flex;gap:5px;padding:10px 12px;border-top:1px solid var(--border);align-items:center">
         <button class="iconbtn recdot" title="Audio/video link" onclick="openMediaLink(u=>sendGroupMedia('${esc(id)}',u))">${ic("mic",18)}</button>
         <button class="iconbtn" title="Image/video link" onclick="openMediaLink(u=>sendGroupMedia('${esc(id)}',u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
         <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800" onclick="openGifPicker(u=>sendGroupMedia('${esc(id)}',u))">GIF</button>
@@ -1842,8 +1872,8 @@ routes.group=async(id)=>{
         <button class="btn sm" onclick="sendGroup('${esc(id)}')">Send</button>
       </div>
     </div>`;
-  await draw();
-  DM_POLL=setInterval(()=>{if(CUR==="group")draw();else stopDmPoll();},window.FB_LIVE?2500:5000);
+  await draw(true);
+  DM_POLL=setInterval(()=>{if(currentGroupId()===id)draw(false);else stopDmPoll();},window.FB_LIVE?2500:5000);
 };
 function appendPendingBubble(boxId,text,from){
   const box=$(boxId);if(!box)return null;
@@ -1863,6 +1893,58 @@ async function sendGroup(id){
   if(d&&d.ok){bump("dms");}
   else if(d&&d.error){if(pending)pending.remove();if(inp)inp.value=text;}
 }
+function groupRoleClient(g,u){if(!g)return"member";if(g.owner===u)return"owner";if((g.admins||[]).includes(u))return"admin";if((g.moderators||[]).includes(u))return"moderator";return"member";}
+function groupCanMod(g){return ["owner","admin","moderator"].includes(g?.role);}
+function groupCanAdmin(g){return ["owner","admin"].includes(g?.role);}
+async function fetchGroup(id){const d=await api("/group-thread",{group:id,_silent:true});if(d&&d.ok){GROUPCACHE[id]=d;ensureUsers(d.members||[]);return d;}return GROUPCACHE[id]||null;}
+async function acceptGroup(id){const d=await api("/group-accept",{group:id});if(d&&d.ok){toast("Joined group");GROUPCACHE[id]=null;routes.group(id);}}
+async function openGroupInfo(id){
+  const g=await fetchGroup(id);if(!g){toast("Couldn't load group");return;}
+  const canAdmin=groupCanAdmin(g),canMod=groupCanMod(g);
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" style="max-width:720px">
+    <div style="display:flex;align-items:center;gap:13px;margin-bottom:14px">
+      ${g.icon?`<img class="av" src="${esc(g.icon)}" width="54" height="54" onerror="this.outerHTML='<div class=\\'avg\\' style=\\'width:54px;height:54px;font-size:23px;background:linear-gradient(135deg,var(--accent2),var(--accent))\\'>👥</div>'">`:`<div class="avg" style="width:54px;height:54px;font-size:23px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`}
+      <div><h2 style="margin:0">${esc(g.name)}</h2><div class="muted">${(g.members||[]).length} members · you are ${esc(g.role||"member")}</div></div>
+      ${canMod?`<button class="iconbtn" style="margin-left:auto" onclick="openGroupAddMembers('${esc(id)}')">${ic("plus",18)}</button>`:""}
+    </div>
+    ${g.wallpaper?`<div style="height:120px;border-radius:16px;background:url('${esc(g.wallpaper)}') center/cover no-repeat;border:1px solid var(--border);margin-bottom:14px"></div>`:""}
+    ${canAdmin?`<div class="card" style="margin:0 0 14px;padding:14px"><h3 style="font-size:14px;margin-bottom:10px">Group appearance</h3>
+      <div class="grid2"><div class="field"><label>GROUP NAME</label><input id="grp_set_name" value="${esc(g.name)}"></div><div class="field"><label>GROUP ICON / PFP LINK</label><input id="grp_set_icon" value="${esc(g.icon||"")}" placeholder="https://…"></div></div>
+      <div class="field"><label>WALLPAPER / BACKGROUND LINK</label><input id="grp_set_wall" value="${esc(g.wallpaper||"")}" placeholder="https://…"></div>
+      <button class="btn sm" onclick="saveGroupSettings('${esc(id)}')">Save group</button>
+    </div>`:""}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0"><h3 style="font-size:14px">Members</h3>${canMod?`<button class="btn ghost sm" onclick="openGroupAddMembers('${esc(id)}')">${ic("plus",14)} Add</button>`:""}</div>
+    <div style="max-height:46vh;overflow-y:auto">${(g.members||[]).map(u=>groupMemberRow(g,id,u)).join("")}</div>
+  </div></div>`;
+}
+function groupMemberRow(g,id,u){const role=groupRoleClient(g,u),muted=(g.muted||[]).includes(u);return `<div class="card hov" style="display:flex;align-items:center;gap:12px;padding:11px;margin:8px 0">
+  ${avatarHTML(u,38)}<div style="min-width:0;flex:1"><b>${esc(displayName(u))}</b><div class="muted">@${esc(u)} ${role!=="member"?" · "+role:""}${muted?" · muted":""}</div></div>
+  <span class="menuwrap"><button class="iconbtn" onclick="event.stopPropagation();openGroupMemberMenu('${esc(id)}','${esc(u)}')">⋯</button></span>
+</div>`;}
+async function saveGroupSettings(id){const d=await api("/group-update",{group:id,name:$("#grp_set_name").value.trim(),icon:$("#grp_set_icon").value.trim(),wallpaper:$("#grp_set_wall").value.trim()});if(d&&d.ok){toast("Group updated");closeModal();GROUPCACHE[id]=null;routes.group(id);}}
+function openGroupAddMembers(id){
+  const g=GROUPCACHE[id];if(!g)return;
+  window._grpAdd=[];
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Add members</h2>
+    <input id="gadd_q" placeholder="Search friends or usernames…" oninput="renderGroupAdd('${esc(id)}')" style="margin-bottom:10px">
+    <div id="gadd_chips" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"></div><div id="gadd_list" style="max-height:46vh;overflow-y:auto"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px"><button class="btn ghost" onclick="openGroupInfo('${esc(id)}')">Back</button><button class="btn" onclick="submitGroupAdd('${esc(id)}')">Add selected</button></div>
+  </div></div>`;renderGroupAdd(id);
+}
+function renderGroupAdd(id){const g=GROUPCACHE[id]||{},q=($("#gadd_q")?.value||"").toLowerCase(),pool=peoplePool().filter(u=>u.includes(q)&&u!==S.me).slice(0,120),chips=$("#gadd_chips"),list=$("#gadd_list");if(chips)chips.innerHTML=window._grpAdd.map(u=>`<span class="chip" onclick="toggleGroupAdd('${esc(u)}','${esc(id)}')">@${esc(u)} ✕</span>`).join("");if(list)list.innerHTML=pool.map(u=>{const added=(g.members||[]).includes(u),sel=window._grpAdd.includes(u);return `<div class="card hov" style="display:flex;align-items:center;gap:11px;padding:10px;margin:7px 0;${added?'opacity:.65':''}" onclick="${added?'':'toggleGroupAdd(\''+esc(u)+'\',\''+esc(id)+'\')'}">${avatarHTML(u,34)}<b>@${esc(u)}</b><span style="margin-left:auto" class="badge ${added?'mut':sel?'pio':'mut'}">${added?'ADDED':sel?'SELECTED':'ADD'}</span></div>`;}).join("")||`<div class="muted">No users found.</div>`;ensureUsers(pool.slice(0,25),()=>renderGroupAdd(id));}
+function toggleGroupAdd(u,id){const i=window._grpAdd.indexOf(u);if(i>=0)window._grpAdd.splice(i,1);else window._grpAdd.push(u);renderGroupAdd(id);}
+async function submitGroupAdd(id){const d=await api("/group-add-members",{group:id,members:window._grpAdd||[]});if(d&&d.ok){toast(`${(d.added||[]).length} added · ${(d.pending||[]).length} invites sent`);GROUPCACHE[id]=null;openGroupInfo(id);}}
+async function openGroupMemberMenu(id,u){
+  const g=GROUPCACHE[id]||await fetchGroup(id),role=groupRoleClient(g,u),canMod=groupCanMod(g),canAdmin=groupCanAdmin(g),isStaff=["owner","admin","moderator"].includes(role),muted=(g.muted||[]).includes(u);
+  const adminButtons=canMod&&u!==S.me?`${canAdmin&&g.role==="owner"&&role!=="admin"?`<button onclick="groupMemberAct('${esc(id)}','${esc(u)}','admin')">Make admin</button>`:""}${canAdmin&&role!=="moderator"&&role!=="admin"&&role!=="owner"?`<button onclick="groupMemberAct('${esc(id)}','${esc(u)}','moderator')">Make moderator</button>`:""}${canAdmin&&role!=="member"&&role!=="owner"?`<button onclick="groupMemberAct('${esc(id)}','${esc(u)}','demote')">Remove staff role</button>`:""}${!isStaff||g.role==="owner"?`<button onclick="groupMemberAct('${esc(id)}','${esc(u)}','${muted?'unmute':'mute'}')">${muted?'Unmute':'Mute'}</button><button style="color:#f87171" onclick="groupMemberAct('${esc(id)}','${esc(u)}','remove')">Remove from group</button>`:""}`:"";
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>@${esc(u)}</h2>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">${avatarHTML(u,46)}<div><b>${esc(displayName(u))}</b><div class="muted">${role}${muted?' · muted':''}</div></div></div>
+    <div class="menu" style="display:block;position:static;min-width:100%;box-shadow:none">${adminButtons}<button onclick="closeModal();openThread('${esc(u)}')">Direct message</button><button onclick="closeModal();nav('#/u/${esc(u)}')">Visit profile</button><button style="color:#f87171" onclick="closeModal();blockToggle('${esc(u)}')">Block user</button></div>
+    <div style="margin-top:12px"><button class="btn ghost sm" onclick="openGroupInfo('${esc(id)}')">Back to group</button></div>
+  </div></div>`;
+}
+async function groupMemberAct(id,u,action){const d=await api("/group-member",{group:id,target:u,action});if(d&&d.ok){toast("Updated");GROUPCACHE[id]=null;openGroupInfo(id);}}
+
 function openThread(name){
   name=String(name||"").trim().toLowerCase().replace("@","").replace(/[^a-z0-9_]/g,"");
   if(!name){toast("Type a username");return;}
@@ -1892,24 +1974,33 @@ routes.dm=async(other)=>{
         <button class="btn sm" onclick="sendDm('${esc(other)}')">Send</button>
       </div>
     </div>`;
-  await refreshThread(other);
-  DM_POLL=setInterval(()=>{if(CUR==="dm")refreshThread(other);else stopDmPoll();},window.FB_LIVE?2500:5000);
+  await refreshThread(other,true);
+  DM_POLL=setInterval(()=>{if(currentDmUser()===other)refreshThread(other,false);else stopDmPoll();},window.FB_LIVE?2500:5000);
 }
-async function refreshThread(other){
-  const d=await api("/dm-thread",{with:other});
+async function refreshThread(other,force){
+  other=String(other||"").toLowerCase();
+  if(currentDmUser()!==other)return;
+  const d=await api("/dm-thread",{with:other,_silent:true});
+  if(currentDmUser()!==other)return;
   if(d&&d.live)window.FB_LIVE=true;
   const box=$("#dm_msgs");if(!box)return;
   if(!d||!d.ok){box.innerHTML=`<div class="muted">Couldn't load messages.</div>`;return;}
+  const msgs=sortedMsgs(d.messages||[]);
+  ensureUsers([other,...msgs.map(m=>m.from),...(other==="lore"?[CONFIG.ADMIN]:[])],()=>{if(currentDmUser()===other)refreshThread(other,true);});
   const mode=$("#dm_mode");if(mode)mode.textContent=d.requested?(d.incoming?"request pending":"request sent"):"";
   const stick=box.scrollHeight-box.scrollTop-box.clientHeight<80;
-  box.innerHTML=d.messages.length?d.messages.map(m=>{
+  const key=chatKey(msgs);
+  if(!force&&CHAT_RENDER_CACHE["dm:"+other]===key)return;
+  CHAT_RENDER_CACHE["dm:"+other]=key;
+  box.innerHTML=msgs.length?msgs.map(m=>{
     const mine=m.from===S.me;
+    const ts=msgTime(m);
     return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
       <div class="${bubbleCls(m.from)}" style="${bubbleStyle(m.from,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
-      <div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">${timeAgo(m.ts)}</div>
+      <div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">${ts?timeAgo(ts):""}</div>
     </div>`;}).join("")
     :`<div class="muted" style="text-align:center;margin:auto">No messages yet. Say something — it's private.</div>`;
-  if(stick||!d.messages.length)box.scrollTop=box.scrollHeight;
+  if(stick||!msgs.length)box.scrollTop=box.scrollHeight;
 }
 async function sendDmMedia(other,url){
   if(other==="lore"){toast("Official LORE broadcasts cannot be replied to");return;}
@@ -2234,8 +2325,9 @@ routes.admin=()=>{
       <p class="muted" style="margin-top:10px">Ban = all actions rejected. Shadowban = their posts visible only to themselves.</p></div>
     <div id="admin_dash" class="card"><h2 style="font-size:15px;margin-bottom:12px">Moderation lists</h2><div class="muted">Loading banned and reports…</div></div></div>
     <div id="admin_comms" class="adminsec" style="display:none"><div class="card"><h2 style="font-size:15px;margin-bottom:13px">LORE Broadcast</h2>
-      <textarea id="ad_broadcast" rows="4" placeholder="Important message to all users…"></textarea><input id="ad_bmedia" placeholder="Optional image/video/audio link" style="margin-top:8px"><button class="btn sm" style="margin-top:10px" onclick="adminBroadcast()">Send broadcast</button><p class="muted" style="margin-top:8px">Sends to Primary DMs as LORE and Activity notifications.</p></div>
-      <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Warning</h2><input id="ad_warn_user" placeholder="username"><textarea id="ad_warn_text" rows="3" placeholder="Warning text…" style="margin-top:8px"></textarea><button class="btn danger sm" style="margin-top:10px" onclick="adminWarn()">Send warning</button></div></div>
+      <div class="muted" style="margin-bottom:8px">Formatting: **bold**, *italic*, ### heading, &gt; quote, links auto-embed, &lt;lore&gt; logo, &lt;lc&gt; coin.</div>
+      <textarea id="ad_broadcast" rows="4" placeholder="### Important update&#10;Use **bold**, *italic*, &lt;lore&gt;, &lt;lc&gt;, and media links…"></textarea><input id="ad_bmedia" placeholder="Optional image/video/audio link" style="margin-top:8px"><button class="btn sm" style="margin-top:10px" onclick="adminBroadcast()">Send broadcast</button><p class="muted" style="margin-top:8px">Sends to Primary DMs as LORE and Activity notifications.</p></div>
+      <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Warning</h2><input id="ad_warn_user" placeholder="username"><div class="muted" style="margin:8px 0">Supports **bold**, *italic*, ### heading, links, &lt;lore&gt;, &lt;lc&gt;.</div><textarea id="ad_warn_text" rows="3" placeholder="Warning text…" style="margin-top:8px"></textarea><button class="btn danger sm" style="margin-top:10px" onclick="adminWarn()">Send warning</button></div></div>
     <div id="admin_econ" class="adminsec" style="display:none">
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("coin",16)} Lore Coins Admin</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
@@ -2486,7 +2578,7 @@ async function ensureUsers(names,cb){
   let changed=false;
   await Promise.all(need.map(async n=>{
     try{
-      const r=await fetch(RAWBASE()+"/users/"+n+".json");
+      const r=await fetch(RAWBASE()+"/users/"+n+".json?t="+Math.floor(Date.now()/15000),{cache:"no-store"});
       if(r.ok){const u=await r.json();SEED.users[n]={...u,color:userColor(n)};changed=true;}
     }catch(e){}
   }));
@@ -2509,7 +2601,7 @@ async function loadLive(){
       SEED.posts=f.map(e=>({id:e.id,author:e.author,topic:e.topic,ts:e.ts,text:e.snippet,img:e.img||"",
         up:Array(e.up||0).fill("·"),down:Array(e.down||0).fill("·"),shares:e.shares||0,
         echo:e.echo||"",pioneer:"",comments:Array(e.comments||0).fill({a:"",t:"",ts:0}),live:true}));
-      render();
+      liveRender();
       ensureUsers(f.map(e=>e.author)); // load authors' pfps/bios
     }
     // sync my own profile + notifications from the server
@@ -2519,7 +2611,7 @@ async function loadLive(){
         const me=await fetch(raw+"/users/"+S.me+".json"+meBust,{cache:"no-store"}).then(r=>r.ok?r.json():null);
         if(me){
           SEED.users[S.me]={...me,color:userColor(S.me)};
-          if(me.pfp&&me.pfp!==S.profile.pfp){S.profile.pfp=me.pfp;save();render();}
+          if(me.pfp&&me.pfp!==S.profile.pfp){S.profile.pfp=me.pfp;save();liveRender();}
           if(me.bio&&S.profile.bio==="New to LORE. Writing my first pages."){S.profile.bio=me.bio;save();}
           if(Array.isArray(me.following)){
             const now=Date.now();
@@ -2573,7 +2665,7 @@ async function loadLiveUser(name){
   if(!LIVE)return null;
   try{
     const raw="https://raw.githubusercontent.com/"+CONFIG.DATA_BASE.split("/gh/")[1].replace("@main","")+"/main";
-    const u=await fetch(raw+"/users/"+name+".json").then(r=>r.json());
+    const u=await fetch(raw+"/users/"+name+".json?t="+Math.floor(Date.now()/15000),{cache:"no-store"}).then(r=>r.json());
     if(u)SEED.users[name]={...u,color:userColor(name)};
     return u;
   }catch(e){return null;}
@@ -2593,5 +2685,5 @@ render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c1ebb95bb5d04b',t:'MTc4MTUzMDEzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
