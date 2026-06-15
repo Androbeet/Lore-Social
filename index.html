@@ -410,6 +410,14 @@ svg.donut .seg:hover{stroke-width:33}
 .bubblepv.ruby,.chatbubble.ruby{background:linear-gradient(135deg,#450a0a,#dc2626,#fb7185);color:#fff;border-color:#fecaca}
 .bubblepv.pearl,.chatbubble.pearl{background:linear-gradient(135deg,#fff,#e9d5ff,#bae6fd);color:#312e81;border-color:#fff;box-shadow:0 0 20px rgba(255,255,255,.3)}
 
+
+/* animation restoration: cheap frames stay static, glow frames pulse, premium frames spin */
+@keyframes framepulse{0%,100%{filter:brightness(1);opacity:.88;transform:scale(1)}50%{filter:brightness(1.35);opacity:1;transform:scale(1.035)}}
+.avwrap.glowonly::before{animation:framepulse 2.8s ease-in-out infinite!important}.avwrap.glowonly::after{animation:framepulse 3.8s ease-in-out infinite!important}
+.framepv.glowonly::before{animation:framepulse 2.8s ease-in-out infinite!important}.framepv.glowonly::after{animation:framepulse 3.8s ease-in-out infinite!important}
+.avwrap:not(.static):not(.glowonly)::before{animation:framespin var(--fs) linear infinite!important}.avwrap:not(.static):not(.glowonly)::after{animation:framespin calc(var(--fs)*1.6) linear reverse infinite!important}
+.framepv:not(.static):not(.glowonly)::before{animation:framespin calc(14s - min(var(--glowp),7)*1s) linear infinite!important}
+
 </style>
 </head>
 <body data-theme="maroon">
@@ -775,9 +783,12 @@ function frameMeta(id){
   const hues=[42,0,215,270,0,135,292,185,24,48,330,95,155,200,350];
   const classes=["clean","rope","tech","roman","sigil","orbit","double","glyph","rune","crescent","hands","ornate","starforge","crown","clock","blade","halo","pulse","arc","mythic"];
   let cls=classes[n%classes.length];
-  const simple=n<=45, glow=n>45&&n<=110, spin=n>110&&n<=170, mythic=n>170;
-  let speed=simple?"999s":glow?"999s":spin?"12s":"8s";
+  // 1–20 = cheap/static, 21–80 = glow pulse, 81+ = visible 360 spin, 171+ = faster mythic spin.
+  // This keeps cheap non-animated frames, but prevents paid/premium frames from looking dead.
+  const simple=n<=20, glow=n>20&&n<=80, spin=n>80&&n<=170, mythic=n>170;
+  let speed=spin?"16s":mythic?"9s":"18s";
   if(simple)cls="static "+cls;
+  if(glow)cls="glowonly "+cls;
   if(n%10===4||n%10===9||String(id).includes("white"))cls+=" white";
   if(mythic)cls+=" mythicx";
   return{n,h:hues[n%hues.length],p:n%9,cls,speed};
@@ -2717,5 +2728,5 @@ render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c3d5696ff50c0b',t:'MTc4MTU1MDE5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
