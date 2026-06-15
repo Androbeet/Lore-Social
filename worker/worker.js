@@ -258,7 +258,7 @@ function storeFrames() {
       color: colors[n % colors.length],
     };
   });
-  const extra = Array.from({ length: 30 }, (_, i) => {
+  const extra = Array.from({ length: 50 }, (_, i) => {
     const n = i + 51;
     const simple = n <= 60, glow = n <= 70;
     return {
@@ -273,7 +273,7 @@ function storeFrames() {
 }
 function storeBubbles() {
   const names = ["Default", "Capybara", "Frog", "Cat Dog", "Facepalm", "Heart", "Doge", "Dino", "Neon", "Glass", "Pixel", "Ribbon", "Paper", "Royal", "Terminal", "Candy", "Aurora", "Noir", "Goldline", "Velvet"];
-  return Array.from({ length: 80 }, (_, i) => {
+  return Array.from({ length: 120 }, (_, i) => {
     const n = i + 1;
     const tier = n <= 20 ? "simple" : n <= 45 ? "texture" : n <= 65 ? "premium" : "animated";
     return {
