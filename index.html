@@ -418,6 +418,15 @@ svg.donut .seg:hover{stroke-width:33}
 .avwrap:not(.static):not(.glowonly)::before{animation:framespin var(--fs) linear infinite!important}.avwrap:not(.static):not(.glowonly)::after{animation:framespin calc(var(--fs)*1.6) linear reverse infinite!important}
 .framepv:not(.static):not(.glowonly)::before{animation:framespin calc(14s - min(var(--glowp),7)*1s) linear infinite!important}
 
+
+/* real uploaded/reference PNG avatar frames */
+.assetframe{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;isolation:isolate;overflow:visible}
+.assetframe .frameimg{position:absolute;inset:-30%;width:160%;height:160%;object-fit:contain;z-index:3;pointer-events:none;filter:drop-shadow(0 0 12px rgba(255,255,255,.50));animation:framespin var(--fs,16s) linear infinite;transform-origin:50% 50%}
+.assetframe .av,.assetframe .avg{position:relative;z-index:2}.assetframe.mythic .frameimg{inset:-40%;width:180%;height:180%;filter:drop-shadow(0 0 18px rgba(255,255,255,.75)) drop-shadow(0 0 16px var(--accent));animation-duration:10s}
+.framepv.asset{background:transparent!important;box-shadow:none!important;padding:0;overflow:visible}.framepv.asset::before,.framepv.asset::after{display:none!important}.framepv.asset img{width:112px;height:112px;object-fit:contain;margin:-20px;filter:drop-shadow(0 0 12px rgba(255,255,255,.45));animation:framespin 16s linear infinite}.framepv.asset.mythic img{filter:drop-shadow(0 0 20px rgba(255,255,255,.75)) drop-shadow(0 0 18px var(--accent));animation-duration:10s}
+.storyaudio{border:1px solid var(--border2);background:linear-gradient(135deg,var(--card),var(--bg2));border-radius:16px;padding:12px;margin-top:12px;display:flex;align-items:center;gap:12px;box-shadow:0 0 18px rgba(178,122,255,.10)}
+.storyaudio button{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--acc-ink);font-weight:900;box-shadow:var(--glow)}.storybar{height:6px;background:var(--border);border-radius:999px;overflow:hidden;flex:1}.storybar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:999px}.viewergrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}.viewerrow{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px}
+
 </style>
 </head>
 <body data-theme="maroon">
@@ -793,9 +802,12 @@ function frameMeta(id){
   if(mythic)cls+=" mythicx";
   return{n,h:hues[n%hues.length],p:n%9,cls,speed};
 }
+function frameAssetPath(id){const n=Number(String(id||"").match(/(\d+)/)?.[1]||0);return n>=201?`assets/frames/frame_asset_${n}.png`:"";}
 function frameWrap(u,s,inner){
   const fr=SEED.users[u]?.avatarFrame||(u===S.me&&LIVEWALLET?.applied?.frame)||"";
   if(!fr)return inner;
+  const asset=frameAssetPath(fr);
+  if(asset){const n=Number(String(fr).match(/(\d+)/)?.[1]||0),myth=n>=256;return `<span class="assetframe ${myth?'mythic':''}" style="width:${s}px;height:${s}px;--fs:${myth?'10s':'16s'}"><img class="frameimg" src="${asset}" alt="">${inner}</span>`;}
   const m=frameMeta(fr);
   return `<span class="avwrap ${m.cls}" style="width:${s}px;height:${s}px;--fh:${m.h};--fp:${m.p};--fs:${m.speed}">${inner}</span>`;
 }
@@ -1139,29 +1151,44 @@ async function loadStories(){
   if(d&&d.ok){LIVESTORIES=d.stories||[];return LIVESTORIES;}
 }
 function storyBody(st){
-  return md([st.media,st.audio,st.text].filter(Boolean).join("\n\n"));
+  const media=String(st.media||""),audio=String(st.audio||"");
+  let html="";
+  if(media){
+    if(/\.(mp4|webm|mov)(\?|$)/i.test(media))html+=`<video class="pimg" src="${esc(media)}" controls preload="metadata" style="max-height:62vh;object-fit:contain;background:#000"></video>`;
+    else html+=`<img class="pimg" src="${esc(media)}" loading="lazy" style="max-height:62vh;object-fit:contain;background:#000" onerror="this.style.display='none'">`;
+  }
+  if(audio){
+    html+=`<div class="storyaudio"><button onclick="toggleStoryAudio()" id="story_play">▶</button><div style="min-width:0;flex:1"><div style="font-weight:800;font-size:13px;margin-bottom:6px">Story audio</div><div class="storybar"><i id="story_prog"></i></div></div><span class="muted" id="story_time">0:00</span><audio id="story_audio" src="${esc(audio)}" preload="metadata" ontimeupdate="storyAudioTick()" onended="storyAudioEnd()"></audio></div>`;
+  }
+  if(st.text)html+=`<div style="margin-top:12px;line-height:1.65">${md(st.text)}</div>`;
+  return html;
 }
+function storyAudioTick(){const a=$("#story_audio"),p=$("#story_prog"),t=$("#story_time");if(!a)return;const pct=a.duration?100*a.currentTime/a.duration:0;if(p)p.style.width=pct+"%";if(t)t.textContent=Math.floor(a.currentTime/60)+":"+String(Math.floor(a.currentTime%60)).padStart(2,"0");}
+function storyAudioEnd(){const b=$("#story_play");if(b)b.textContent="▶";}
+function toggleStoryAudio(){const a=$("#story_audio"),b=$("#story_play");if(!a)return;if(a.paused){a.play();if(b)b.textContent="Ⅱ";}else{a.pause();if(b)b.textContent="▶";}}
 async function openStory(owner,id){
   const d=await api("/story-view",{owner,id,_silent:true});
   if(!d||!d.ok){toast((d&&d.error)||"Story unavailable");return;}
   const st=d.story;
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
-    <div class="modal">
+    <div class="modal" style="max-width:720px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        ${avatarHTML(owner,36)}<b>@${esc(owner)}</b><span class="muted">${timeAgo(st.ts)} ago</span>
+        ${avatarHTML(owner,40)}<b>@${esc(owner)}</b><span class="muted">${timeAgo(st.ts)} ago</span>
         <button class="iconbtn" style="margin-left:auto" onclick="closeModal()">×</button>
       </div>
-      <div style="border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg2);padding:12px;min-height:180px">${storyBody(st)||`<div class="muted">Story</div>`}</div>
+      <div style="border:1px solid var(--border);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--bg2),var(--card));padding:14px;min-height:180px">${storyBody(st)||`<div class="muted">Story</div>`}</div>
       <div style="display:flex;align-items:center;gap:9px;margin-top:12px;flex-wrap:wrap">
         <button class="btn ghost sm" onclick="likeStory('${esc(owner)}','${esc(id)}')">${st.liked?"Liked":"Like"} · <span id="story_likes">${st.likesCount||0}</span></button>
         <button class="btn ghost sm" onclick="openShare('Story',location.origin+location.pathname+'#/story/${esc(owner)}/${esc(id)}')">Share</button>
-        ${owner===S.me?`<span class="muted">${st.viewsCount||0} views</span><button class="btn danger sm" onclick="deleteStory('${esc(id)}')">Delete</button>`:""}
+        ${owner===S.me?`<button class="btn ghost sm" onclick="toggleStoryViewers()">${st.viewsCount||0} views</button><button class="btn danger sm" onclick="deleteStory('${esc(id)}')">Delete</button>`:""}
       </div>
-      ${owner===S.me&&st.viewers&&st.viewers.length?`<div class="muted" style="margin-top:8px;font-size:12px">Viewed by ${st.viewers.map(v=>"@"+esc(v)).join(", ")}</div>`:""}
+      ${owner===S.me?`<div id="story_viewers" style="display:none"><div class="viewergrid">${(st.viewers||[]).map(v=>`<div class="viewerrow">${avatarHTML(v,28)}<b>@${esc(v)}</b></div>`).join("")||`<div class="muted">No viewers yet.</div>`}</div></div>`:""}
       <div style="display:flex;gap:8px;margin-top:12px"><input id="story_reply" placeholder="Reply to this story…" onkeydown="if(event.key==='Enter')commentStory('${esc(owner)}','${esc(id)}')"><button class="btn sm" onclick="commentStory('${esc(owner)}','${esc(id)}')">Reply</button></div>
       <div id="story_comments" style="margin-top:12px">${(st.comments||[]).map(c=>`<div class="cmt">${avatarHTML(c.a,28)}<div><span class="who">@${esc(c.a)}</span><span class="muted" style="margin-left:6px">${timeAgo(c.ts)}</span><div style="color:var(--text2);margin-top:3px">${md(c.t)}</div></div></div>`).join("")}</div>
     </div></div>`;
+  if(owner===S.me&&st.viewers&&st.viewers.length)ensureUsers(st.viewers,()=>openStory(owner,id));
 }
+function toggleStoryViewers(){const el=$("#story_viewers");if(el)el.style.display=el.style.display==="none"?"block":"none";}
 async function likeStory(owner,id){
   const d=await api("/story-react",{owner,id,action:"like",_silent:true});
   if(d&&d.ok){const el=$("#story_likes");if(el)el.textContent=d.likesCount;toast(d.liked?"Liked":"Like removed");}
@@ -1687,7 +1714,7 @@ function giftArt(g){const h=giftHue(g.id);return `<div class="giftart" style="--
 function giftCard(g,sel){return `<div class="giftcard ${g.price>=320?'premium':''} ${sel?'on':''}" onclick="openGift('', '${esc(g.id)}')">${giftArt(g)}<b>${esc(g.name)}</b><div class="giftprice">${ic('coin',13)} ${g.price}</div></div>`;}
 function giftChoice(g,sel){return `<div class="giftcard ${g.price>=320?'premium':''} ${sel?'on':''}" data-gift="${esc(g.id)}" onclick="selectGift('${esc(g.id)}')">${giftArt(g)}<b>${esc(g.name)}</b><div class="giftprice">${ic('coin',13)} ${g.price}</div></div>`;}
 function selectGift(id){const inp=$("#gift_id");if(inp)inp.value=id;document.querySelectorAll('[data-gift]').forEach(e=>e.classList.toggle('on',e.dataset.gift===id));}
-function framePreview(id){const m=frameMeta(id);return `<div class="framepv ${m.cls}" style="--h:${m.h};--glowp:${m.p}"><i></i></div>`;}
+function framePreview(id){const asset=frameAssetPath(id);if(asset){const n=Number(String(id).match(/(\d+)/)?.[1]||0),myth=n>=256;return `<div class="framepv asset ${myth?'mythic':''}"><img src="${asset}" alt=""></div>`;}const m=frameMeta(id);return `<div class="framepv ${m.cls}" style="--h:${m.h};--glowp:${m.p}"><i></i></div>`;}
 function bubblePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*41)%360;const names=["Capy","Frog","Cat Dog","Facepalm","Heart","Doge","Dino","Aurora","Velvet","Neon","Glass","Pixel","Royal","Noir","Wave","Ink","Cloud","Chrome","Ember","Frost","Matrix","Pastel","Galaxy","Comic","Holo","Pearl"],cls=bubbleClass(id);return `<div class="bubblepv ${cls}" style="--h:${h}">${esc(names[n%names.length])}</div>`;}
 function dailyRewardsHTML(w){const rewards=[10,15,20,25,30,50,90],cur=w.streak?.count||0;return `<div class="dailygrid">${rewards.map((r,i)=>`<div class="daycard ${cur==i+1?'on':''}"><div style="font-size:19px;font-weight:900;color:var(--gold);display:flex;gap:5px;justify-content:center">${ic('coin',15)}${r}</div><div class="muted" style="margin-top:10px">day ${i+1}</div></div>`).join("")}</div>`;}
 function coinStoreTab(t){sessionStorage.setItem("coinTab",t);render();}
@@ -2728,5 +2755,5 @@ render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c3d5696ff50c0b',t:'MTc4MTU1MDE5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
