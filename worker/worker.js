@@ -329,6 +329,10 @@ export default {
         case "/group-create":      return await groupCreate(user, body, env);
         case "/group-message":     return await groupMessage(user, body, env);
         case "/group-thread":      return await groupThread(user, body, env);
+        case "/group-update":      return await groupUpdate(user, body, env);
+        case "/group-add-members": return await groupAddMembers(user, body, env);
+        case "/group-member":      return await groupMemberAction(user, body, env);
+        case "/group-accept":      return await groupAccept(user, body, env);
         case "/close-friends":     return await closeFriends(user, body, env);
         case "/stories":           return await storiesList(user, body, env);
         case "/story-create":      return await storyCreate(user, body, env);
@@ -1495,6 +1499,73 @@ async function setPrivacy(user, body, env) {
 }
 
 /* ---------- group chats (stored in DMS repo) ---------- */
+function normGroup(g) {
+  g = g || {};
+  g.members = Array.isArray(g.members) ? [...new Set(g.members)] : [];
+  g.owner = g.owner || g.members[0] || "";
+  g.admins = Array.isArray(g.admins) ? [...new Set([g.owner, ...g.admins])] : [g.owner].filter(Boolean);
+  g.moderators = Array.isArray(g.moderators) ? [...new Set(g.moderators)] : [];
+  g.muted = Array.isArray(g.muted) ? [...new Set(g.muted)] : [];
+  g.pending = g.pending && typeof g.pending === "object" ? g.pending : {};
+  g.messages = Array.isArray(g.messages) ? g.messages : [];
+  g.icon = String(g.icon || "").slice(0, 700);
+  g.wallpaper = String(g.wallpaper || "").slice(0, 700);
+  return g;
+}
+function groupRole(g, user) {
+  g = normGroup(g);
+  if (g.owner === user) return "owner";
+  if ((g.admins || []).includes(user)) return "admin";
+  if ((g.moderators || []).includes(user)) return "moderator";
+  if ((g.members || []).includes(user)) return "member";
+  if (g.pending && g.pending[user]) return "pending";
+  return "none";
+}
+function canGroupModerate(g, user) { return ["owner", "admin", "moderator"].includes(groupRole(g, user)); }
+function canGroupAdmin(g, user) { return ["owner", "admin"].includes(groupRole(g, user)); }
+function publicGroup(g, user, messages) {
+  g = normGroup(g);
+  return {
+    ok: true,
+    id: g.id,
+    name: g.name,
+    owner: g.owner,
+    admins: g.admins || [],
+    moderators: g.moderators || [],
+    muted: g.muted || [],
+    members: g.members || [],
+    icon: g.icon || "",
+    wallpaper: g.wallpaper || "",
+    pending: !!(g.pending && g.pending[user]),
+    role: groupRole(g, user),
+    messages: messages == null ? g.messages : messages,
+  };
+}
+async function targetFollowsActor(env, target, actor) {
+  const r = await ghGetJSON(env, env.DATA_REPO, `users/${target}.json`).catch(() => ({ json: null }));
+  return !!(r.json && (r.json.following || []).includes(actor));
+}
+async function groupInbox(env, user, g, last, unread, request = false) {
+  const withName = "👥 " + (g.name || String(g.id || "").replace(/^g_/, ""));
+  try {
+    const path = `inbox/${user}.json`;
+    const { json, sha } = await ghGetJSON(env, env.DMS_REPO, path);
+    const inbox = json || { threads: [] };
+    inbox.threads = Array.isArray(inbox.threads) ? inbox.threads : [];
+    let t = inbox.threads.find((x) => x.with === withName || x.group === g.id);
+    if (!t) { t = { with: withName, unread: 0 }; inbox.threads.push(t); }
+    t.with = withName;
+    t.group = g.id;
+    t.request = !!request;
+    t.last = String(last || "").slice(0, 80);
+    t.ts = Date.now();
+    t.unread = unread ? (t.unread || 0) + 1 : 0;
+    inbox.threads.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    await ghPutJSON(env, env.DMS_REPO, path, inbox, sha, `group inbox ${user}`);
+  } catch (e) {
+    await updateInbox(env, user, withName, last, unread);
+  }
+}
 async function groupCreate(user, body, env) {
   await checkRate(env, user, "group", 60);
   const name = String(body.name || "").toLowerCase().replace(/[^a-z0-9-_]/g, "").slice(0, 30);
@@ -1505,26 +1576,30 @@ async function groupCreate(user, body, env) {
   }
   const exists = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
   if (exists.json) throw new Error("group name taken");
-  const members = [...new Set([user, ...(body.members || []).map((m) => String(m).toLowerCase()).slice(0, 20)])];
-  if (fbOn(env)) {
-    const mem = {};
-    members.forEach((m) => { mem[m] = true; });
-    await fb(env, `groups/${id}`, "PUT", { id, name, owner: user, members: mem, migrated: true });
-    for (const m of members) {
-      await fb(env, `inbox/${m}/${encodeURIComponent("👥 " + name)}`, "PATCH", {
-        last: "Group created by @" + user,
-        ts: Date.now(),
-        unread: m !== user ? 1 : 0,
-        group: id,
-      }).catch(() => {});
-    }
-    return reply({ ok: true, id });
+  const rawMembers = [...new Set([user, ...(body.members || []).map((m) => String(m).toLowerCase().replace(/[^a-z0-9_]/g, "")).slice(0, 40)])].filter(Boolean);
+  const members = [user];
+  const pending = {};
+  for (const m of rawMembers.filter((x) => x !== user)) {
+    if (await targetFollowsActor(env, m, user)) members.push(m);
+    else pending[m] = { by: user, ts: Date.now() };
   }
-  await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`, { id, name, owner: user, members, messages: [] }, null, `group ${id}`);
-  for (const m of members) await updateInbox(env, m, "👥 " + name, "Group created by @" + user, m !== user);
-  return reply({ ok: true, id });
+  const group = { id, name, owner: user, admins: [user], moderators: [], muted: [], members: [...new Set(members)], pending, icon: String(body.icon || "").slice(0, 700), wallpaper: String(body.wallpaper || "").slice(0, 700), messages: [] };
+  if (fbOn(env)) {
+    const mem = {}; group.members.forEach((m) => { mem[m] = true; });
+    const pend = {}; Object.keys(pending).forEach((m) => { pend[m] = pending[m]; });
+    await fb(env, `groups/${id}`, "PUT", { ...group, members: mem, pending: pend, migrated: true });
+    for (const m of group.members) await fb(env, `inbox/${m}/${encodeURIComponent("👥 " + name)}`, "PATCH", { last: "Group created by @" + user, ts: Date.now(), unread: m !== user ? 1 : 0, group: id }).catch(() => {});
+    for (const m of Object.keys(pending)) await fb(env, `inbox/${m}/${encodeURIComponent("👥 " + name)}`, "PATCH", { last: "Group invite from @" + user, ts: Date.now(), unread: 1, group: id, request: true }).catch(() => {});
+    return reply({ ok: true, id, pending: Object.keys(pending) });
+  }
+  await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`, group, null, `group ${id}`);
+  for (const m of group.members) await groupInbox(env, m, group, "Group created by @" + user, m !== user);
+  for (const m of Object.keys(pending)) {
+    await groupInbox(env, m, group, "Group invite from @" + user, true, true);
+    await notify(env, m, { type: "group_invite", from: user, group: id });
+  }
+  return reply({ ok: true, id, pending: Object.keys(pending) });
 }
-
 async function groupMessage(user, body, env) {
   await checkRate(env, user, "group", 3); // separate bucket from DMs
   const id = String(body.group || "");
@@ -1532,40 +1607,141 @@ async function groupMessage(user, body, env) {
   if (!text) throw new Error("empty message");
   if (fbOn(env)) {
     await migrateGroup(env, id);
-    const isMember = await fb(env, `groups/${id}/members/${user}`).catch(() => null);
+    const g = await fb(env, `groups/${id}`).catch(() => null);
+    if (!g || !g.id) throw new Error("group not found");
+    const isMember = !!(g.members || {})[user];
     if (!isMember) throw new Error("not a member");
+    if ((g.muted || []).includes(user) && !canGroupModerate({ ...g, members: Object.keys(g.members || {}) }, user)) throw new Error("you are muted in this group");
     await fb(env, `groups/${id}/messages`, "POST", { from: user, text, ts: Date.now() });
     return reply({ ok: true });
   }
-  const { json: g, sha } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
-  if (!g) throw new Error("group not found");
+  const { json: raw, sha } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
+  const g = normGroup(raw);
+  if (!g.id) throw new Error("group not found");
   if (!g.members.includes(user)) throw new Error("not a member");
+  if ((g.muted || []).includes(user) && !canGroupModerate(g, user)) throw new Error("you are muted in this group");
   g.messages.push({ from: user, text, ts: Date.now() });
   g.messages = g.messages.slice(-500);
   await ghPutJSON(env, env.DMS_REPO, `groups/${id}.json`, g, sha, `gmsg ${id}`);
   return reply({ ok: true });
 }
-
 async function groupThread(user, body, env) {
   const id = String(body.group || "");
   if (fbOn(env)) {
     await migrateGroup(env, id);
     const g = await fb(env, `groups/${id}`).catch(() => null);
     if (!g || !g.id) throw new Error("group not found");
-    if (!(g.members || {})[user]) throw new Error("not a member");
+    const members = Object.keys(g.members || {}), pending = g.pending || {};
+    if (!members.includes(user) && !pending[user]) throw new Error("not a member");
     const msgs = g.messages || {};
-    return reply({
-      ok: true,
-      name: g.name,
-      members: Object.keys(g.members || {}),
-      messages: Object.keys(msgs).sort().map((k) => msgs[k]),
-      live: true,
-    });
+    return reply(publicGroup({ ...g, members, pending }, user, members.includes(user) ? Object.keys(msgs).sort().map((k) => msgs[k]) : []));
   }
-  const { json: g } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
-  if (!g) throw new Error("group not found");
-  if (!g.members.includes(user)) throw new Error("not a member");
-  return reply({ ok: true, name: g.name, members: g.members, messages: g.messages });
+  const { json: raw } = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`);
+  const g = normGroup(raw);
+  if (!g.id) throw new Error("group not found");
+  if (!g.members.includes(user) && !(g.pending && g.pending[user])) throw new Error("not a member");
+  return reply(publicGroup(g, user, g.members.includes(user) ? g.messages : []));
+}
+async function groupAccept(user, body, env) {
+  const id = String(body.group || "");
+  if (fbOn(env)) {
+    const g = await fb(env, `groups/${id}`).catch(() => null);
+    if (!g || !g.pending || !g.pending[user]) throw new Error("no invite");
+    await fb(env, `groups/${id}/members/${user}`, "PUT", true);
+    await fb(env, `groups/${id}/pending/${user}`, "DELETE").catch(() => {});
+    await fb(env, `inbox/${user}/${encodeURIComponent("👥 " + g.name)}`, "PATCH", { last: "Joined group", ts: Date.now(), unread: 0, group: id });
+    return reply({ ok: true });
+  }
+  await mutateJSON(env, env.DMS_REPO, `groups/${id}.json`, {}, (raw) => {
+    const g = normGroup(raw);
+    if (!g.pending[user]) throw new Error("no invite");
+    delete g.pending[user];
+    if (!g.members.includes(user)) g.members.push(user);
+    return g;
+  }, `group accept ${id}`);
+  const g = await ghGetJSON(env, env.DMS_REPO, `groups/${id}.json`).then((r) => normGroup(r.json));
+  await groupInbox(env, user, g, "Joined group", false);
+  return reply({ ok: true });
+}
+async function groupUpdate(user, body, env) {
+  const id = String(body.group || "");
+  const patch = {
+    name: body.name != null ? String(body.name).toLowerCase().replace(/[^a-z0-9-_]/g, "").slice(0, 30) : null,
+    icon: body.icon != null ? String(body.icon).slice(0, 700) : null,
+    wallpaper: body.wallpaper != null ? String(body.wallpaper).slice(0, 700) : null,
+  };
+  if (fbOn(env)) {
+    const g = await fb(env, `groups/${id}`).catch(() => null);
+    if (!g || !canGroupAdmin({ ...g, members: Object.keys(g.members || {}) }, user)) throw new Error("admins only");
+    const upd = {}; if (patch.name) upd.name = patch.name; if (patch.icon != null) upd.icon = patch.icon; if (patch.wallpaper != null) upd.wallpaper = patch.wallpaper;
+    await fb(env, `groups/${id}`, "PATCH", upd);
+    return reply({ ok: true });
+  }
+  await mutateJSON(env, env.DMS_REPO, `groups/${id}.json`, {}, (raw) => {
+    const g = normGroup(raw);
+    if (!canGroupAdmin(g, user)) throw new Error("admins only");
+    if (patch.name) g.name = patch.name;
+    if (patch.icon != null) g.icon = patch.icon;
+    if (patch.wallpaper != null) g.wallpaper = patch.wallpaper;
+    return g;
+  }, `group update ${id}`);
+  return reply({ ok: true });
+}
+async function groupAddMembers(user, body, env) {
+  const id = String(body.group || "");
+  const targets = [...new Set((body.members || []).map((m) => String(m).toLowerCase().replace(/[^a-z0-9_]/g, "")).filter(Boolean))].slice(0, 50);
+  if (!targets.length) throw new Error("select members");
+  const added = [], pending = [];
+  if (fbOn(env)) {
+    const g = await fb(env, `groups/${id}`).catch(() => null);
+    if (!g) throw new Error("group not found");
+    const group = normGroup({ ...g, members: Object.keys(g.members || {}), pending: g.pending || {} });
+    if (!canGroupModerate(group, user)) throw new Error("moderators only");
+    for (const t of targets) {
+      if (group.members.includes(t)) continue;
+      if (await targetFollowsActor(env, t, user)) { await fb(env, `groups/${id}/members/${t}`, "PUT", true); added.push(t); await fb(env, `inbox/${t}/${encodeURIComponent("👥 " + group.name)}`, "PATCH", { last: "Added by @" + user, ts: Date.now(), unread: 1, group: id }).catch(() => {}); }
+      else { await fb(env, `groups/${id}/pending/${t}`, "PUT", { by: user, ts: Date.now() }); pending.push(t); await fb(env, `inbox/${t}/${encodeURIComponent("👥 " + group.name)}`, "PATCH", { last: "Group invite from @" + user, ts: Date.now(), unread: 1, group: id, request: true }).catch(() => {}); }
+    }
+    return reply({ ok: true, added, pending });
+  }
+  let saved;
+  await mutateJSON(env, env.DMS_REPO, `groups/${id}.json`, {}, async (raw) => {
+    const g = normGroup(raw);
+    if (!canGroupModerate(g, user)) throw new Error("moderators only");
+    for (const t of targets) {
+      if (g.members.includes(t)) continue;
+      if (await targetFollowsActor(env, t, user)) { g.members.push(t); added.push(t); }
+      else { g.pending[t] = { by: user, ts: Date.now() }; pending.push(t); }
+    }
+    saved = g;
+    return g;
+  }, `group add ${id}`);
+  for (const t of added) await groupInbox(env, t, saved, "Added by @" + user, true);
+  for (const t of pending) { await groupInbox(env, t, saved, "Group invite from @" + user, true, true); await notify(env, t, { type: "group_invite", from: user, group: id }); }
+  return reply({ ok: true, added, pending });
+}
+async function groupMemberAction(user, body, env) {
+  const id = String(body.group || "");
+  const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+  const action = String(body.action || "");
+  if (!target) throw new Error("target required");
+  if (fbOn(env)) throw new Error("group moderation edits require GitHub DMS mode for now");
+  await mutateJSON(env, env.DMS_REPO, `groups/${id}.json`, {}, (raw) => {
+    const g = normGroup(raw);
+    const actor = groupRole(g, user), tr = groupRole(g, target);
+    if (!["owner", "admin", "moderator"].includes(actor)) throw new Error("moderators only");
+    if (target === g.owner) throw new Error("owner cannot be changed here");
+    if (actor === "moderator" && ["owner", "admin", "moderator"].includes(tr)) throw new Error("moderators cannot act on staff");
+    if (action === "remove") g.members = g.members.filter((m) => m !== target);
+    else if (action === "mute") { if (!g.muted.includes(target)) g.muted.push(target); }
+    else if (action === "unmute") g.muted = g.muted.filter((m) => m !== target);
+    else if (action === "admin") { if (actor !== "owner") throw new Error("owner only"); if (!g.admins.includes(target)) g.admins.push(target); g.moderators = g.moderators.filter((m) => m !== target); }
+    else if (action === "moderator") { if (!canGroupAdmin(g, user)) throw new Error("admins only"); if (!g.moderators.includes(target)) g.moderators.push(target); }
+    else if (action === "demote") { if (!canGroupAdmin(g, user)) throw new Error("admins only"); g.admins = g.admins.filter((m) => m !== target || m === g.owner); g.moderators = g.moderators.filter((m) => m !== target); }
+    else throw new Error("unknown action");
+    return g;
+  }, `group member ${action} ${id}`);
+  return reply({ ok: true });
 }
 
 /* ---------- block users ---------- */
