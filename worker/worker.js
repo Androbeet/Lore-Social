@@ -1,3 +1,4 @@
+// FINAL LORE WORKER BUILD — 2204+ lines — if you see requestTag at 1125, you opened an old cached file.
 /**
  * LORE — Cloudflare Worker backend (free tier: 100k requests/day)
  * ----------------------------------------------------------------
@@ -139,7 +140,30 @@ const GIFT_CATALOG = [
     "name": "daddy",
     "price": 60
   }
+ ];
+const GIFT_CATALOG_EXTRA = [
+  { id: "dragon", name: "dragon", price: 180 },
+  { id: "phoenix", name: "phoenix", price: 260 },
+  { id: "crown", name: "crown", price: 700 },
+  { id: "halo", name: "halo", price: 520 },
+  { id: "moon", name: "moon", price: 90 },
+  { id: "sun", name: "sun", price: 90 },
+  { id: "comet", name: "comet", price: 140 },
+  { id: "rose_gold", name: "rose gold", price: 360 },
+  { id: "black_diamond", name: "black diamond", price: 900 },
+  { id: "royal_key", name: "royal key", price: 640 },
+  { id: "lore_seal", name: "lore seal", price: 1200 },
+  { id: "galaxy", name: "galaxy", price: 1500 },
+  { id: "angel", name: "angel", price: 300 },
+  { id: "demon", name: "demon", price: 300 },
+  { id: "clover", name: "clover", price: 70 },
+  { id: "pearl", name: "pearl", price: 220 },
+  { id: "crown_king", name: "king crown", price: 1800 },
+  { id: "queen", name: "queen", price: 1800 },
+  { id: "mythic", name: "mythic", price: 3200 },
+  { id: "eternal", name: "eternal", price: 5000 }
 ];
+GIFT_CATALOG.push(...GIFT_CATALOG_EXTRA);
 const ACH_REWARDS = {
   "first_post": 10,
   "first_vote": 10,
@@ -247,40 +271,38 @@ const ACH_REWARDS = {
 };
 
 function storeFrames() {
-  const colors = ["gold", "red", "blue", "purple", "white", "green", "violet", "cyan", "orange", "silver"];
-  const old = Array.from({ length: 50 }, (_, i) => {
+  const colors = ["gold", "red", "blue", "purple", "white", "green", "violet", "cyan", "orange", "silver", "rose", "black", "emerald", "ice", "crimson"];
+  const designNames = ["Clean", "Rope", "Tech", "Roman", "Sigil", "Orbit", "Double", "Glyph", "Rune", "Crescent", "Hands", "Ornate", "Starforge", "Crown", "Clock", "Blade", "Halo", "Pulse", "Arc", "Mythic"];
+  return Array.from({ length: 200 }, (_, i) => {
     const n = i + 1;
+    const design = designNames[(n - 1) % designNames.length];
+    const color = colors[(n - 1) % colors.length];
+    const simple = n <= 45;
+    const glow = n > 45 && n <= 110;
+    const spin = n > 110 && n <= 170;
+    const mythic = n > 170;
     return {
       id: "frame_" + String(n).padStart(2, "0"),
-      name: "Avatar Frame " + n,
-      price: n <= 15 ? 80 : n <= 35 ? 180 : n <= 45 ? 420 : 900,
-      tier: n <= 15 ? "classic" : n <= 35 ? "glow" : "animated",
-      color: colors[n % colors.length],
+      name: `${design} ${color[0].toUpperCase() + color.slice(1)} Frame ${n}`,
+      price: simple ? 35 + (n % 10) * 5 : glow ? 170 + (n % 18) * 15 : spin ? 650 + (n % 24) * 55 : 2200 + (n % 30) * 95,
+      tier: simple ? "minimal" : glow ? "glow" : spin ? "animated" : "mythic-spin",
+      design: design.toLowerCase(),
+      color,
+      animated: spin || mythic,
     };
   });
-  const extra = Array.from({ length: 50 }, (_, i) => {
-    const n = i + 51;
-    const simple = n <= 60, glow = n <= 70;
-    return {
-      id: "frame_" + String(n).padStart(2, "0"),
-      name: (simple ? "Minimal" : glow ? "Glow" : "Orbit") + " Frame " + (n - 50),
-      price: simple ? 45 + (n - 51) * 5 : glow ? 240 + (n - 61) * 25 : 950 + (n - 71) * 130,
-      tier: simple ? "minimal" : glow ? "glow" : "premium-spin",
-      color: colors[n % colors.length],
-    };
-  });
-  return [...old, ...extra];
 }
 function storeBubbles() {
-  const names = ["Default", "Capybara", "Frog", "Cat Dog", "Facepalm", "Heart", "Doge", "Dino", "Neon", "Glass", "Pixel", "Ribbon", "Paper", "Royal", "Terminal", "Candy", "Aurora", "Noir", "Goldline", "Velvet"];
-  return Array.from({ length: 120 }, (_, i) => {
+  const names = ["Default", "Capybara", "Frog", "Cat Dog", "Facepalm", "Heart", "Doge", "Dino", "Neon", "Glass", "Pixel", "Ribbon", "Paper", "Royal", "Terminal", "Candy", "Aurora", "Noir", "Goldline", "Velvet", "Ink", "Cloud", "Chrome", "Ember", "Frost", "Matrix", "Pastel", "Galaxy", "Comic", "Minimal", "Luxury", "Holo", "Lunar", "Solar", "Arcade", "Sakura", "Ocean", "Toxic", "Ruby", "Pearl"];
+  return Array.from({ length: 200 }, (_, i) => {
     const n = i + 1;
-    const tier = n <= 20 ? "simple" : n <= 45 ? "texture" : n <= 65 ? "premium" : "animated";
+    const tier = n <= 45 ? "simple" : n <= 100 ? "texture" : n <= 155 ? "premium" : "animated";
     return {
       id: "bubble_" + String(n).padStart(2, "0"),
-      name: names[i % names.length] + " Bubble " + n,
-      price: tier === "simple" ? 45 + (n % 5) * 5 : tier === "texture" ? 130 + (n % 8) * 15 : tier === "premium" ? 320 + (n % 10) * 35 : 850 + (n % 12) * 80,
+      name: names[(n - 1) % names.length] + " Bubble " + n,
+      price: tier === "simple" ? 30 + (n % 8) * 5 : tier === "texture" ? 120 + (n % 14) * 12 : tier === "premium" ? 300 + (n % 18) * 28 : 850 + (n % 25) * 75,
       tier,
+      design: names[(n - 1) % names.length].toLowerCase(),
     };
   });
 }
