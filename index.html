@@ -143,7 +143,7 @@ svg.ic{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;str
   padding:12px 16px;align-items:center;justify-content:space-between}
 #mtop .logo{font-size:22px;letter-spacing:5px;padding:0}
 #mtop .acts{display:flex;gap:6px}
-.iconbtn{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;
+.iconbtn{width:44px;height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;
   color:var(--text2);transition:background .15s;position:relative}
 .iconbtn:hover{background:var(--soft);color:var(--text)}
 #tabbar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:70;
@@ -205,7 +205,7 @@ svg.ic{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;str
 /* coins/store visuals */
 .coinbar{display:flex;align-items:center;gap:8px;border:1px solid rgba(234,179,8,.38);background:linear-gradient(135deg,rgba(234,179,8,.16),var(--card));color:var(--text);border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:900;box-shadow:0 0 18px rgba(234,179,8,.12);position:relative;margin-bottom:8px}
 .coinbar:hover{border-color:var(--gold);box-shadow:0 0 24px rgba(234,179,8,.22)}
-.coinbar.small{height:40px;margin:0;padding:0 12px}
+.coinbar.small{height:44px;margin:0;padding:0 12px}
 .coinbar svg.ic{width:16px;height:16px;color:var(--gold)}
 .coinbar .nbadge{position:absolute;top:-5px;right:-5px}
 .dailygrid{display:grid;grid-template-columns:repeat(7,minmax(92px,1fr));gap:9px;overflow-x:auto}
@@ -217,6 +217,8 @@ svg.ic{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;str
 .giftcard.premium{border-color:rgba(234,179,8,.42);box-shadow:0 0 22px rgba(234,179,8,.15)}
 .giftart{width:58px;height:58px;margin:0 auto 10px;border-radius:18px;background:radial-gradient(circle at 35% 25%,#fff8,transparent 24%),linear-gradient(135deg,hsl(var(--h),80%,62%),hsl(calc(var(--h) + 42),78%,42%));display:flex;align-items:center;justify-content:center;color:white;font-weight:1000;font-size:18px;text-shadow:0 2px 8px #0009;box-shadow:0 12px 28px hsla(var(--h),80%,55%,.28);position:relative}
 .giftart::before,.giftart::after{content:"";position:absolute;background:#fff9;border-radius:999px;opacity:.65}.giftart::before{width:28px;height:5px;top:9px;right:-8px;transform:rotate(35deg)}.giftart::after{width:18px;height:5px;bottom:8px;left:-5px;transform:rotate(-24deg)}
+.giftart svg{width:34px;height:34px;filter:drop-shadow(0 4px 8px #0008)}
+.giftcard.premium .giftart{animation:giftpulse 2.4s ease-in-out infinite}@keyframes giftpulse{50%{transform:scale(1.06);box-shadow:0 0 34px hsla(var(--h),90%,62%,.5)}}
 .giftprice{display:inline-flex;align-items:center;gap:5px;color:var(--gold);font-weight:900;margin-top:5px}
 .storegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
 .storecard{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:18px;padding:14px;text-align:center;transition:border-color .15s,box-shadow .2s}
@@ -227,6 +229,22 @@ svg.ic{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;str
 .bubblepv::before,.bubblepv::after{content:"";position:absolute;border-radius:50%;background:#fff7}.bubblepv::before{width:16px;height:16px;left:7px;top:6px}.bubblepv::after{width:24px;height:8px;right:-6px;bottom:6px;transform:rotate(-25deg)}
 .exportgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}.exportopt{border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--bg2);display:flex;gap:9px;align-items:flex-start}.exportopt input{width:auto;margin-top:3px}
 @media(max-width:860px){.dailygrid{grid-template-columns:repeat(7,92px)}.giftgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.storegrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+.avwrap{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;isolation:isolate}
+.avwrap::before{content:"";position:absolute;inset:-4px;border-radius:50%;z-index:-1;background:conic-gradient(from 0deg,transparent 0 9%,hsl(var(--fh),92%,65%) 10% 16%,transparent 17% 24%,hsl(calc(var(--fh) + 55),90%,65%) 25% 33%,transparent 34% 42%,hsl(var(--fh),92%,50%) 43% 52%,transparent 53% 61%,hsl(calc(var(--fh) + 110),90%,70%) 62% 72%,transparent 73% 100%);box-shadow:0 0 calc(12px + var(--fp)*2px) hsla(var(--fh),92%,62%,.58);animation:framespin var(--fs) linear infinite}
+.avwrap::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:1px dashed hsla(var(--fh),90%,78%,.55);animation:framespin calc(var(--fs)*1.6) linear reverse infinite;opacity:.75}
+.avwrap.roman::after{content:"XII   III   VI   IX";display:flex;align-items:center;justify-content:center;color:hsla(var(--fh),90%,85%,.82);font-family:Georgia,serif;font-size:9px;letter-spacing:3px;border:1px solid hsla(var(--fh),90%,80%,.42)}
+.avwrap.rope::before{background:repeating-conic-gradient(from 0deg,hsl(var(--fh),90%,70%) 0 8deg,transparent 8deg 15deg,hsl(calc(var(--fh) + 40),90%,55%) 15deg 22deg,transparent 22deg 30deg)}
+.avwrap.tech::before{background:repeating-conic-gradient(from 0deg,hsl(var(--fh),90%,72%) 0 4deg,transparent 4deg 10deg,hsl(calc(var(--fh) + 90),90%,60%) 10deg 13deg,transparent 13deg 20deg)}
+.avwrap.sigil::before{background:radial-gradient(circle,transparent 58%,hsl(var(--fh),90%,72%) 59% 61%,transparent 62%),repeating-conic-gradient(from 0deg,hsl(var(--fh),90%,70%) 0 2deg,transparent 2deg 12deg)}
+@keyframes framespin{to{transform:rotate(360deg)}}
+.framepv{position:relative;overflow:visible}.framepv::before{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;animation:framespin calc(14s - min(var(--glowp),7)*1s) linear infinite}.framepv i{position:relative;z-index:2}
+.framepv.roman::after{content:"XII  III  VI  IX";position:absolute;inset:6px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Georgia,serif;font-size:8px;letter-spacing:2px;animation:framespin 18s linear reverse infinite}.framepv.rope{background:repeating-conic-gradient(hsl(var(--h),95%,70%) 0 8deg,transparent 8deg 16deg)}.framepv.tech{background:repeating-conic-gradient(hsl(var(--h),95%,72%) 0 4deg,transparent 4deg 10deg,hsl(calc(var(--h) + 90),95%,60%) 10deg 13deg,transparent 13deg 20deg)}.framepv.sigil{background:radial-gradient(circle,transparent 58%,hsl(var(--h),95%,72%) 59% 61%,transparent 62%),repeating-conic-gradient(hsl(var(--h),95%,70%) 0 2deg,transparent 2deg 12deg)}
+.bubblepv.texture,.chatbubble.texture{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.18) 0 4px,transparent 4px 10px),linear-gradient(135deg,hsl(var(--h),85%,62%),hsl(calc(var(--h) + 45),85%,48%))}
+.bubblepv.pixel,.chatbubble.pixel{border-radius:5px;clip-path:polygon(0 0,100% 0,100% 72%,92% 72%,92% 100%,78% 72%,0 72%)}
+.bubblepv.animal::before,.chatbubble.animal::before{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:inherit;left:7px;top:-4px;box-shadow:88px 0 0 hsla(var(--h),80%,58%,1)}
+.chatbubble{position:relative;background:linear-gradient(135deg,hsl(var(--h),85%,62%),hsl(calc(var(--h) + 45),85%,48%));color:#fff;border:1px solid hsla(var(--h),90%,70%,.55);box-shadow:0 8px 24px hsla(var(--h),80%,55%,.28)}
 
 /* posts */
 .post{padding:18px 20px 14px}
@@ -701,25 +719,29 @@ function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return"now";if(d<3600)
 function dispName(u){return u===CONFIG.ADMIN?CONFIG.ADMIN_DISPLAY:u;}
 function userColor(u){if(SEED.users[u])return SEED.users[u].color;let h=0;for(const c of u)h=(h*31+c.charCodeAt(0))%360;return`hsl(${h},60%,48%)`;}
 function genAv(u,s){return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008)">${esc((u[0]||"?").toUpperCase())}</div>`;}
-function frameStyle(u){
+function frameMeta(id){
+  const n=Number(String(id||"").match(/(\d+)/)?.[1]||0),colors=[42,0,265,135,190,310,25,85];
+  return{n,h:colors[n%colors.length],p:n%9,cls:["","rope","tech","roman","sigil"][n%5],speed:(n>35?10:n>15?14:18)+"s"};
+}
+function frameWrap(u,s,inner){
   const fr=SEED.users[u]?.avatarFrame||(u===S.me&&LIVEWALLET?.applied?.frame)||"";
-  if(!fr)return"";
-  const n=Number(String(fr).match(/(\d+)/)?.[1]||1),h=(n*37)%360;
-  return `box-shadow:0 0 0 2px hsl(${h},85%,60%),0 0 ${10+(n%8)*2}px hsla(${h},85%,60%,.45)`;
+  if(!fr)return inner;
+  const m=frameMeta(fr);
+  return `<span class="avwrap ${m.cls}" style="width:${s}px;height:${s}px;--fh:${m.h};--fp:${m.p};--fs:${m.speed}">${inner}</span>`;
 }
 function avatarHTML(u,s){
   const url=u===S.me?S.profile.pfp:(SEED.users[u]?.pfp||"");
-  const fs=frameStyle(u);
-  if(url)return`<img class="av" src="${esc(url)}" width="${s}" height="${s}" alt="" ${fs?`style="${fs}"`:""} onerror="this.outerHTML=genAv('${esc(u)}',${s})">`;
-  if(fs)return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008);${fs}">${esc((u[0]||"?").toUpperCase())}</div>`;
-  return genAv(u,s);
+  const inner=url?`<img class="av" src="${esc(url)}" width="${s}" height="${s}" alt="" onerror="this.outerHTML=genAv('${esc(u)}',${s})">`:genAv(u,s);
+  return frameWrap(u,s,inner);
 }
+function bubbleClass(id){const n=Number(String(id||"").match(/(\d+)/)?.[1]||0);return ["","texture","pixel","animal"][n%4];}
 function bubbleStyle(u,mine){
   const b=SEED.users[u]?.chatBubble||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";
   if(!b)return `background:${mine?"linear-gradient(135deg,var(--accent2),var(--accent))":"var(--bg2)"};color:${mine?"var(--acc-ink)":"var(--text)"};border:1px solid ${mine?"transparent":"var(--border)"}`;
   const n=Number(String(b).match(/(\d+)/)?.[1]||1),h=(n*41)%360;
-  return `background:radial-gradient(circle at 12% 18%,rgba(255,255,255,.35),transparent 16%),linear-gradient(135deg,hsl(${h},82%,62%),hsl(${(h+45)%360},82%,46%));color:#fff;border:1px solid hsla(${h},90%,70%,.55);box-shadow:0 8px 24px hsla(${h},80%,55%,.28)`;
+  return `--h:${h};`;
 }
+function bubbleCls(u){const b=SEED.users[u]?.chatBubble||(u===S.me&&LIVEWALLET?.applied?.bubble)||"";return b?" chatbubble "+bubbleClass(b):"";}
 function toast(m){document.querySelectorAll(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
 function allPosts(){
   const mine=LIVE?[]:S.myPosts.map(p=>({...p}));
@@ -793,7 +815,7 @@ function head(t,s){$("#ptitle").textContent=t;$("#psub").textContent=s||"";}
 /* ============ CHROME: left rail, right rail, tabbar ============ */
 const NAVS=[["explore","Explore","explore"],["topics","Topics","topics"],["communities","Communities","comm"],
 ["search","Search","search"],["notifications","Activity","alerts"],["coins","Lore Coins","coin"],["dms","Messages","msg"],["achievements","Achievements","trophy"],["me","Profile","user"],["settings","Settings","gear"]];
-I.coin='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9 9.2c.7-.8 1.7-1.2 3-1.2 2 0 3.2 1 3.2 2.4 0 1.6-1.4 2.2-3 2.5-1.6.3-3 .7-3 2.2 0 1.2 1.1 2.1 3 2.1 1.4 0 2.5-.4 3.2-1.3"/></svg>';
+I.coin='<svg class="ic" viewBox="0 0 24 24"><defs><linearGradient id="lcg" x1="4" y1="3" x2="20" y2="21"><stop stop-color="#fff2a6"/><stop offset=".35" stop-color="#f5b51b"/><stop offset="1" stop-color="#d66b00"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="url(#lcg)" stroke="#ffd76a"/><circle cx="12" cy="12" r="6.7" fill="none" stroke="#b95600" opacity=".45"/><path d="M9 6.5h6M12 6.5v10M9.2 16.5h6.2M12 11.7c2.5 0 3.7-1 3.7-2.6" stroke="#c64300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
 I.trophy='<svg class="ic" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/></svg>';
 function coinInner(){return `${ic("coin",14)}<b>${LIVEWALLET?LIVEWALLET.balance:0}</b>${LIVECLAIM?`<span class="nbadge">!</span>`:""}`;}
 function coinBar(){return `<button class="coinbar" onclick="nav('#/coins')">${coinInner()}<span style="font-size:11px;color:var(--muted);font-weight:700">LORE</span></button>`;}
@@ -1028,12 +1050,12 @@ function storiesHTML(){
   const rows=LIVESTORIES||[];
   return `<div class="card" style="padding:12px;display:flex;gap:13px;overflow-x:auto;align-items:center">
     <div style="text-align:center;min-width:62px;cursor:pointer" onclick="openCompose('','story')">
-      <div style="width:54px;height:54px;border-radius:50%;padding:2px;background:var(--border2);display:flex;align-items:center;justify-content:center;margin:auto">${avatarHTML(S.me,50)}</div>
-      <div class="muted" style="font-size:11px;margin-top:5px;white-space:nowrap">Your story</div>
+      <div style="width:64px;height:64px;border-radius:50%;padding:2px;background:var(--border2);display:flex;align-items:center;justify-content:center;margin:auto">${avatarHTML(S.me,58)}</div>
+      <div class="muted" style="font-size:11.5px;margin-top:6px;white-space:nowrap">Your story</div>
     </div>
     ${rows.map(r=>`<div style="text-align:center;min-width:62px;cursor:pointer" onclick="openStory('${esc(r.user)}','${esc(r.items[0].id)}')">
-      <div style="width:54px;height:54px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;margin:auto">${avatarHTML(r.user,50)}</div>
-      <div class="muted" style="font-size:11px;margin-top:5px;white-space:nowrap;max-width:70px;overflow:hidden;text-overflow:ellipsis">@${esc(r.user)}</div>
+      <div style="width:64px;height:64px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;margin:auto">${avatarHTML(r.user,58)}</div>
+      <div class="muted" style="font-size:11.5px;margin-top:6px;white-space:nowrap;max-width:70px;overflow:hidden;text-overflow:ellipsis">@${esc(r.user)}</div>
     </div>`).join("")}
   </div>`;
 }
@@ -1080,23 +1102,34 @@ async function deleteStory(id){
   const d=await api("/story-delete",{id});
   if(d&&d.ok){closeModal();toast("Story deleted");await loadStories();render();}
 }
+function shareTargets(){
+  const people=[...new Set([...(S.follows||[]),...peoplePool(),...((LIVEINBOX||[]).filter(t=>!String(t.with).startsWith("👥 ")).map(t=>t.with))])].filter(Boolean).slice(0,120);
+  const groups=(LIVEINBOX||[]).filter(t=>String(t.with).startsWith("👥 ")).slice(0,50);
+  return{people,groups};
+}
 function openShare(label,url){
-  const people=[...new Set([...(S.follows||[]),...((LIVEINBOX||[]).filter(t=>!String(t.with).startsWith("👥 ")).map(t=>t.with))])].filter(Boolean).slice(0,40);
-  const groups=(LIVEINBOX||[]).filter(t=>String(t.with).startsWith("👥 ")).slice(0,20);
+  window._share={label,url};
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal"><h2>Share ${esc(label)}</h2>
       <div class="field"><textarea id="share_text" rows="2" placeholder="Add a message…"></textarea></div>
+      <input id="share_q" placeholder="Search friends, users or groups…" oninput="renderShareList()" style="margin-bottom:10px">
       <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn ghost sm" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(url)}').then(()=>toast('Link copied'))">Copy link</button></div>
-      <div id="share_list" style="max-height:45vh;overflow-y:auto">
-        ${people.map(u=>shareRow(u,false,url)).join("")}${groups.map(g=>shareRow(g.with,true,url)).join("")||(!people.length&&!groups.length?`<div class="muted">No chats yet. Start a DM first.</div>`:"")}
-      </div>
+      <div id="share_list" style="max-height:45vh;overflow-y:auto"></div>
     </div></div>`;
-  if(!LIVEINBOX&&LIVE&&S.token)api("/dm-inbox",{_silent:true}).then(d=>{if(d&&d.ok){LIVEINBOX=d.threads;openShare(label,url);}});
+  if(!LIVEINBOX&&LIVE&&S.token)api("/dm-inbox",{_silent:true}).then(d=>{if(d&&d.ok){LIVEINBOX=d.threads;renderShareList();}});
+  renderShareList();
+}
+function renderShareList(){
+  const q=($("#share_q")?.value||"").toLowerCase(),{people,groups}=shareTargets(),url=window._share?.url||"";
+  const p=people.filter(u=>u.includes(q)).slice(0,60),g=groups.filter(x=>x.with.toLowerCase().includes(q)).slice(0,30);
+  const el=$("#share_list");if(!el)return;
+  el.innerHTML=p.map(u=>shareRow(u,false,url)).join("")+g.map(x=>shareRow(x.with,true,url)).join("")||`<div class="muted">No matches.</div>`;
+  ensureUsers(p.slice(0,20),renderShareList);
 }
 function shareRow(w,isGroup,url){
   return `<div class="card hov" style="display:flex;align-items:center;gap:11px;margin:8px 0;cursor:pointer" onclick="shareTo('${esc(w)}',${isGroup},'${esc(url)}')">
     ${isGroup?`<div class="avg" style="width:36px;height:36px;font-size:16px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:avatarHTML(w,36)}
-    <b>${isGroup?esc(w.slice(3)):"@"+esc(w)}</b><span class="link" style="margin-left:auto">send</span>
+    <b>${isGroup?esc(w.slice(3)):displayName(w)}</b><span class="link" style="margin-left:auto">send</span>
   </div>`;
 }
 async function shareTo(w,isGroup,url){
@@ -1105,6 +1138,7 @@ async function shareTo(w,isGroup,url){
   const d=isGroup?await api("/group-message",{group:"g_"+w.slice(3),text}):await api("/message",{to:w,text});
   if(d&&d.ok){toast(d.requested?"Sent as request":"Shared");closeModal();}
 }
+
 
 /* ============ PAGES ============ */
 routes.explore=()=>{
@@ -1192,8 +1226,8 @@ function replyBox(pid,cid,who){
 }
 function commentAttach(pid,parent){
   const pp=parent?`'${esc(parent)}'`:"null";
-  return `<button class="iconbtn recdot" title="Voice note" onclick="startVoice(u=>sendCommentMedia('${esc(pid)}',${pp},u))">${ic("mic",18)}</button>
-    <button class="iconbtn" title="Image" onclick="pickChatImage(u=>sendCommentMedia('${esc(pid)}',${pp},u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
+  return `<button class="iconbtn recdot" title="Audio/video link" onclick="openMediaLink(u=>sendCommentMedia('${esc(pid)}',${pp},u))">${ic("mic",18)}</button>
+    <button class="iconbtn" title="Image/video link" onclick="openMediaLink(u=>sendCommentMedia('${esc(pid)}',${pp},u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
     <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800" onclick="openGifPicker(u=>sendCommentMedia('${esc(pid)}',${pp},u))">GIF</button>`;
 }
 function sendCommentMedia(id,parent,url){addComment(id,parent,url);}
@@ -1223,19 +1257,23 @@ function syncComment(payload,tries){
 }
 
 routes.topics=()=>{
-  head("Topics","every topic is a hall in the Lore");
-  const posts=allPosts();
-  $("#content").innerHTML=`<div class="grid2">`+SEED.tags.map(t=>{
-    const n=posts.filter(p=>p.topic===t).length;
-    return`<div class="card hov" style="cursor:pointer;margin:0" onclick="nav('#/topic/${esc(t)}')">
-      <div style="font-size:16.5px;font-weight:800">#${esc(t)}</div>
-      <div class="muted" style="margin-top:6px">${n} post${n===1?"":"s"}${t==="Philosophy"?` · ${ic("pin")} chart pinned`:""}</div>
-    </div>`;}).join("")+`</div>
-    <div class="card" style="margin-top:16px;text-align:center">
-      <div class="muted">Don't see your interest?</div>
-      <button class="btn ghost sm" style="margin-top:10px" onclick="requestTag()">${ic("plus",15)} Request a new tag</button>
-    </div>`;
+  head("Topics","discover halls of the Lore");
+  const posts=allPosts(),counts={};posts.forEach(p=>counts[p.topic]=(counts[p.topic]||0)+1);
+  const top=[...SEED.tags].sort((a,b)=>(counts[b]||0)-(counts[a]||0));
+  $("#content").innerHTML=`
+    <div class="card" style="border-color:var(--accent);background:radial-gradient(600px 160px at 80% 0,var(--soft),transparent),var(--card)">
+      <h2 style="font-size:18px;margin-bottom:8px">Topic halls</h2><p class="muted">Follow what feels alive. Hot halls rise by posts and replies.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">${top.slice(0,8).map((t,i)=>`<span class="chip" style="${i<3?'background:var(--accent);color:var(--acc-ink)':''}" onclick="nav('#/topic/${esc(t)}')">#${esc(t)} · ${counts[t]||0}</span>`).join("")}</div>
+    </div>
+    <div class="grid2">${top.map((t,i)=>{
+      const n=counts[t]||0,last=posts.filter(p=>p.topic===t).sort((a,b)=>b.ts-a.ts)[0];
+      return`<div class="card hov" style="cursor:pointer;margin:0;min-height:126px;background:linear-gradient(135deg,color-mix(in srgb,var(--card) 88%,${i%2?'var(--accent2)':'var(--accent)'}),var(--card))" onclick="nav('#/topic/${esc(t)}')">
+        <div style="display:flex;align-items:center;gap:10px"><div class="medal" style="width:36px;height:36px;background:var(--soft)">${i+1}</div><div><div style="font-size:16.5px;font-weight:900">#${esc(t)}</div><div class="muted">${n} post${n===1?"":"s"}</div></div></div>
+        <div class="muted" style="margin-top:12px;line-height:1.5">${last?esc(last.text.slice(0,88)):'No pages yet — claim the hall.'}</div>
+      </div>`;}).join("")}</div>
+    <div class="card" style="margin-top:16px;text-align:center"><div class="muted">Don't see your interest?</div><button class="btn ghost sm" style="margin-top:10px" onclick="requestTag()">${ic("plus",15)} Request a new tag</button></div>`;
 };
+
 function requestTag(){
   const t=prompt("Suggest a new interest tag (goes to ANDROBEET's moderation queue):");
   if(t){toast(`"${t}" sent to the moderation queue`);if(LIVE)api("/request-tag",{tag:t});}
@@ -1319,9 +1357,9 @@ function profilePage(uname){
     <div class="pbody">
       <span class="ring">${(isMe?S.profile.pfp:u.pfp)?`<img class="av" src="${esc(isMe?S.profile.pfp:u.pfp)}" width="90" height="90" style="border:3px solid var(--card)" onerror="this.outerHTML=genAv('${esc(uname)}',90)">`:genAv(uname,90)}</span>
       <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">
-        <h2 style="font-size:21px">@${esc(uname)}</h2>
+        <h2 style="font-size:21px">@${esc(uname)}</h2>${nickName(uname)?`<span class="badge mut">${esc(nickName(uname))}</span>`:""}
         ${u.seal?`<span class="badge seal">${ic("seal")} ${CONFIG.ADMIN_DISPLAY} SEAL</span>`:""}
-        ${(u.customBadges||[]).map(b=>`<span class="badge seal" style="border-color:${esc(b.color||'var(--gold)')};color:${esc(b.color||'var(--gold)')}">${esc(b.name)}</span>`).join("")}
+        ${(u.customBadges||[]).map(b=>`<span class="badge seal" style="border-color:${esc(b.color||'var(--gold)')};color:${esc(b.color||'var(--gold)')};${b.texture?`background:url('${esc(b.texture)}') center/cover,var(--soft2);`:''}${b.bold?'font-weight:1000;':''}${b.italic?'font-style:italic;':''}">${esc(b.name)}</span>`).join("")}
         ${mutual?'<span class="badge mut">MUTUAL</span>':""}
         ${uname===CONFIG.ADMIN?'<span class="badge seal">ADMIN</span>':""}
         ${online?'<span style="color:var(--green);font-size:12px;font-weight:700">● online</span>':'<span class="muted">○ offline</span>'}
@@ -1350,6 +1388,7 @@ function profilePage(uname){
           <span class="menuwrap"><button class="btn ghost" onclick="event.stopPropagation();toggleMenu('prof')">⋯</button>
             <span id="menu_prof" style="display:none" class="menu">
               <button onclick="event.stopPropagation();openGift('${esc(uname)}')">Send gift</button>
+              <button onclick="event.stopPropagation();setNickname('${esc(uname)}')">Set nickname</button>
               <button onclick="event.stopPropagation();blockToggle('${esc(uname)}')" style="color:#f87171">${iBlocked?"Unblock":"Block"} @${esc(uname)}</button>
               <button onclick="event.stopPropagation();openReport('user','${esc(uname)}')">Report @${esc(uname)}</button>
             </span></span>`}
@@ -1469,7 +1508,7 @@ routes.notifications=()=>{
   head("Activity","what's happening around you");
   if(LIVE){
     const items=LIVENOTIFS||[];
-    const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg",dm_request:"msg",dm_accept:"msg",story_like:"alerts",story_comment:"cmt",gift:"coin",coins:"coin"};
+    const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg",dm_request:"msg",dm_accept:"msg",story_like:"alerts",story_comment:"cmt",gift:"coin",coins:"coin",broadcast:"alerts",warning:"shield"};
     const msg=n=>{
       if(n.type==="follow")return`<b>@${esc(n.from)}</b> started following you`;
       if(n.type==="upvote")return`<b>@${esc(n.from)}</b> upvoted your post`;
@@ -1480,6 +1519,8 @@ routes.notifications=()=>{
       if(n.type==="story_comment")return`<b>@${esc(n.from)}</b> replied to your story`;
       if(n.type==="gift")return`<b>@${esc(n.from)}</b> sent you ${esc(n.gift||"a gift")}`;
       if(n.type==="coins")return`<b>${CONFIG.ADMIN_DISPLAY}</b> sent you ${n.amount||0} Lore Coins`;
+      if(n.type==="broadcast")return`<b>LORE</b> broadcast: ${esc(n.snippet||"")}`;
+      if(n.type==="warning")return`<b>LORE warning</b>: ${esc(n.snippet||"")}`;
       if(n.type==="seal")return`<b>${CONFIG.ADMIN_DISPLAY}</b> awarded you the <b>Seal</b>`;
       if(n.type==="rank_change")return`You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${esc(n.topic)}`;
       return"activity";};
@@ -1492,7 +1533,7 @@ routes.notifications=()=>{
       :`<div class="empty">${ic("alerts")}Nothing yet. When people follow you, upvote or reply, it shows up here.</div>`;
     return;
   }
-  const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg",dm_request:"msg",dm_accept:"msg",story_like:"alerts",story_comment:"cmt",gift:"coin",coins:"coin"};
+  const icon={follow:"user",upvote:"up",comment:"cmt",seal:"seal",rank_change:"trend",mention:"msg",dm_request:"msg",dm_accept:"msg",story_like:"alerts",story_comment:"cmt",gift:"coin",coins:"coin",broadcast:"alerts",warning:"shield"};
   const msg=n=>{
     if(n.type==="follow")return`<b>@${n.from}</b> started following you`;
     if(n.type==="upvote")return`<b>@${n.from}</b> upvoted your post`;
@@ -1503,6 +1544,8 @@ routes.notifications=()=>{
     if(n.type==="story_comment")return`<b>@${n.from}</b> replied to your story`;
     if(n.type==="gift")return`<b>@${n.from}</b> sent you ${esc(n.gift||"a gift")}`;
     if(n.type==="coins")return`<b>${CONFIG.ADMIN_DISPLAY}</b> sent you ${n.amount||0} Lore Coins`;
+    if(n.type==="broadcast")return`<b>LORE</b> broadcast: ${esc(n.snippet||"")}`;
+    if(n.type==="warning")return`<b>LORE warning</b>: ${esc(n.snippet||"")}`;
     if(n.type==="seal")return`<b>${CONFIG.ADMIN_DISPLAY}</b> awarded your post the <b>Seal</b>`;
     if(n.type==="rank_change")return`You climbed <b>#${n.oldRank} → #${n.newRank}</b> in #${n.topic}`;
     return"activity";};
@@ -1541,46 +1584,86 @@ function txRows(tx){
   </div>`).join(""):`<div class="muted">No transactions yet.</div>`;
 }
 function giftHue(id){let h=0;for(const c of String(id))h=(h*33+c.charCodeAt(0))%360;return h;}
-function giftArt(g){const h=giftHue(g.id),txt=(g.name||g.id).split(/\s|_/).map(x=>x[0]).join("").slice(0,2).toUpperCase();return `<div class="giftart" style="--h:${h}"><span>${esc(txt)}</span></div>`;}
+function giftSVG(id){
+  const map={
+    flower:'<path d="M12 18V9"/><path d="M12 9c-3-4-7-1-4 2 2 2 4-2 4-2Zm0 0c3-4 7-1 4 2-2 2-4-2-4-2Z"/><path d="M12 13c-3 0-5 2-5 4 3 .3 4-1 5-4Zm0 0c3 0 5 2 5 4-3 .3-4-1-5-4Z"/>',
+    coffee:'<path d="M6 9h9v5a4 4 0 0 1-4 4H9a3 3 0 0 1-3-3V9Z"/><path d="M15 10h2a2 2 0 0 1 0 4h-2M7 6c1 1 2 1 1 2M11 5c1 1 2 1 1 2"/>',
+    cake:'<path d="M5 11h14v7H5z"/><path d="M7 11c0-3 10-3 10 0M8 8V5M12 8V5M16 8V5"/><path d="M8 5h0M12 5h0M16 5h0"/>',
+    candy:'<path d="M9 9h6v6H9z"/><path d="M9 12H4l3-3m2 6-2 3-3-3m11-6 2-3 3 3m-5 6h5l-3 3"/>',
+    mood:'<circle cx="12" cy="12" r="7"/><path d="M9 10h.01M15 10h.01M8.5 14c2 2 5 2 7 0"/>',
+    fr:'<path d="M7 17c3-6 7-6 10 0"/><path d="M9 8a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z"/>',
+    surprize:'<path d="M5 10h14v9H5z"/><path d="M4 10h16M12 10v9M7 7c1-3 4-1 5 3M17 7c-1-3-4-1-5 3"/>',
+    dance:'<path d="M12 4v8l5 6M12 12l-5 6M10 7h4M9 4h6"/>',
+    gemstone:'<path d="M7 5h10l4 5-9 10-9-10 4-5Z"/><path d="M3 10h18M8 5l4 15 4-15"/>',
+    fireworks:'<path d="M12 12V3M12 12l6-6M12 12h9M12 12l6 6M12 12v9M12 12l-6 6M12 12H3M12 12 6 6"/>',
+    winner:'<path d="M8 20h8M12 16v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4c0 3 2 5 4 5M17 6h3c0 3-2 5-4 5"/>',
+    rocket:'<path d="M12 15 9 12c1-4 4-7 9-8-1 5-4 8-8 9Z"/><path d="M9 12 5 13l3 3 1-4ZM12 15l-1 4 3-3 1-4"/><circle cx="15" cy="8" r="1"/>',
+    relatable:'<path d="M8 12h.01M16 12h.01M8 15c2 2 6 2 8 0"/><circle cx="12" cy="12" r="8"/>',
+    all_stars:'<path d="m12 3 2 6 6 .5-4.6 4 1.5 6-4.9-3.3L7 19.5l1.5-6L4 9.5 10 9l2-6Z"/>',
+    mvp:'<path d="M5 18h14M7 15l3-8 2 5 3-5 2 8"/>',
+    throne:'<path d="M6 18V8l4 4 2-6 2 6 4-4v10H6Z"/><path d="M6 18h12"/>',
+    kiss:'<path d="M7 12c2-5 8-5 10 0-3 3-7 3-10 0Z"/><path d="M7 12h10"/>',
+    yes:'<path d="m5 13 4 4L19 7"/>',
+    baddie:'<path d="M6 17 9 7l3 6 3-6 3 10H6Z"/><path d="M8 17h8"/>',
+    daddy:'<path d="M5 17h14L16 7l-4 5-4-5-3 10Z"/><path d="M8 17h8"/>'
+  };
+  return `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${map[id]||map.all_stars}</g></svg>`;
+}
+function giftArt(g){const h=giftHue(g.id);return `<div class="giftart" style="--h:${h}">${giftSVG(g.id)}</div>`;}
 function giftCard(g,sel){return `<div class="giftcard ${g.price>=320?'premium':''} ${sel?'on':''}" onclick="openGift('', '${esc(g.id)}')">${giftArt(g)}<b>${esc(g.name)}</b><div class="giftprice">${ic('coin',13)} ${g.price}</div></div>`;}
 function giftChoice(g,sel){return `<div class="giftcard ${g.price>=320?'premium':''} ${sel?'on':''}" data-gift="${esc(g.id)}" onclick="selectGift('${esc(g.id)}')">${giftArt(g)}<b>${esc(g.name)}</b><div class="giftprice">${ic('coin',13)} ${g.price}</div></div>`;}
 function selectGift(id){const inp=$("#gift_id");if(inp)inp.value=id;document.querySelectorAll('[data-gift]').forEach(e=>e.classList.toggle('on',e.dataset.gift===id));}
-function framePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*29)%360,g=n%10;return `<div class="framepv" style="--h:${h};--glowp:${g}"><i></i></div>`;}
-function bubblePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*41)%360;const names=["Capy","Frog","Cat Dog","Facepalm","Heart","Doge","Dino","Aurora","Velvet","Neon"];return `<div class="bubblepv" style="--h:${h}">${esc(names[n%names.length])}</div>`;}
+function framePreview(id){const m=frameMeta(id);return `<div class="framepv ${m.cls}" style="--h:${m.h};--glowp:${m.p}"><i></i></div>`;}
+function bubblePreview(id){const n=Number(String(id).match(/(\d+)/)?.[1]||1),h=(n*41)%360;const names=["Capy","Frog","Cat Dog","Facepalm","Heart","Doge","Dino","Aurora","Velvet","Neon"],cls=bubbleClass(id);return `<div class="bubblepv ${cls}" style="--h:${h}">${esc(names[n%names.length])}</div>`;}
 function dailyRewardsHTML(w){const rewards=[10,15,20,25,30,50,90],cur=w.streak?.count||0;return `<div class="dailygrid">${rewards.map((r,i)=>`<div class="daycard ${cur==i+1?'on':''}"><div style="font-size:19px;font-weight:900;color:var(--gold);display:flex;gap:5px;justify-content:center">${ic('coin',15)}${r}</div><div class="muted" style="margin-top:10px">day ${i+1}</div></div>`).join("")}</div>`;}
+function coinStoreTab(t){sessionStorage.setItem("coinTab",t);render();}
 routes.coins=async()=>{
   head("Lore Coins","claim, gift, redeem and unlock");
   if(!LIVE||!S.token){$("#content").innerHTML=`<div class="empty">${ic("coin")}Log in to use Lore Coins.<br><br><button class="btn sm" onclick="openAuth()">Log in / Create account</button></div>`;return;}
   $("#content").innerHTML=`<div class="empty">${ic("coin")}Loading wallet…</div>`;
   const w=await loadWallet(true);if(!w)return;
-  const cat=COINCAT||{gifts:[],frames:[],bubbles:[]};
-  $("#content").innerHTML=`
-    <div class="card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-color:rgba(234,179,8,.35);box-shadow:0 0 30px rgba(234,179,8,.10)">
+  const cat=COINCAT||{gifts:[],frames:[],bubbles:[]},tab=sessionStorage.getItem("coinTab")||"wallet";
+  const tabs=`<div class="tabs">${[["wallet","Wallet"],["gifts","Gifts"],["frames","Avatar Frames"],["bubbles","Chat Bubbles"],["history","History"]].map(([id,l])=>`<button class="tab ${tab===id?'on':''}" onclick="coinStoreTab('${id}')">${l}</button>`).join("")}</div>`;
+  const hero=`<div class="card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-color:${LIVECLAIM?'var(--gold)':'var(--border)'};box-shadow:${LIVECLAIM?'0 0 30px rgba(234,179,8,.16)':'none'}">
       <div class="medal" style="background:var(--soft);color:var(--gold)">${ic("coin",24)}</div>
       <div><div class="muted">BALANCE</div><div style="font-size:31px;font-weight:1000;letter-spacing:.2px">${w.balance||0} Lore Coins</div></div>
-      <button class="btn sm" style="margin-left:auto" onclick="claimCoins()">Claim daily</button>
+      <button class="btn ${LIVECLAIM?'':'ghost'} sm" style="margin-left:auto" onclick="claimCoins()">${LIVECLAIM?'Claim daily':'Daily claimed'}</button>
       <button class="btn ghost sm" onclick="loadWallet(true).then(()=>render())">Refresh</button>
-      <button class="btn ghost sm" onclick="toast('Recharge is coming after payment setup')">Recharge</button>
-    </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Free Daily Rewards</h2>${dailyRewardsHTML(w)}</div>
-    <div class="grid2">
-      <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Voucher</h2>
-        <div style="display:flex;gap:8px"><input id="voucher_code" placeholder="Enter code"><button class="btn sm" onclick="redeemVoucher()">Redeem</button></div></div>
-      <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Store status</h2>
-        <p class="muted">Frames owned: <b>${w.inventory?.frames?.length||0}</b> · Bubbles owned: <b>${w.inventory?.bubbles?.length||0}</b> · Gifts held: <b>${w.inventory?.gifts?.length||0}</b></p></div>
-    </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Award Gifts</h2><div class="giftgrid">${cat.gifts.map(g=>giftCard(g)).join("")}</div></div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Avatar Frame Store</h2>
-      <div class="storegrid">${cat.frames.slice(0,50).map(i=>storeItem(i,'frame',w)).join("")}</div>
-    </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Chat Bubble Store</h2>
-      <div class="storegrid">${cat.bubbles.slice(0,50).map(i=>storeItem(i,'bubble',w)).join("")}</div>
-    </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Received gifts</h2>
-      ${(w.inventory?.gifts||[]).length?(w.inventory.gifts||[]).map(g=>`<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--border)">${giftArt(g)}<div><b>${esc(g.name||g.id)}</b><div class="muted">from @${esc(g.from||"")}</div></div><span class="muted" style="margin-left:auto">${g.price||0}</span><button class="btn ghost sm" onclick="convertGift('${esc(g.uid||g.id)}')">Convert</button></div>`).join(""):`<div class="muted">No gifts yet.</div>`}
-    </div>
-    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Transactions</h2>${txRows(w.tx)}</div>`;
+      <button class="btn ghost sm" onclick="rechargeCoins()">Recharge</button>
+    </div>`;
+  let body="";
+  if(tab==="wallet")body=`${hero}<div class="card"><h2 style="font-size:16px;margin-bottom:12px">Free Daily Rewards</h2>${dailyRewardsHTML(w)}</div>
+    <div class="grid2"><div class="card"><h2 style="font-size:16px;margin-bottom:12px">Voucher</h2><div style="display:flex;gap:8px"><input id="voucher_code" placeholder="Enter code"><button class="btn sm" onclick="redeemVoucher()">Redeem</button></div></div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Store</h2><p class="muted">Frames owned: <b>${w.inventory?.frames?.length||0}</b> · Bubbles owned: <b>${w.inventory?.bubbles?.length||0}</b> · Gifts held: <b>${w.inventory?.gifts?.length||0}</b></p><button class="btn ghost sm" style="margin-top:12px" onclick="coinStoreTab('frames')">Open store</button></div></div>`;
+  if(tab==="gifts")body=`${hero}<div class="card"><h2 style="font-size:16px;margin-bottom:12px">Award Gifts</h2><div class="giftgrid">${cat.gifts.map(g=>giftCard(g)).join("")}</div></div><div class="card"><h2 style="font-size:16px;margin-bottom:12px">Received gifts</h2>${(w.inventory?.gifts||[]).length?(w.inventory.gifts||[]).map(g=>`<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--border)">${giftArt(g)}<div><b>${esc(g.name||g.id)}</b><div class="muted">from @${esc(g.from||"")}</div></div><span class="muted" style="margin-left:auto">${g.price||0}</span><button class="btn ghost sm" onclick="convertGift('${esc(g.uid||g.id)}')">Convert</button></div>`).join(""):`<div class="muted">No gifts yet.</div>`}</div>`;
+  if(tab==="frames")body=`${hero}<div class="card"><h2 style="font-size:16px;margin-bottom:12px">Avatar Frame Store</h2><div class="storegrid">${cat.frames.slice(0,50).map(i=>storeItem(i,'frame',w)).join("")}</div></div>`;
+  if(tab==="bubbles")body=`${hero}<div class="card"><h2 style="font-size:16px;margin-bottom:12px">Chat Bubble Store</h2><div class="storegrid">${cat.bubbles.slice(0,50).map(i=>storeItem(i,'bubble',w)).join("")}</div></div>`;
+  if(tab==="history")body=`${hero}<div class="card"><h2 style="font-size:16px;margin-bottom:12px">Transactions</h2>${txRows(w.tx)}</div>`;
+  $("#content").innerHTML=tabs+body;
 };
+
+function rechargeCoins(){
+  const usd=prompt("How many USD worth of Lore Coins do you want? 100 LC = 1 USD", "5");
+  if(!usd)return;
+  const coins=Math.max(0,Math.floor(Number(usd)*100));
+  const subject=encodeURIComponent("LORE Coins recharge request");
+  const body=encodeURIComponent(`Hello ANDROBEET,
+
+I want to recharge Lore Coins.
+
+Username: @${S.me}
+Requested amount: ${coins} LC
+Price: ${usd} USD
+
+Rate: 100 Lore Coins (LC) = 1 USD.
+I understand I can pay through Buy Me a Coffee and may receive 20% bonus/discount when available.
+Buy Me a Coffee: https://buymeacoffee.com/androbeet
+
+Please guide me with the payment confirmation.
+
+Thank you.`);
+  location.href=`mailto:${CONFIG.SUPPORT}?subject=${subject}&body=${body}`;
+}
 function storeItem(i,type,w){
   const key=type==="frame"?"frames":"bubbles",owned=(w.inventory?.[key]||[]).includes(i.id),ap=w.applied?.[type]===i.id;
   return `<div class="storecard">${type==="frame"?framePreview(i.id):bubblePreview(i.id)}<b>${esc(i.name)}</b><div class="muted" style="margin:4px 0 10px">${i.price} coins</div>
@@ -1665,11 +1748,11 @@ function renderInbox(threads){
   const el=$("#dm_list");
   if(!el)return;
   el.innerHTML=threads.length?threads.map(t=>{
-    const isGroup=String(t.with).startsWith("👥 ");
+    const isGroup=String(t.with).startsWith("👥 "),isLore=t.with==="lore";
     const id=isGroup?"g_"+t.with.slice(3):t.with;
     return`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer" onclick="${isGroup?`nav('#/group/${esc(id)}')`:`openThread('${esc(t.with)}')`}">
-      ${isGroup?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:avatarHTML(t.with,44)}
-      <div style="min-width:0"><b>${isGroup?esc(t.with.slice(3)):"@"+esc(t.with)}</b>${isGroup?' <span class="muted">· group</span>':""}
+      ${isGroup?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:isLore?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--gold),var(--accent))">L</div>`:avatarHTML(t.with,44)}
+      <div style="min-width:0"><b>${isGroup?esc(t.with.slice(3)):isLore?"LORE":esc(displayName(t.with))}</b>${isGroup?' <span class="muted">· group</span>':isLore?' <span class="muted">· official</span>':""}
         <div class="muted" style="margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.last||"")}</div></div>
       <div style="margin-left:auto;text-align:right;flex-shrink:0">
         <div class="muted">${t.ts?timeAgo(t.ts):""}</div>
@@ -1679,17 +1762,21 @@ function renderInbox(threads){
     :`<div class="empty">${ic("msg")}No conversations yet.<br>Type a @username above to start one.</div>`;
 }
 function openGroupCreate(){
+  window._gMembers=[];
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal"><h2>New group chat</h2>
       <div class="field"><label>GROUP NAME</label><input id="g_name" placeholder="the-inner-circle"></div>
-      <div class="field"><label>MEMBERS (USERNAMES, COMMA-SEPARATED)</label><input id="g_members" placeholder="alice, bob, charlie"></div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
+      <div class="field"><label>MEMBERS</label><input id="grp_q" placeholder="Search friends or usernames…" oninput="renderPeoplePick('grp',window._gMembers,'toggleGroupMember')"></div>
+      <div id="grp_chips" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"></div><div id="grp_list" style="max-height:38vh;overflow-y:auto"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
         <button class="btn ghost" onclick="closeModal()">Cancel</button>
         <button class="btn" onclick="createGroup()">Create</button></div>
-    </div></div>`;
+    </div></div>`;renderGroupMembers();
 }
+function renderGroupMembers(){const c=$("#grp_chips");if(c)c.innerHTML=window._gMembers.map(u=>`<span class="chip" onclick="toggleGroupMember('${esc(u)}')">@${esc(u)} ✕</span>`).join("");renderPeoplePick('grp',window._gMembers,'toggleGroupMember');}
+function toggleGroupMember(u){const i=window._gMembers.indexOf(u);if(i>=0)window._gMembers.splice(i,1);else window._gMembers.push(u);renderGroupMembers();}
 async function createGroup(){
-  const name=$("#g_name").value.trim(),members=$("#g_members").value.split(",").map(m=>m.trim().toLowerCase().replace("@","")).filter(Boolean);
+  const name=$("#g_name").value.trim(),members=[...new Set(window._gMembers||[])];
   if(!name){toast("Name your group");return;}
   const d=await api("/group-create",{name,members});
   if(d&&d.ok){closeModal();bump("groups");toast("Group created");nav("#/group/"+d.id);}
@@ -1708,8 +1795,8 @@ routes.group=async(id)=>{
       box.innerHTML=d.messages.length?d.messages.map(m=>{
         const mine=m.from===S.me;
         return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
-          ${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(m.from)}</div>`:""}
-          <div style="${bubbleStyle(m.from,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
+          ${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">${esc(displayName(m.from))}</div>`:""}
+          <div class="${bubbleCls(m.from)}" style="${bubbleStyle(m.from,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
         </div>`;}).join(""):`<div class="muted" style="margin:auto;text-align:center">No messages yet.</div>`;
       if(stick)box.scrollTop=box.scrollHeight;
     }
@@ -1723,8 +1810,8 @@ routes.group=async(id)=>{
       </div>
       <div id="g_msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px"><div class="muted">Loading…</div></div>
       <div style="display:flex;gap:5px;padding:10px 12px;border-top:1px solid var(--border);align-items:center">
-        <button class="iconbtn recdot" title="Voice note" onclick="startVoice(u=>sendGroupMedia('${esc(id)}',u))">${ic("mic",18)}</button>
-        <button class="iconbtn" title="Image" onclick="pickChatImage(u=>sendGroupMedia('${esc(id)}',u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
+        <button class="iconbtn recdot" title="Audio/video link" onclick="openMediaLink(u=>sendGroupMedia('${esc(id)}',u))">${ic("mic",18)}</button>
+        <button class="iconbtn" title="Image/video link" onclick="openMediaLink(u=>sendGroupMedia('${esc(id)}',u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
         <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800" onclick="openGifPicker(u=>sendGroupMedia('${esc(id)}',u))">GIF</button>
         <input id="g_text" placeholder="Message the group…" onkeydown="if(event.key==='Enter')sendGroup('${esc(id)}')">
         <button class="btn sm" onclick="sendGroup('${esc(id)}')">Send</button>
@@ -1740,7 +1827,7 @@ function appendPendingBubble(boxId,text,from){
   const div=document.createElement("div");
   div.style.cssText=`align-self:${mine?"flex-end":"flex-start"};max-width:78%`;
   div.setAttribute("data-pending","1");
-  div.innerHTML=`${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(from)}</div>`:""}<div style="${bubbleStyle(from||S.me,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${md(text)}</div><div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">just now</div>`;
+  div.innerHTML=`${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(from)}</div>`:""}<div class="${bubbleCls(from||S.me)}" style="${bubbleStyle(from||S.me,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${md(text)}</div><div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">just now</div>`;
   box.appendChild(div);box.scrollTop=box.scrollHeight;return div;
 }
 async function sendGroup(id){
@@ -1766,15 +1853,15 @@ routes.dm=async(other)=>{
     <div class="card" style="padding:0;display:flex;flex-direction:column;height:64vh">
       <div style="display:flex;align-items:center;gap:11px;padding:13px 17px;border-bottom:1px solid var(--border)">
         <button class="iconbtn" onclick="nav('#/dms')" style="margin-left:-8px"><svg class="ic" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></button>
-        ${avatarHTML(other,36)}<b style="cursor:pointer" onclick="nav('#/u/${esc(other)}')">@${esc(other)}</b>
+        ${other==="lore"?`<div class="avg" style="width:36px;height:36px;font-size:16px;background:linear-gradient(135deg,var(--gold),var(--accent))">L</div>`:avatarHTML(other,36)}<b style="cursor:${other==="lore"?"default":"pointer"}" ${other==="lore"?"":`onclick="nav('#/u/${esc(other)}')"`}>${other==="lore"?"LORE":esc(displayName(other))}</b>
         <span class="muted" style="margin-left:auto" id="dm_mode"></span>
       </div>
       <div id="dm_msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px">
         <div class="muted">Loading…</div>
       </div>
       <div style="display:flex;gap:5px;padding:10px 12px;border-top:1px solid var(--border);align-items:center">
-        <button class="iconbtn recdot" title="Voice note" onclick="startVoice(u=>sendDmMedia('${esc(other)}',u))">${ic("mic",18)}</button>
-        <button class="iconbtn" title="Image" onclick="pickChatImage(u=>sendDmMedia('${esc(other)}',u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
+        <button class="iconbtn recdot" title="Audio/video link" onclick="openMediaLink(u=>sendDmMedia('${esc(other)}',u))">${ic("mic",18)}</button>
+        <button class="iconbtn" title="Image/video link" onclick="openMediaLink(u=>sendDmMedia('${esc(other)}',u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
         <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800" onclick="openGifPicker(u=>sendDmMedia('${esc(other)}',u))">GIF</button>
         <input id="dm_text" placeholder="Message @${esc(other)}…" onkeydown="if(event.key==='Enter')sendDm('${esc(other)}')">
         <button class="btn sm" onclick="sendDm('${esc(other)}')">Send</button>
@@ -1793,13 +1880,14 @@ async function refreshThread(other){
   box.innerHTML=d.messages.length?d.messages.map(m=>{
     const mine=m.from===S.me;
     return`<div style="align-self:${mine?"flex-end":"flex-start"};max-width:78%">
-      <div style="${bubbleStyle(m.from,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
+      <div class="${bubbleCls(m.from)}" style="${bubbleStyle(m.from,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word">${md(m.text)}</div>
       <div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">${timeAgo(m.ts)}</div>
     </div>`;}).join("")
     :`<div class="muted" style="text-align:center;margin:auto">No messages yet. Say something — it's private.</div>`;
   if(stick||!d.messages.length)box.scrollTop=box.scrollHeight;
 }
 async function sendDmMedia(other,url){
+  if(other==="lore"){toast("Official LORE broadcasts cannot be replied to");return;}
   const pending=appendPendingBubble("#dm_msgs",url,S.me);
   const d=await api("/message",{to:other,text:url});
   if(d&&d.ok){
@@ -1816,6 +1904,7 @@ async function sendGroupMedia(id,url){
   else if(d&&d.error){if(pending)pending.remove();}
 }
 async function sendDm(other){
+  if(other==="lore"){toast("Official LORE broadcasts cannot be replied to");return;}
   const inp=$("#dm_text"),text=inp.value.trim();
   if(!text)return;
   inp.value="";
@@ -1881,9 +1970,10 @@ routes.settings=()=>{
           `<input id="soc_${k}" value="${esc((S.profile.socials||{})[k]||"")}" placeholder="${l}">`).join("")}
       </div></div>
     <div class="field"><label>INTEREST TAGS</label>
-      <div style="display:flex;gap:7px;flex-wrap:wrap">${SEED.tags.map(t=>`<span class="chip" style="${S.profile.tags.includes(t)?"background:var(--accent);color:var(--acc-ink)":""}" onclick="toggleTag('${esc(t)}')">#${esc(t)}</span>`).join("")}
-      <span class="chip" onclick="requestTag()">${ic("plus",12)} request new</span></div>
+      <button class="btn ghost sm" onclick="openTagPanel()">Edit interest tags · ${(S.profile.tags||[]).length}</button>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px">${(S.profile.tags||[]).map(t=>`<span class="chip">#${esc(t)}</span>`).join("")}</div>
     </div>
+    <div class="field"><label>PROFILE STORE ITEMS</label><button class="btn ghost sm" onclick="openAppearancePanel()">Avatar frames & chat bubbles</button></div>
     <button class="btn" onclick="saveProfile()">Save profile</button>
   </div>
   <div class="card"><h2 style="font-size:16px;margin-bottom:12px">Privacy</h2>
@@ -1892,8 +1982,7 @@ routes.settings=()=>{
       <label for="f_privprof" style="font-size:14px;color:var(--text2);cursor:pointer"><b>Private profile</b> — only people you follow back can see your posts and message you. Everyone else sees just your counts.</label>
     </div>
     <div class="hr"></div>
-    <div class="field"><label>CLOSE FRIENDS (USERNAMES, COMMA-SEPARATED)</label><input id="f_close" value="${esc((S.closeFriends||[]).join(', '))}" placeholder="alice, bob, charlie"></div>
-    <button class="btn ghost sm" onclick="saveCloseFriends()">Save close friends</button>
+    <div class="field"><label>CLOSE FRIENDS</label><button class="btn ghost sm" onclick="openCloseFriendsPanel()">Manage close friends · ${(S.closeFriends||[]).length}</button></div>
     <div class="hr"></div>
     <button class="btn ghost sm" onclick="exportMyData()">Download my data</button>
     <span class="muted" style="margin-left:10px">Everything LORE knows about you — yours to keep.</span>
@@ -1946,15 +2035,58 @@ function pickPfp(input){
   input.value="";
 }
 
+function peoplePool(){return [...new Set([...(S.follows||[]),...Object.keys(SEED.users||{}),...(LIVEUSERS||[])])].filter(u=>u&&u!==S.me).sort();}
+function renderPeoplePick(id,selected,onToggle){
+  const q=($("#"+id+"_q")?.value||"").toLowerCase(),pool=peoplePool().filter(u=>u.includes(q)).slice(0,80);
+  const box=$("#"+id+"_list");if(!box)return;
+  box.innerHTML=pool.map(u=>`<div class="card hov" style="display:flex;align-items:center;gap:11px;padding:10px;margin:7px 0;cursor:pointer" onclick="${onToggle}('${esc(u)}')">
+    ${avatarHTML(u,34)}<b>@${esc(u)}</b><span class="muted">${esc(nickName(u)||"")}</span><span style="margin-left:auto" class="badge ${selected.includes(u)?"pio":"mut"}">${selected.includes(u)?"ADDED":"ADD"}</span>
+  </div>`).join("")||`<div class="muted">No users found.</div>`;
+  ensureUsers(pool.slice(0,20),()=>renderPeoplePick(id,selected,onToggle));
+}
+function openTagPanel(){
+  window._tagDraft=[...(S.profile.tags||[])];
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Edit interest tags</h2>
+    <input id="tag_q" placeholder="Search tags…" oninput="renderTagPanel()" style="margin-bottom:12px">
+    <div id="tag_list" style="display:flex;gap:8px;flex-wrap:wrap;max-height:48vh;overflow-y:auto"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="S.profile.tags=window._tagDraft.slice(0,12);save();closeModal();render()">Done</button></div>
+  </div></div>`;renderTagPanel();
+}
+function renderTagPanel(){const q=($("#tag_q")?.value||"").toLowerCase();const box=$("#tag_list");if(!box)return;box.innerHTML=SEED.tags.filter(t=>t.toLowerCase().includes(q)).map(t=>`<span class="chip" style="${window._tagDraft.includes(t)?"background:var(--accent);color:var(--acc-ink)":""}" onclick="const i=window._tagDraft.indexOf('${esc(t)}');if(i>=0)window._tagDraft.splice(i,1);else if(window._tagDraft.length<12)window._tagDraft.push('${esc(t)}');renderTagPanel()">#${esc(t)}</span>`).join("")+`<span class="chip" onclick="requestTag()">${ic("plus",12)} request new</span>`;}
+function openCloseFriendsPanel(){
+  window._cfDraft=[...(S.closeFriends||[])];
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Close friends</h2>
+    <input id="cf_q" placeholder="Search followers, following or any username…" oninput="renderPeoplePick('cf',window._cfDraft,'toggleCF')" style="margin-bottom:10px">
+    <div id="cf_chips" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"></div><div id="cf_list" style="max-height:46vh;overflow-y:auto"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="S.closeFriends=window._cfDraft;saveCloseFriends();closeModal();render()">Save</button></div>
+  </div></div>`;renderCF();
+}
+function renderCF(){const c=$("#cf_chips");if(c)c.innerHTML=window._cfDraft.map(u=>`<span class="chip" onclick="toggleCF('${esc(u)}')">@${esc(u)} ✕</span>`).join("");renderPeoplePick('cf',window._cfDraft,'toggleCF');}
+function toggleCF(u){const i=window._cfDraft.indexOf(u);if(i>=0)window._cfDraft.splice(i,1);else window._cfDraft.push(u);renderCF();}
+async function openAppearancePanel(){
+  await loadWallet(true);const w=LIVEWALLET||{inventory:{frames:[],bubbles:[]},applied:{}};
+  const frames=(COINCAT?.frames||[]).filter(x=>(w.inventory?.frames||[]).includes(x.id));
+  const bubbles=(COINCAT?.bubbles||[]).filter(x=>(w.inventory?.bubbles||[]).includes(x.id));
+  $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>Profile appearance</h2>
+    <div class="tabs"><button class="tab on" onclick="document.querySelectorAll('.apSec').forEach(x=>x.style.display='none');$('#ap_frames').style.display='grid';document.querySelectorAll('.modal .tab').forEach(x=>x.classList.remove('on'));this.classList.add('on')">Frames</button><button class="tab" onclick="document.querySelectorAll('.apSec').forEach(x=>x.style.display='none');$('#ap_bubbles').style.display='grid';document.querySelectorAll('.modal .tab').forEach(x=>x.classList.remove('on'));this.classList.add('on')">Bubbles</button></div>
+    <div id="ap_frames" class="apSec storegrid">${frames.length?frames.map(i=>storeItem(i,'frame',w)).join(""):`<div class="muted">No frames owned. Open Lore Coins store.</div>`}</div>
+    <div id="ap_bubbles" class="apSec storegrid" style="display:none">${bubbles.length?bubbles.map(i=>storeItem(i,'bubble',w)).join(""):`<div class="muted">No bubbles owned. Open Lore Coins store.</div>`}</div>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn ghost" onclick="closeModal();nav('#/coins')">Open store</button></div>
+  </div></div>`;
+}
+function nickName(u){return (S.nicknames&&S.nicknames[u])||"";}
+function displayName(u){return nickName(u)||"@"+u;}
+function setNickname(u){S.nicknames=S.nicknames||{};const v=prompt("Nickname for @"+u+" (only you see it):",S.nicknames[u]||"");if(v===null)return;if(v.trim())S.nicknames[u]=v.trim().slice(0,30);else delete S.nicknames[u];save();render();}
+
 async function loadCloseFriends(){
   if(!(LIVE&&S.token))return;
   const d=await api("/close-friends",{_silent:true});
   if(d&&d.ok){S.closeFriends=d.list||[];save();const el=$("#f_close");if(el)el.value=S.closeFriends.join(", ");}
 }
 async function saveCloseFriends(){
-  const el=$("#f_close");if(!el)return;
-  const list=el.value.split(",").map(x=>x.trim().toLowerCase().replace("@","")).filter(Boolean);
-  S.closeFriends=[...new Set(list)];save();toast("Close friends saved");
+  const el=$("#f_close");
+  if(el)S.closeFriends=[...new Set(el.value.split(",").map(x=>x.trim().toLowerCase().replace("@","")).filter(Boolean))];
+  S.closeFriends=[...new Set(S.closeFriends||[])];save();toast("Close friends saved");
   if(LIVE&&S.token)api("/close-friends",{list:S.closeFriends});
 }
 function exportHistKey(){return "lore_exports_"+S.me;}
@@ -2052,11 +2184,18 @@ routes.admin=()=>{
   $("#content").innerHTML=`
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("seal")} Award ${CONFIG.ADMIN_DISPLAY} Seal</h2>
       <div style="display:flex;gap:8px"><input id="ad_seal" placeholder="username or post id"><button class="btn sm" onclick="adminAct('seal')">Award</button></div></div>
+    <div class="tabs"><button class="tab on" onclick="adminTab('admin_mod',this)">Moderation</button><button class="tab" onclick="adminTab('admin_comms',this)">Broadcast</button><button class="tab" onclick="adminTab('admin_econ',this)">Economy</button><button class="tab" onclick="adminTab('admin_badges',this)">Badges</button></div>
+    <div id="admin_mod" class="adminsec">
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("shield",16)} Ban / Shadowban</h2>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="ad_ban" placeholder="username" style="flex:1;min-width:150px">
       <button class="btn sm" onclick="adminAct('ban')">Toggle ban</button>
       <button class="btn ghost sm" onclick="adminAct('shadowban')">Toggle shadowban</button></div>
       <p class="muted" style="margin-top:10px">Ban = all actions rejected. Shadowban = their posts visible only to themselves.</p></div>
+    <div id="admin_dash" class="card"><h2 style="font-size:15px;margin-bottom:12px">Moderation lists</h2><div class="muted">Loading banned and reports…</div></div></div>
+    <div id="admin_comms" class="adminsec" style="display:none"><div class="card"><h2 style="font-size:15px;margin-bottom:13px">LORE Broadcast</h2>
+      <textarea id="ad_broadcast" rows="4" placeholder="Important message to all users…"></textarea><input id="ad_bmedia" placeholder="Optional image/video/audio link" style="margin-top:8px"><button class="btn sm" style="margin-top:10px" onclick="adminBroadcast()">Send broadcast</button><p class="muted" style="margin-top:8px">Sends to Primary DMs as LORE and Activity notifications.</p></div>
+      <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Warning</h2><input id="ad_warn_user" placeholder="username"><textarea id="ad_warn_text" rows="3" placeholder="Warning text…" style="margin-top:8px"></textarea><button class="btn danger sm" style="margin-top:10px" onclick="adminWarn()">Send warning</button></div></div>
+    <div id="admin_econ" class="adminsec" style="display:none">
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("coin",16)} Lore Coins Admin</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
         <input id="ad_coin_user" placeholder="username"><input id="ad_coin_amt" placeholder="amount (+/-)"><input id="ad_coin_note" placeholder="note"><button class="btn sm" onclick="adminCoins()">Apply</button>
@@ -2064,8 +2203,8 @@ routes.admin=()=>{
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">
         <input id="ad_v_code" placeholder="voucher code optional"><input id="ad_v_amt" placeholder="coins"><input id="ad_v_uses" placeholder="uses"><input id="ad_v_days" placeholder="days"><button class="btn ghost sm" onclick="adminVoucher()">Create voucher</button>
       </div></div>
-    <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Custom Badge</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px"><input id="ad_badge_user" placeholder="username"><input id="ad_badge_name" placeholder="badge name"><input id="ad_badge_color" placeholder="color"><button class="btn sm" onclick="adminBadge(false)">Add</button><button class="btn ghost sm" onclick="adminBadge(true)">Remove</button></div></div>
+    </div><div id="admin_badges" class="adminsec" style="display:none"><div class="card"><h2 style="font-size:15px;margin-bottom:13px">Custom Badge</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px"><input id="ad_badge_user" placeholder="username"><input id="ad_badge_name" placeholder="badge name"><input id="ad_badge_color" placeholder="text color / #hex"><input id="ad_badge_texture" placeholder="texture image URL"><label class="exportopt"><input id="ad_badge_bold" type="checkbox">Bold</label><label class="exportopt"><input id="ad_badge_italic" type="checkbox">Italic</label><button class="btn sm" onclick="adminBadge(false)">Add</button><button class="btn ghost sm" onclick="adminBadge(true)">Remove</button></div><p class="muted" style="margin-top:8px">Badge templates are saved on user profiles. Use exact #hex colors for precise shades.</p></div></div>
     <div class="card"><h2 style="font-size:15px;margin-bottom:12px">Users (${users.length})</h2>
       ${users.map(u=>`<div style="display:flex;align-items:center;gap:11px;padding:9px 0;border-top:1px solid var(--border)">
         ${avatarHTML(u,32)}<b style="cursor:pointer" onclick="nav('#/u/${u}')">@${u}</b>
@@ -2080,6 +2219,7 @@ routes.admin=()=>{
       <p class="muted">Live mode: every signup, login, post, vote and admin action lands in <b>admin/logs/&lt;date&gt;.json</b> in lore-data — open it on GitHub anytime. Failed logins flagged.</p></div>
     <div class="card"><h2 style="font-size:15px;margin-bottom:11px">Reports queue</h2>
       <p class="muted">User reports land in <b>data/admin/reports.json</b>. Review → delete the post file or shadowban.</p></div>`;
+  loadAdminDash();
 };
 function adminLookup(){
   const v=$("#ad_lookup").value.trim();
@@ -2092,6 +2232,10 @@ function adminGitHub(){
   const path=v.startsWith("p_")?"posts/"+v.split(":")[0]+".json":v?"users/"+v.toLowerCase().replace("@","")+".json":"";
   window.open("https://github.com/"+repo+(path?"/blob/main/"+path:""),"_blank");
 }
+function adminTab(id,btn){document.querySelectorAll('.adminsec').forEach(e=>e.style.display='none');const el=$("#"+id);if(el)el.style.display='block';document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));if(btn)btn.classList.add('on');}
+async function loadAdminDash(){const d=await api("/admin/dashboard",{_silent:true});const el=$("#admin_dash");if(!el||!d||!d.ok)return;el.innerHTML=`<h2 style="font-size:15px;margin-bottom:12px">Moderation lists</h2><div class="grid2"><div><b>Banned</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${(d.banned.banned||[]).map(u=>`<span class="chip">@${esc(u)}</span>`).join("")||'<span class="muted">None</span>'}</div></div><div><b>Shadowbanned</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${(d.banned.shadowbanned||[]).map(u=>`<span class="chip">@${esc(u)}</span>`).join("")||'<span class="muted">None</span>'}</div></div></div><div class="hr"></div><b>Most reported</b>${(d.mostReported||[]).map(r=>`<div class="muted" style="padding:5px 0">${esc(r.target)} · ${r.count}</div>`).join("")||'<div class="muted">No reports.</div>'}<div class="hr"></div><b>Badge templates</b>${(d.badges||[]).map(b=>`<div class="muted" style="padding:5px 0"><span class="badge seal" style="color:${esc(b.color||'var(--gold)')};border-color:${esc(b.color||'var(--gold)')};${b.texture?`background:url('${esc(b.texture)}') center/cover,var(--soft2);`:''}">${esc(b.name)}</span></div>`).join("")||'<div class="muted">No badge templates.</div>'}`;}
+async function adminBroadcast(){const d=await api("/admin/broadcast",{text:$("#ad_broadcast").value.trim(),media:$("#ad_bmedia").value.trim()});if(d&&d.ok)toast("Broadcast sent to "+d.sent+" users");}
+async function adminWarn(){const d=await api("/admin/warn",{target:$("#ad_warn_user").value.trim(),text:$("#ad_warn_text").value.trim()});if(d&&d.ok)toast("Warning sent");}
 async function adminAct(kind){
   const val=(kind==="seal"?$("#ad_seal"):$("#ad_ban")).value.trim().toLowerCase();
   if(!val){toast("Enter a username first");return;}
@@ -2110,7 +2254,7 @@ async function adminVoucher(){
   if(d&&d.ok){toast("Voucher: "+d.code);navigator.clipboard&&navigator.clipboard.writeText(d.code);}
 }
 async function adminBadge(remove){
-  const d=await api("/admin/badge",{target:$("#ad_badge_user").value.trim(),name:$("#ad_badge_name").value.trim(),color:$("#ad_badge_color").value.trim(),remove});
+  const d=await api("/admin/badge",{target:$("#ad_badge_user").value.trim(),name:$("#ad_badge_name").value.trim(),color:$("#ad_badge_color").value.trim(),texture:$("#ad_badge_texture").value.trim(),bold:$("#ad_badge_bold")?.checked,italic:$("#ad_badge_italic")?.checked,remove});
   if(d&&d.ok)toast(remove?"Badge removed":"Badge added");
 }
 
@@ -2193,25 +2337,14 @@ async function startVoice(sendFn){
 }
 function stopVoice(){if(REC&&REC.state!=="inactive")REC.stop();}
 function blobToDataUrl(blob){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(blob);});}
-function pickChatImage(sendFn){
-  const inp=document.createElement("input");inp.type="file";inp.accept="image/*";
-  inp.onchange=async()=>{
-    const file=inp.files[0];if(!file)return;
-    let dataUrl=await blobToDataUrl(file);
-    if(dataUrl.length>2_000_000){ // compress big photos
-      dataUrl=await new Promise(res=>{const img=new Image();img.onload=()=>{
-        const cv=document.createElement("canvas");const sc=Math.min(1,1280/Math.max(img.width,img.height));
-        cv.width=img.width*sc;cv.height=img.height*sc;
-        cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
-        res(cv.toDataURL("image/jpeg",0.82));};img.src=dataUrl;});
-    }
-    if(dataUrl.length>2_000_000){toast("Image too large even after compression");return;}
-    toast("Uploading image…");
-    const d=await api("/upload",{data:dataUrl});
-    if(d&&d.url)sendFn(d.url);
-  };
-  inp.click();
+function openMediaLink(sendFn){
+  const url=prompt("Paste image, video, GIF or audio link (Catbox, Imgur, GIPHY, YouTube, MP3, MP4…):");
+  if(!url)return;
+  const clean=url.trim();
+  if(!/^https?:\/\//i.test(clean)){toast("Paste a full https:// link");return;}
+  sendFn(clean);
 }
+function pickChatImage(sendFn){openMediaLink(sendFn);}
 function openGifPicker(sendFn){
   window._gifSend=sendFn;
   $("#modalroot").innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()">
@@ -2229,8 +2362,8 @@ async function doGifSearch(){
   $("#gif_grid").innerHTML=d.results.map(g=>`<img src="${esc(g.preview)}" loading="lazy" style="width:100%;border-radius:9px;cursor:pointer;border:1px solid var(--border)" onclick="window._gifSend('${esc(g.url)}');closeModal()">`).join("")||'<span class="muted">No results.</span>';
 }
 const attachBar=fn=>`
-  <button class="iconbtn recdot" title="Voice note" onclick="startVoice(u=>${fn}(u))">${ic("mic",18)}</button>
-  <button class="iconbtn" title="Image" onclick="pickChatImage(u=>${fn}(u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
+  <button class="iconbtn recdot" title="Audio/video link" onclick="openMediaLink(u=>${fn}(u))">${ic("mic",18)}</button>
+  <button class="iconbtn" title="Image/video link" onclick="openMediaLink(u=>${fn}(u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
   <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800;letter-spacing:.5px" onclick="openGifPicker(u=>${fn}(u))">GIF</button>`;
 I.mic=I.mic||'<svg class="ic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5M8.5 21.5h7"/></svg>';
 
@@ -2419,5 +2552,5 @@ render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c19e3218f9d220',t:'MTc4MTUyNjk2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
