@@ -291,7 +291,7 @@ function storeFrames() {
       animated: spin || mythic,
     };
   });
-  const assetFrames = Array.from({ length: 80 }, (_, i) => {
+  const assetFrames = Array.from({ length: 120 }, (_, i) => {
     const n = i + 201;
     const premium = n >= 256;
     return {
