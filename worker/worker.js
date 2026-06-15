@@ -273,7 +273,7 @@ const ACH_REWARDS = {
 function storeFrames() {
   const colors = ["gold", "red", "blue", "purple", "white", "green", "violet", "cyan", "orange", "silver", "rose", "black", "emerald", "ice", "crimson"];
   const designNames = ["Clean", "Rope", "Tech", "Roman", "Sigil", "Orbit", "Double", "Glyph", "Rune", "Crescent", "Hands", "Ornate", "Starforge", "Crown", "Clock", "Blade", "Halo", "Pulse", "Arc", "Mythic"];
-  return Array.from({ length: 200 }, (_, i) => {
+  const cssFrames = Array.from({ length: 200 }, (_, i) => {
     const n = i + 1;
     const design = designNames[(n - 1) % designNames.length];
     const color = colors[(n - 1) % colors.length];
@@ -283,7 +283,7 @@ function storeFrames() {
     const mythic = n > 170;
     return {
       id: "frame_" + String(n).padStart(2, "0"),
-      name: `${design} ${color[0].toUpperCase() + color.slice(1)} Frame ${n}`,
+      name: "Frame " + n,
       price: simple ? 35 + (n % 10) * 5 : glow ? 170 + (n % 18) * 15 : spin ? 650 + (n % 24) * 55 : 2200 + (n % 30) * 95,
       tier: simple ? "minimal" : glow ? "glow" : spin ? "animated" : "mythic-spin",
       design: design.toLowerCase(),
@@ -291,6 +291,20 @@ function storeFrames() {
       animated: spin || mythic,
     };
   });
+  const assetFrames = Array.from({ length: 80 }, (_, i) => {
+    const n = i + 201;
+    const premium = n >= 256;
+    return {
+      id: "frame_" + String(n).padStart(2, "0"),
+      name: "Frame " + n,
+      price: premium ? 2600 + (i % 20) * 120 : 1200 + (i % 25) * 70,
+      tier: premium ? "reference-premium-spin" : "reference-spin",
+      design: "reference",
+      asset: `assets/frames/frame_asset_${n}.png`,
+      animated: true,
+    };
+  });
+  return [...cssFrames, ...assetFrames];
 }
 function storeBubbles() {
   const names = ["Default", "Capybara", "Frog", "Cat Dog", "Facepalm", "Heart", "Doge", "Dino", "Neon", "Glass", "Pixel", "Ribbon", "Paper", "Royal", "Terminal", "Candy", "Aurora", "Noir", "Goldline", "Velvet", "Ink", "Cloud", "Chrome", "Ember", "Frost", "Matrix", "Pastel", "Galaxy", "Comic", "Minimal", "Luxury", "Holo", "Lunar", "Solar", "Arcade", "Sakura", "Ocean", "Toxic", "Ruby", "Pearl"];
