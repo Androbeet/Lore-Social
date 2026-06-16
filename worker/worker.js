@@ -2149,7 +2149,18 @@ async function adminBroadcast(user, body, env) {
   assertAdmin(user, env);
   const text = String(body.text || "").slice(0, 3000).trim();
   const media = String(body.media || "").slice(0, 700).trim();
+  const cid = String(body.cid || "").slice(0, 80);
   if (!text && !media) throw new Error("empty broadcast");
+  if (cid) {
+    let duplicate = false;
+    await mutateJSON(env, env.DMS_REPO, "admin/action_ids.json", { ids: {} }, (x) => {
+      x.ids = x.ids || {};
+      if (x.ids[cid]) duplicate = true;
+      else x.ids[cid] = { type: "broadcast", ts: Date.now(), by: user };
+      return x;
+    }, "admin action id").catch(() => {});
+    if (duplicate) return reply({ ok: true, duplicate: true, sent: 0 });
+  }
   const message = `LORE BROADCAST\n\n${text}${media ? "\n\n" + media : ""}`;
   const { json } = await ghGetJSON(env, env.DATA_REPO, "config/userindex.json").catch(() => ({ json: [] }));
   const users = (Array.isArray(json) ? json : []).filter((u) => u && u !== user).slice(0, 1000);
@@ -2162,17 +2173,28 @@ async function adminBroadcast(user, body, env) {
       if (sent % 20 === 0) await sleep(350);
     } catch (e) {}
   }
-  await log(env, user, "admin_broadcast", { sent });
+  await log(env, user, "admin_broadcast", { sent, cid });
   return reply({ ok: true, sent });
 }
 async function adminWarn(user, body, env) {
   assertAdmin(user, env);
   const target = String(body.target || "").toLowerCase().replace(/[^a-z0-9_]/g, "");
   const text = String(body.text || "").slice(0, 2000).trim();
+  const cid = String(body.cid || "").slice(0, 80);
   if (!target || !text) throw new Error("target and warning required");
+  if (cid) {
+    let duplicate = false;
+    await mutateJSON(env, env.DMS_REPO, "admin/action_ids.json", { ids: {} }, (x) => {
+      x.ids = x.ids || {};
+      if (x.ids[cid]) duplicate = true;
+      else x.ids[cid] = { type: "warning", ts: Date.now(), by: user, target };
+      return x;
+    }, "admin action id").catch(() => {});
+    if (duplicate) return reply({ ok: true, duplicate: true });
+  }
   await sendSystemDm(env, target, `LORE WARNING\n\n${text}`, "lore");
   await notify(env, target, { type: "warning", from: user, snippet: text.slice(0, 90) });
-  await log(env, user, "admin_warning", { target });
+  await log(env, user, "admin_warning", { target, cid });
   return reply({ ok: true });
 }
 
