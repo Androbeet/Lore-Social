@@ -422,6 +422,9 @@ svg.donut .seg:hover{stroke-width:33}
 
 
 
+
+.loreav{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:900;color:#fff;background:radial-gradient(circle at 35% 30%,#fff8,transparent 18%),linear-gradient(135deg,var(--gold),var(--accent));box-shadow:0 0 0 2px rgba(234,179,8,.45),0 0 20px rgba(234,179,8,.42);position:relative;overflow:hidden}.loreav::after{content:"";position:absolute;inset:-30%;border-radius:50%;border:2px dashed rgba(255,255,255,.45);animation:framespin 8s linear infinite}.loreav b{position:relative;z-index:1}
+
 </style>
 </head>
 <body data-theme="maroon">
@@ -782,6 +785,7 @@ function timeAgo(ts){const d=(Date.now()-ts)/1000;if(d<60)return"now";if(d<3600)
 function dispName(u){return u===CONFIG.ADMIN?CONFIG.ADMIN_DISPLAY:u;}
 function userColor(u){if(SEED.users[u])return SEED.users[u].color;let h=0;for(const c of u)h=(h*31+c.charCodeAt(0))%360;return`hsl(${h},60%,48%)`;}
 function genAv(u,s){return`<div class="avg" style="width:${s}px;height:${s}px;font-size:${s*0.42}px;background:linear-gradient(135deg,${userColor(u)},#0008)">${esc((u[0]||"?").toUpperCase())}</div>`;}
+function loreAvatar(s){return `<div class="loreav" style="width:${s}px;height:${s}px;font-size:${s*0.42}px"><b>L</b></div>`;}
 function frameMeta(id){
   const n=Number(String(id||"").match(/(\d+)/)?.[1]||0);
   const hues=[42,0,215,270,0,135,292,185,24,48,330,95,155,200,350];
@@ -886,10 +890,22 @@ function render(){
   try{fn(rest.join("/"));}catch(e){$("#content").innerHTML=`<div class="empty">Something glitched. <span class="link" onclick="nav('#/explore')">Back to Explore</span></div>`;}
   window.scrollTo({top:0,behavior:"instant"});
 }
+function activeEditable(){const e=document.activeElement;return e&&(e.tagName==="INPUT"||e.tagName==="TEXTAREA"||e.tagName==="SELECT"||e.isContentEditable);}
+function modalOpen(){return !!document.querySelector("#modalroot .overlay");}
+function stableRoute(){return ["dm","group","admin","coins","settings","achievements"].includes(CUR);}
 function liveRender(){
-  if(CUR==="dm"||CUR==="group"){drawChrome();return;}
-  render();
+  // Premium stability: background refresh must never wipe typing, admin drafts, modals, or active chats.
+  if(activeEditable()||modalOpen()||stableRoute()){drawChrome();return;}
+  if(["explore","topic","topics","search","notifications","me","u"].includes(CUR))render();
+  else drawChrome();
 }
+const UI_LOCKS={};
+async function withLock(key,fn){if(UI_LOCKS[key])return;UI_LOCKS[key]=1;try{return await fn();}finally{setTimeout(()=>delete UI_LOCKS[key],900);}}
+function draftSet(k,v){try{sessionStorage.setItem("draft:"+k,v||"")}catch(e){}}
+function draftGet(k){try{return sessionStorage.getItem("draft:"+k)||""}catch(e){return""}}
+function draftClear(k){try{sessionStorage.removeItem("draft:"+k)}catch(e){}}
+function restoreVal(id,k){const el=$("#"+id),v=draftGet(k);if(el&&v&&!el.value)el.value=v;}
+
 function head(t,s){$("#ptitle").textContent=t;$("#psub").textContent=s||"";}
 
 /* ============ CHROME: left rail, right rail, tabbar ============ */
@@ -897,7 +913,7 @@ const NAVS=[["explore","Explore","explore"],["topics","Topics","topics"],["commu
 ["search","Search","search"],["notifications","Activity","alerts"],["coins","Lore Coins","coin"],["dms","Messages","msg"],["achievements","Achievements","trophy"],["me","Profile","user"],["settings","Settings","gear"]];
 I.coin='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="currentColor" stroke-width=".8" opacity=".45"/><text x="12" y="15.2" text-anchor="middle" font-size="7.2" font-weight="800" font-family="Inter,Arial,sans-serif" fill="currentColor">LC</text></svg>'
 I.trophy='<svg class="ic" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/></svg>';
-function coinInner(){return `${ic("coin",14)}<b>${LIVEWALLET?LIVEWALLET.balance:0}</b>${LIVECLAIM?`<span class="nbadge">!</span>`:""}`;}
+function coinInner(){const bal=LIVEWALLET?.balance??S.walletCache?.balance??"—";return `${ic("coin",14)}<b>${bal}</b>${LIVECLAIM?`<span class="nbadge">!</span>`:""}`;}
 function coinBar(){return `<button class="coinbar" onclick="nav('#/coins')">${coinInner()}<span style="font-size:11px;color:var(--muted);font-weight:700">LORE</span></button>`;}
 function drawChrome(){
   const n=unread();
@@ -911,7 +927,7 @@ function drawChrome(){
     <button class="newpost" onclick="openCompose()">${ic("plus",18)} NEW POST</button>
     <div class="mecard" onclick="nav('#/me')">
       ${avatarHTML(S.me,38)}
-      <div><div class="nm">@${esc(S.me)}</div><div class="hd">${S.token?(LIVEWALLET?LIVEWALLET.balance+" coins":"logged in"):"guest"}</div></div>
+      <div><div class="nm">@${esc(S.me)}</div><div class="hd">${S.token?((LIVEWALLET?.balance??S.walletCache?.balance??"…")+" coins"):"guest"}</div></div>
     </div>`;
   $("#tabbar").innerHTML=[
     ["explore","Home","explore"],["topics","Topics","topics"],["__post","","plus"],
@@ -1187,12 +1203,12 @@ async function likeStory(owner,id){
   const d=await api("/story-react",{owner,id,action:"like",_silent:true});
   if(d&&d.ok){const el=$("#story_likes");if(el)el.textContent=d.likesCount;toast(d.liked?"Liked":"Like removed");}
 }
-async function commentStory(owner,id){
+async function commentStory(owner,id){return withLock("storyc:"+id,async()=>{
   const inp=$("#story_reply"),text=inp&&inp.value.trim();if(!text)return;
   inp.value="";
-  const d=await api("/story-react",{owner,id,action:"comment",text,_silent:true});
-  if(d&&d.ok){toast("Reply sent");openStory(owner,id);}else toast("Couldn't send reply");
-}
+  const d=await api("/story-react",{owner,id,action:"comment",text,_silent:true,cid:"sc_"+Date.now()+"_"+Math.random().toString(36).slice(2)});
+  if(d&&d.ok){toast("Reply sent");openStory(owner,id);}else{if(inp)inp.value=text;toast("Couldn't send reply");}
+});}
 async function deleteStory(id){
   const d=await api("/story-delete",{id});
   if(d&&d.ok){closeModal();toast("Story deleted");await loadStories();render();}
@@ -1462,7 +1478,7 @@ function profilePage(uname){
       ${u.streak&&u.streak.count>0?`<div style="margin-top:9px"><span class="badge strk">${ic("flame")} ${u.streak.count}-day streak${u.streak.tier!=="—"?" · "+u.streak.tier:""}</span></div>`:""}
       ${showHTML?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">${showHTML}</div>`:""}
       ${socHTML?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">${socHTML}</div>`:""}
-      <p style="margin-top:13px;color:var(--text2);line-height:1.7;max-width:560px">${esc(u.bio)}</p>
+      <p style="margin-top:13px;color:var(--text2);line-height:1.7;max-width:560px">${md(u.bio||"")}</p>
       ${u.voice?`<div class="voice"><button class="playb" onclick="playVoice()">${ic("play",17)}</button><div class="wave">${wave}</div><span class="muted">voice card · 0:06</span></div>`:""}
       <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:14px">
         ${(u.tags||[]).map(t=>`<span class="chip" onclick="nav('#/topic/${esc(t)}')">#${esc(t)}</span>`).join("")}
@@ -1669,7 +1685,7 @@ async function loadWallet(force){
   if(!LIVE||!S.token)return null;
   if(LIVEWALLET&&!force)return LIVEWALLET;
   const d=await api("/wallet",{_silent:true});
-  if(d&&d.ok){LIVEWALLET=d.wallet;COINCAT=d.catalog;LIVECLAIM=!!d.canClaim;drawChrome();}
+  if(d&&d.ok){LIVEWALLET=d.wallet;COINCAT=d.catalog;LIVECLAIM=!!d.canClaim;S.walletCache={balance:d.wallet?.balance||0,ts:Date.now()};save();drawChrome();}
   return LIVEWALLET;
 }
 function txRows(tx){
@@ -1851,7 +1867,7 @@ function renderInbox(threads){
     const isGroup=String(t.with).startsWith("👥 "),isLore=t.with==="lore";
     const id=isGroup?"g_"+t.with.slice(3):t.with;
     return`<div class="card hov" style="display:flex;gap:13px;align-items:center;cursor:pointer" onclick="${isGroup?`nav('#/group/${esc(id)}')`:`openThread('${esc(t.with)}')`}">
-      ${isGroup?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:isLore?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--gold),var(--accent))">L</div>`:avatarHTML(t.with,44)}
+      ${isGroup?`<div class="avg" style="width:44px;height:44px;font-size:19px;background:linear-gradient(135deg,var(--accent2),var(--accent))">👥</div>`:isLore?loreAvatar(44):avatarHTML(t.with,44)}
       <div style="min-width:0"><b>${isGroup?esc(t.with.slice(3)):isLore?"LORE":esc(displayName(t.with))}</b>${isGroup?` <span class="muted">· ${t.request?"request":"group"}</span>`:isLore?' <span class="muted">· official</span>':""}
         <div class="muted" style="margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.last||"")}</div></div>
       <div style="margin-left:auto;text-align:right;flex-shrink:0">
@@ -1932,10 +1948,11 @@ routes.group=async(id)=>{
         <button class="iconbtn recdot" title="Audio/video link" onclick="openMediaLink(u=>sendGroupMedia('${esc(id)}',u))">${ic("mic",18)}</button>
         <button class="iconbtn" title="Image/video link" onclick="openMediaLink(u=>sendGroupMedia('${esc(id)}',u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
         <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800" onclick="openGifPicker(u=>sendGroupMedia('${esc(id)}',u))">GIF</button>
-        <input id="g_text" placeholder="Message the group…" onkeydown="if(event.key==='Enter')sendGroup('${esc(id)}')">
+        <input id="g_text" placeholder="Message the group…" oninput="draftSet('g:${esc(id)}',this.value)" onkeydown="if(event.key==='Enter')sendGroup('${esc(id)}')">
         <button class="btn sm" onclick="sendGroup('${esc(id)}')">Send</button>
       </div>
     </div>`;
+  restoreVal("g_text","g:"+id);
   await draw(true);
   DM_POLL=setInterval(()=>{if(currentGroupId()===id)draw(false);else stopDmPoll();},window.FB_LIVE?2500:5000);
 };
@@ -1949,14 +1966,14 @@ function appendPendingBubble(boxId,text,from){
   div.innerHTML=`${!mine?`<div class="muted" style="font-size:10.5px;margin-bottom:2px">@${esc(from)}</div>`:""}<div class="${bubbleCls(from||S.me)}" style="${bubbleStyle(from||S.me,mine)};padding:9px 14px;border-radius:${mine?"16px 16px 4px 16px":"16px 16px 16px 4px"};font-size:14px;line-height:1.55;word-wrap:break-word;opacity:.75">${md(text)}</div><div class="muted" style="margin-top:3px;text-align:${mine?"right":"left"};font-size:10.5px">just now</div>`;
   box.appendChild(div);box.scrollTop=box.scrollHeight;return div;
 }
-async function sendGroup(id){
+async function sendGroup(id){return withLock("gmsg:"+id,async()=>{
   const inp=$("#g_text"),text=inp.value.trim();if(!text)return;
-  inp.value="";
+  inp.value="";draftClear("g:"+id);
   const pending=appendPendingBubble("#g_msgs",text,S.me);
-  const d=await api("/group-message",{group:id,text});
+  const d=await api("/group-message",{group:id,text,cid:"g_"+Date.now()+"_"+Math.random().toString(36).slice(2)});
   if(d&&d.ok){bump("dms");}
-  else if(d&&d.error){if(pending)pending.remove();if(inp)inp.value=text;}
-}
+  else if(d&&d.error){if(pending)pending.remove();if(inp)inp.value=text;draftSet("g:"+id,text);}
+});}
 function groupRoleClient(g,u){if(!g)return"member";if(g.owner===u)return"owner";if((g.admins||[]).includes(u))return"admin";if((g.moderators||[]).includes(u))return"moderator";return"member";}
 function groupCanMod(g){return ["owner","admin","moderator"].includes(g?.role);}
 function groupCanAdmin(g){return ["owner","admin"].includes(g?.role);}
@@ -2024,7 +2041,7 @@ routes.dm=async(other)=>{
     <div class="card" style="padding:0;display:flex;flex-direction:column;height:64vh">
       <div style="display:flex;align-items:center;gap:11px;padding:13px 17px;border-bottom:1px solid var(--border)">
         <button class="iconbtn" onclick="nav('#/dms')" style="margin-left:-8px"><svg class="ic" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></button>
-        ${other==="lore"?`<div class="avg" style="width:36px;height:36px;font-size:16px;background:linear-gradient(135deg,var(--gold),var(--accent))">L</div>`:avatarHTML(other,36)}<b style="cursor:${other==="lore"?"default":"pointer"}" ${other==="lore"?"":`onclick="nav('#/u/${esc(other)}')"`}>${other==="lore"?"LORE":esc(displayName(other))}</b>
+        ${other==="lore"?loreAvatar(36):avatarHTML(other,36)}<b style="cursor:${other==="lore"?"default":"pointer"}" ${other==="lore"?"":`onclick="nav('#/u/${esc(other)}')"`}>${other==="lore"?"LORE":esc(displayName(other))}</b>
         <span class="muted" style="margin-left:auto" id="dm_mode"></span>
       </div>
       <div id="dm_msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px">
@@ -2034,10 +2051,11 @@ routes.dm=async(other)=>{
         <button class="iconbtn recdot" title="Audio/video link" onclick="openMediaLink(u=>sendDmMedia('${esc(other)}',u))">${ic("mic",18)}</button>
         <button class="iconbtn" title="Image/video link" onclick="openMediaLink(u=>sendDmMedia('${esc(other)}',u))"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 3 3 4-4 4 4"/></svg></button>
         <button class="iconbtn" title="GIF" style="font-size:10px;font-weight:800" onclick="openGifPicker(u=>sendDmMedia('${esc(other)}',u))">GIF</button>
-        <input id="dm_text" placeholder="Message @${esc(other)}…" onkeydown="if(event.key==='Enter')sendDm('${esc(other)}')">
+        <input id="dm_text" placeholder="Message @${esc(other)}…" oninput="draftSet('dm:${esc(other)}',this.value)" onkeydown="if(event.key==='Enter')sendDm('${esc(other)}')">
         <button class="btn sm" onclick="sendDm('${esc(other)}')">Send</button>
       </div>
     </div>`;
+  restoreVal("dm_text","dm:"+other);
   await refreshThread(other,true);
   DM_POLL=setInterval(()=>{if(currentDmUser()===other)refreshThread(other,false);else stopDmPoll();},window.FB_LIVE?2500:5000);
 }
@@ -2083,13 +2101,13 @@ async function sendGroupMedia(id,url){
   if(d&&d.ok){bump("dms");toast("Sent");}
   else if(d&&d.error){if(pending)pending.remove();}
 }
-async function sendDm(other){
+async function sendDm(other){return withLock("dm:"+other,async()=>{
   if(other==="lore"){toast("Official LORE broadcasts cannot be replied to");return;}
   const inp=$("#dm_text"),text=inp.value.trim();
   if(!text)return;
-  inp.value="";
+  inp.value="";draftClear("dm:"+other);
   const pending=appendPendingBubble("#dm_msgs",text,S.me);
-  const d=await api("/message",{to:other,text});
+  const d=await api("/message",{to:other,text,cid:"dm_"+Date.now()+"_"+Math.random().toString(36).slice(2)});
   if(d&&d.ok){
     bump("dms");
     if(d.requested){toast("Sent as request");const mode=$("#dm_mode");if(mode)mode.textContent="request sent";return;}
@@ -2102,9 +2120,9 @@ async function sendDm(other){
     setTimeout(()=>{ if(CUR==="dm")refreshThread(other); }, 900);
   } else if(d&&d.error){
     if(pending)pending.remove();
-    if(inp)inp.value=text;
+    if(inp)inp.value=text;draftSet("dm:"+other,text);
   }
-}
+});}
 
 routes.settings=()=>{
   head("Settings","make the Lore yours");
@@ -2380,7 +2398,7 @@ routes.admin=()=>{
   $("#content").innerHTML=`
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("seal")} Award ${CONFIG.ADMIN_DISPLAY} Seal</h2>
       <div style="display:flex;gap:8px"><input id="ad_seal" placeholder="username or post id"><button class="btn sm" onclick="adminAct('seal')">Award</button></div></div>
-    <div class="tabs"><button class="tab on" onclick="adminTab('admin_mod',this)">Moderation</button><button class="tab" onclick="adminTab('admin_comms',this)">Broadcast</button><button class="tab" onclick="adminTab('admin_econ',this)">Economy</button><button class="tab" onclick="adminTab('admin_badges',this)">Badges</button></div>
+    <div class="tabs"><button class="tab" data-adtab="admin_mod" onclick="adminTab('admin_mod',this)">Moderation</button><button class="tab" data-adtab="admin_comms" onclick="adminTab('admin_comms',this)">Broadcast</button><button class="tab" data-adtab="admin_econ" onclick="adminTab('admin_econ',this)">Economy</button><button class="tab" data-adtab="admin_badges" onclick="adminTab('admin_badges',this)">Badges</button></div>
     <div id="admin_mod" class="adminsec">
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("shield",16)} Ban / Shadowban</h2>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="ad_ban" placeholder="username" style="flex:1;min-width:150px">
@@ -2390,8 +2408,8 @@ routes.admin=()=>{
     <div id="admin_dash" class="card"><h2 style="font-size:15px;margin-bottom:12px">Moderation lists</h2><div class="muted">Loading banned and reports…</div></div></div>
     <div id="admin_comms" class="adminsec" style="display:none"><div class="card"><h2 style="font-size:15px;margin-bottom:13px">LORE Broadcast</h2>
       <div class="muted" style="margin-bottom:8px">Formatting: **bold**, *italic*, ### heading, &gt; quote, links auto-embed, &lt;lore&gt; logo, &lt;lc&gt; coin.</div>
-      <textarea id="ad_broadcast" rows="4" placeholder="### Important update&#10;Use **bold**, *italic*, &lt;lore&gt;, &lt;lc&gt;, and media links…"></textarea><input id="ad_bmedia" placeholder="Optional image/video/audio link" style="margin-top:8px"><button class="btn sm" style="margin-top:10px" onclick="adminBroadcast()">Send broadcast</button><p class="muted" style="margin-top:8px">Sends to Primary DMs as LORE and Activity notifications.</p></div>
-      <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Warning</h2><input id="ad_warn_user" placeholder="username"><div class="muted" style="margin:8px 0">Supports **bold**, *italic*, ### heading, links, &lt;lore&gt;, &lt;lc&gt;.</div><textarea id="ad_warn_text" rows="3" placeholder="Warning text…" style="margin-top:8px"></textarea><button class="btn danger sm" style="margin-top:10px" onclick="adminWarn()">Send warning</button></div></div>
+      <textarea id="ad_broadcast" rows="4" placeholder="### Important update&#10;Use **bold**, *italic*, &lt;lore&gt;, &lt;lc&gt;, and media links…" oninput="draftSet('admin:broadcast',this.value)">${esc(draftGet('admin:broadcast'))}</textarea><input id="ad_bmedia" placeholder="Optional image/video/audio link" value="${esc(draftGet('admin:bmedia'))}" oninput="draftSet('admin:bmedia',this.value)" style="margin-top:8px"><button id="ad_broadcast_btn" class="btn sm" style="margin-top:10px" onclick="adminBroadcast()">Send broadcast</button><p class="muted" style="margin-top:8px">Sends to Primary DMs as LORE and Activity notifications.</p></div>
+      <div class="card"><h2 style="font-size:15px;margin-bottom:13px">Warning</h2><input id="ad_warn_user" placeholder="username" value="${esc(draftGet('admin:warn_user'))}" oninput="draftSet('admin:warn_user',this.value)"><div class="muted" style="margin:8px 0">Supports **bold**, *italic*, ### heading, links, &lt;lore&gt;, &lt;lc&gt;.</div><textarea id="ad_warn_text" rows="3" placeholder="Warning text…" oninput="draftSet('admin:warn_text',this.value)" style="margin-top:8px">${esc(draftGet('admin:warn_text'))}</textarea><button id="ad_warn_btn" class="btn danger sm" style="margin-top:10px" onclick="adminWarn()">Send warning</button></div></div>
     <div id="admin_econ" class="adminsec" style="display:none">
     <div class="card"><h2 style="font-size:15px;margin-bottom:13px">${ic("coin",16)} Lore Coins Admin</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
@@ -2417,6 +2435,7 @@ routes.admin=()=>{
     <div class="card"><h2 style="font-size:15px;margin-bottom:11px">Reports queue</h2>
       <p class="muted">User reports land in <b>data/admin/reports.json</b>. Review → delete the post file or shadowban.</p></div>`;
   loadAdminDash();
+  setTimeout(()=>adminTab(sessionStorage.getItem('adminTab')||'admin_mod'),0);
 };
 function adminLookup(){
   const v=$("#ad_lookup").value.trim();
@@ -2429,10 +2448,10 @@ function adminGitHub(){
   const path=v.startsWith("p_")?"posts/"+v.split(":")[0]+".json":v?"users/"+v.toLowerCase().replace("@","")+".json":"";
   window.open("https://github.com/"+repo+(path?"/blob/main/"+path:""),"_blank");
 }
-function adminTab(id,btn){document.querySelectorAll('.adminsec').forEach(e=>e.style.display='none');const el=$("#"+id);if(el)el.style.display='block';document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));if(btn)btn.classList.add('on');}
+function adminTab(id,btn){sessionStorage.setItem('adminTab',id);document.querySelectorAll('.adminsec').forEach(e=>e.style.display='none');const el=$("#"+id);if(el)el.style.display='block';document.querySelectorAll('[data-adtab]').forEach(t=>t.classList.toggle('on',t.dataset.adtab===id));if(btn)btn.classList.add('on');}
 async function loadAdminDash(){const d=await api("/admin/dashboard",{_silent:true});const el=$("#admin_dash");if(!el||!d||!d.ok)return;el.innerHTML=`<h2 style="font-size:15px;margin-bottom:12px">Moderation lists</h2><div class="grid2"><div><b>Banned</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${(d.banned.banned||[]).map(u=>`<span class="chip">@${esc(u)}</span>`).join("")||'<span class="muted">None</span>'}</div></div><div><b>Shadowbanned</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${(d.banned.shadowbanned||[]).map(u=>`<span class="chip">@${esc(u)}</span>`).join("")||'<span class="muted">None</span>'}</div></div></div><div class="hr"></div><b>Most reported</b>${(d.mostReported||[]).map(r=>`<div class="muted" style="padding:5px 0">${esc(r.target)} · ${r.count}</div>`).join("")||'<div class="muted">No reports.</div>'}<div class="hr"></div><b>Badge templates</b>${(d.badges||[]).map(b=>`<div class="muted" style="padding:5px 0"><span class="badge seal" style="color:${esc(b.color||'var(--gold)')};border-color:${esc(b.color||'var(--gold)')};${b.texture?`background:url('${esc(b.texture)}') center/cover,var(--soft2);`:''}">${esc(b.name)}</span></div>`).join("")||'<div class="muted">No badge templates.</div>'}`;}
-async function adminBroadcast(){const d=await api("/admin/broadcast",{text:$("#ad_broadcast").value.trim(),media:$("#ad_bmedia").value.trim()});if(d&&d.ok)toast("Broadcast sent to "+d.sent+" users");}
-async function adminWarn(){const d=await api("/admin/warn",{target:$("#ad_warn_user").value.trim(),text:$("#ad_warn_text").value.trim()});if(d&&d.ok)toast("Warning sent");}
+async function adminBroadcast(){return withLock('admin:broadcast',async()=>{const btn=$("#ad_broadcast_btn"),text=$("#ad_broadcast").value.trim(),media=$("#ad_bmedia").value.trim();if(!text&&!media){toast('Write a broadcast first');return;}if(btn){btn.disabled=true;btn.textContent='Sending…';}const cid='bc_'+Date.now()+'_'+Math.random().toString(36).slice(2);const d=await api("/admin/broadcast",{text,media,cid});if(d&&d.ok){toast(d.duplicate?'Broadcast already sent':'Broadcast sent to '+d.sent+' users');draftClear('admin:broadcast');draftClear('admin:bmedia');const a=$("#ad_broadcast"),m=$("#ad_bmedia");if(a)a.value='';if(m)m.value='';}if(btn){btn.disabled=false;btn.textContent='Send broadcast';}});}
+async function adminWarn(){return withLock('admin:warn',async()=>{const btn=$("#ad_warn_btn"),target=$("#ad_warn_user").value.trim(),text=$("#ad_warn_text").value.trim();if(!target||!text){toast('Target and warning required');return;}if(btn){btn.disabled=true;btn.textContent='Sending…';}const d=await api("/admin/warn",{target,text,cid:'warn_'+Date.now()+'_'+Math.random().toString(36).slice(2)});if(d&&d.ok){toast('Warning sent');draftClear('admin:warn_user');draftClear('admin:warn_text');const u=$("#ad_warn_user"),t=$("#ad_warn_text");if(u)u.value='';if(t)t.value='';}if(btn){btn.disabled=false;btn.textContent='Send warning';}});}
 async function adminAct(kind){
   const val=(kind==="seal"?$("#ad_seal"):$("#ad_ban")).value.trim().toLowerCase();
   if(!val){toast("Enter a username first");return;}
@@ -2595,7 +2614,7 @@ function openCompose(topic,type){
   setTimeout(()=>$("#c_text")&&$("#c_text").focus(),60);
 }
 
-function closeModal(){$("#modalroot").innerHTML="";}
+function closeModal(){document.querySelectorAll("#modalroot audio,#modalroot video").forEach(x=>{try{x.pause();}catch(e){}});$("#modalroot").innerHTML="";}
 async function submitStory(){
   const text=$("#c_text").value.trim();
   const media=$("#c_media")?$("#c_media").value.trim().split("\n").map(x=>x.trim()).filter(Boolean)[0]||"":"";
@@ -2709,7 +2728,7 @@ async function loadLive(){
         const sd=await api("/stories",{_silent:true});
         if(sd&&sd.ok){LIVESTORIES=sd.stories||[];ensureUsers(LIVESTORIES.map(x=>x.user));if(CUR==="explore")render();}
         const wd=await api("/wallet",{_silent:true});
-        if(wd&&wd.ok){LIVEWALLET=wd.wallet;COINCAT=wd.catalog;LIVECLAIM=!!wd.canClaim;drawChrome();}
+        if(wd&&wd.ok){LIVEWALLET=wd.wallet;COINCAT=wd.catalog;LIVECLAIM=!!wd.canClaim;S.walletCache={balance:wd.wallet?.balance||0,ts:Date.now()};save();drawChrome();}
       }catch(e){}
     }
   }catch(e){}
@@ -2749,5 +2768,5 @@ render();
 if("serviceWorker" in navigator&&location.protocol==="https:")
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c970fbbea2b6de',t:'MTc4MTYwODk5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
